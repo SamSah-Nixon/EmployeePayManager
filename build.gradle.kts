@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
+    alias(libs.plugins.kotlin.jvm)
 }
 
 allprojects {
@@ -17,6 +18,12 @@ allprojects {
 
     version = "app_version"()
     group = "maven_group"()
+}
+
+dependencies {
+    implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
+    implementation(kotlin("serialization"))
 }
 
 operator fun String.invoke(): String = rootProject.ext[this] as? String ?: error("Property $this is not defined")
