@@ -1,4 +1,4 @@
-package org.ryecountryday.samandrhys
+package org.ryecountryday.samandrhys.epm
 
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application

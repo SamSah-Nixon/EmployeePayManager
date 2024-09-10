@@ -1,4 +1,4 @@
-package org.ryecountryday.samandrhys
+package org.ryecountryday.samandrhys.epm
 
 class Greeting {
     private val platform = getPlatform()

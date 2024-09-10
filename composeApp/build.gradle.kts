@@ -32,12 +32,12 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "org.ryecountryday.samandrhys.MainKt"
+        mainClass = "org.ryecountryday.samandrhys.epm.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Pkg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "org.ryecountryday.samandrhys"
-            packageVersion = rootProject.version.toString()
+            packageName = "${project.group}.${project.name}"
+            packageVersion = project.version.toString()
         }
     }
 }

@@ -16,6 +16,7 @@ allprojects {
     }
 
     version = "app_version"()
+    group = "maven_group"()
 }
 
 operator fun String.invoke(): String = rootProject.ext[this] as? String ?: error("Property $this is not defined")
