@@ -12,4 +12,12 @@ data class Employee(
     val address: Address
 ) {
     val workHistory = WorkHistory()
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return this === other || (other is Employee && this.id == other.id)
+    }
 }

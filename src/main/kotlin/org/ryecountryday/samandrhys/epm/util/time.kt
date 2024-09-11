@@ -20,6 +20,6 @@ fun Instant.startOfDay(): Instant {
 /**
  * parse a date string in the format "MM/dd/yyyy"
  */
-fun parseDate(str: String): Date {
-    return SimpleDateFormat("MM/dd/yyyy").parse(str)
+fun parseDate(str: String, separator: Char = '/'): Date {
+    return SimpleDateFormat("MM${separator}dd${separator}yyyy").parse(str)
 }

@@ -33,7 +33,7 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "org.ryecountryday.samandrhys.epm.MainKt"
+        mainClass = "org.ryecountryday.samandrhys.epm.ui.Main"
 
         nativeDistributions {
             targetFormats(TargetFormat.Pkg, TargetFormat.Msi, TargetFormat.Deb)
