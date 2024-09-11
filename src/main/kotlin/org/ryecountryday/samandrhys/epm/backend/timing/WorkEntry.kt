@@ -1,19 +1,22 @@
 package org.ryecountryday.samandrhys.epm.backend.timing
 
-import java.util.Date
+import java.time.Instant
 
-class WorkEntry(val start: Date, val end: Date) {
-    val dates: Set<Date>
+class WorkEntry(val start: Instant, val end: Instant) {
+    constructor(start: Instant, duration: Double) : this(start, start.plusNanos((duration * 3_600_000_000_000).toLong()))
+    constructor(start: Instant, duration: Int) : this(start, duration.toDouble())
+
+    val dates: Set<Instant>
         get() {
-            val dates = mutableSetOf<Date>()
+            val dates = mutableSetOf<Instant>()
             var current = start
-            while (current.before(end)) {
+            while (current.isBefore(end)) {
                 dates.add(current)
-                current = Date(current.time + 86400000) // 24 hours in milliseconds
+                current = current.plusSeconds(86400)
             }
             return dates
         }
 
-    val duration: Long
-        get() = end.time - start.time
+    val durationSeconds: Long
+        get() = end.epochSecond - start.epochSecond
 }

@@ -24,6 +24,12 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     implementation(kotlin("serialization"))
+
+    testImplementation(kotlin("test"))
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 operator fun String.invoke(): String = rootProject.ext[this] as? String ?: error("Property $this is not defined")
