@@ -6,7 +6,9 @@ import kotlin.math.round
 abstract class PayStrategy {
     abstract fun calculateSalary(history: WorkHistory): Double
 
-    class Hourly(private val hourlyRate: Double) : PayStrategy() {
+    class Hourly(hourlyRate: Double) : PayStrategy() {
+        private val hourlyRate: Double = hourlyRate.roundToTwoDecimalPlaces()
+
         override fun calculateSalary(history: WorkHistory): Double {
             val hoursWorked = history.sumOf { it.durationHours }
             return (hourlyRate * hoursWorked).roundToTwoDecimalPlaces()

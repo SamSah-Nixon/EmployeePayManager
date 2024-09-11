@@ -10,7 +10,7 @@ data class Employee(
     val salary: PayStrategy,
     val birthday: Date,
     val address: Address
-) {
+) : Comparable<Employee> {
     val workHistory = WorkHistory()
 
     override fun hashCode(): Int {
@@ -19,5 +19,9 @@ data class Employee(
 
     override fun equals(other: Any?): Boolean {
         return this === other || (other is Employee && this.id == other.id)
+    }
+
+    override fun compareTo(other: Employee): Int {
+        return this.id.compareTo(other.id)
     }
 }

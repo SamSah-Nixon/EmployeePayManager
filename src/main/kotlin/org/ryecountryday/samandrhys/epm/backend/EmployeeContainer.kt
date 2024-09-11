@@ -1,8 +1,12 @@
 package org.ryecountryday.samandrhys.epm.backend
 
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
+import java.util.TreeSet
 
-class EmployeeContainer(private val employees: MutableSet<Employee> = HashSet()) : Iterable<Employee> by employees {
+class EmployeeContainer(private val employees: MutableSet<Employee> = TreeSet()) : Iterable<Employee> by employees {
+
+    val size
+        get() = employees.size
 
     fun addEmployee(employee: Employee) {
         if(getEmployeeById(employee.id) == null) {

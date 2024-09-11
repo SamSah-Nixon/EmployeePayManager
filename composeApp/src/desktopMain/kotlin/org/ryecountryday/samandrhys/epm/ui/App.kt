@@ -5,9 +5,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,32 +24,51 @@ import org.ryecountryday.samandrhys.epm.util.parseDate
 @Preview
 fun App() {
     MaterialTheme {
-        val employees = remember { EmployeeContainer() }
-        var openAddDialog by remember { mutableStateOf(false) }
+        val employees = remember {
+            EmployeeContainer().apply {
+                addEmployee(Employee(
+                    name = "Admin",
+                    id = "000100",
+                    salary = PayStrategy.Hourly(50.0),
+                    birthday = parseDate("01/01/2000"),
+                    address = Address("3 Five Cedar", "Rye Land", "New York", "11122-1111"),
+                ))
+                addEmployee(Employee(
+                    name = "Sam",
+                    id = "abF31",
+                    salary = PayStrategy.Salaried(100000.0),
+                    birthday = parseDate("12/06/2006"),
+                    address = Address("123 Main St", "Rye", "New York", "10580"),
+                ))
 
-        employees.addEmployee(Employee(
-                name = "Admin",
-                id = "000100",
-                salary = PayStrategy.Hourly(50.0),
-                birthday = parseDate("01/01/2000"),
-                address = Address("3 Five Cedar", "Rye Land", "New York", "11122-1111"),
-        ))
+                for(i in 0..100) {
+                    addEmployee(Employee(
+                        name = "Employee $i",
+                        id = "id$i",
+                        salary = PayStrategy.Hourly(Math.random() * 100),
+                        birthday = parseDate("${i % 12 + 1}/${i % 28 + 1}/${2000 + i % 20}"),
+                        address = Address("3 Five Cedar", "Rye Land", "New York", "11122-1111"),
+                    ))
+                }
+            }
+        }
+        val openAddDialog = remember {mutableStateOf(false) }
 
-        Column(
+        LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            for (employee in employees) {
-                EmployeeCard(employee)
+            items(employees.size) { index ->
+                EmployeeCard(employees.getAllEmployees()[index])
             }
         }
 
-        Button(onClick = { openAddDialog = !openAddDialog }) {
+        Button(onClick = { openAddDialog.value = true }) {
             Text("Add Employee")
         }
 
-        if (openAddDialog) {
-            AddEmployeeDialog()
+        if (openAddDialog.value) {
+            AddEmployeeDialog(openAddDialog, employees)
         }
     }
 }
@@ -68,15 +86,18 @@ fun EmployeeCard(employee: Employee) {
 }
 
 @Composable
-fun AddEmployeeDialog() {
-    Dialog(onDismissRequest = {}) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("Add Employee")
-            Button(onClick = { }) {
-                Text("Add")
+fun AddEmployeeDialog(value: MutableState<Boolean>?, employees: EmployeeContainer) {
+    Dialog(onDismissRequest = { value?.value = false }) {
+        Card {
+            Column {
+                var name: String by remember { mutableStateOf("") }
+                var id: String by remember { mutableStateOf("") }
+
+                TextField(value = name, singleLine = true, onValueChange = { name = it }, label = { Text("Name") })
+                TextField(value = id, singleLine = true, onValueChange = { id = it }, label = { Text("ID") })
+                // Dropdown item for salary - hourly or salaried
+                // spinner/textfield for rate
+                // date picker for birthday
             }
         }
     }
