@@ -2,25 +2,28 @@ package org.ryecountryday.samandrhys.epm.backend
 
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
 import java.util.TreeSet
+import java.util.function.Predicate
 
-class EmployeeContainer(private val employees: MutableSet<Employee> = TreeSet()) : Iterable<Employee> by employees {
+class EmployeeContainer(private val employees: MutableSet<Employee> = TreeSet()) : MutableSet<Employee> by employees {
 
-    val size
-        get() = employees.size
-
-    fun addEmployee(employee: Employee) {
-        if(getEmployeeById(employee.id) == null) {
-            employees.add(employee)
-        } else {
-            throw IllegalArgumentException("Employee with id ${employee.id} already exists")
-        }
+    override fun remove(element: Employee): Boolean {
+        throw UnsupportedOperationException("Cannot remove employees")
     }
 
-    fun getAllEmployees(): List<Employee> {
-        return employees.toList()
+    override fun removeAll(elements: Collection<Employee>): Boolean {
+        throw UnsupportedOperationException("Cannot remove employees")
     }
 
-    fun getEmployeeById(id: String): Employee? {
+    override fun removeIf(filter: Predicate<in Employee>): Boolean {
+        throw UnsupportedOperationException("Cannot remove employees")
+    }
+
+    fun replaceEmployee(employee: Employee) {
+        employees.removeIf { it.id == employee.id }
+        employees.add(employee)
+    }
+
+    fun findById(id: String): Employee? {
         return employees.find { it.id == id }
     }
 }

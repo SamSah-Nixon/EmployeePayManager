@@ -7,9 +7,9 @@ import java.util.Date
 data class Employee(
     var name: String,
     val id: String,
-    val salary: PayStrategy,
+    var pay: PayStrategy,
     val birthday: Date,
-    val address: Address
+    var address: Address
 ) : Comparable<Employee> {
     val workHistory = WorkHistory()
 

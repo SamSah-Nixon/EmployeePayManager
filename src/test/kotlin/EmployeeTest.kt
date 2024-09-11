@@ -13,13 +13,13 @@ class EmployeeTest {
         val e = Employee(
             name = "Admin",
             id = "000100",
-            salary = PayStrategy.Hourly(50.0),
+            pay = PayStrategy.Hourly(50.0),
             birthday = parseDate("01/01/2000"),
             address = Address("3 Five Cedar", "Rye Land", "New York", "11122-1111"),
         )
 
         e.workHistory.add(WorkEntry(Instant.parse("2021-01-01T09:00:00Z"), 8.0)) // 9-5
         // 8 hours * 50 = $400
-        assertEquals(400.0, e.salary.calculateSalary(e.workHistory))
+        assertEquals(400.0, e.pay.calculateSalary(e.workHistory))
     }
 }
