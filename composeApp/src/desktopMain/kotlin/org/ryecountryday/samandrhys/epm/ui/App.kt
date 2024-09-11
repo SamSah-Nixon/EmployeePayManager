@@ -5,7 +5,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -65,7 +67,6 @@ fun App() {
                 }
             }
         }
-        val openAddDialog = remember {mutableStateOf(false) }
 
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
@@ -77,12 +78,24 @@ fun App() {
             }
         }
 
+        val openAddDialog: MutableState<Boolean?> = remember { mutableStateOf(false) }
         FloatingActionButton(onClick = { openAddDialog.value = true }) {
             Icon(Icons.Filled.Add, contentDescription = "Add Employee")
         }
 
-        if (openAddDialog.value) {
+        if(openAddDialog.value == true) {
             AddEmployeeDialog(openAddDialog, employees)
+        } else if(openAddDialog.value == null) {
+            Dialog(onDismissRequest = { openAddDialog.value = false }) {
+                Card(modifier = Modifier.fillMaxHeight()) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("Employee with that ID already exists", textAlign = TextAlign.Center, modifier = Modifier.padding(8.dp))
+                        Button(onClick = { openAddDialog.value = true }) {
+                            Text("Try Again")
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -101,10 +114,10 @@ fun EmployeeCard(employee: Employee) {
 }
 
 @Composable
-fun AddEmployeeDialog(value: MutableState<Boolean>?, employees: EmployeeContainer) {
-    Dialog(onDismissRequest = { value?.value = false }) {
+fun AddEmployeeDialog(value: MutableState<Boolean?>, employees: EmployeeContainer) {
+    Dialog(onDismissRequest = { value.value = false }) {
         Card(modifier = Modifier.fillMaxHeight()) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.verticalScroll(rememberScrollState())) {
                 var name by remember { mutableStateOf("") }
                 var id by remember { mutableStateOf("") }
                 var hourly by remember { mutableStateOf(true) }
@@ -131,13 +144,71 @@ fun AddEmployeeDialog(value: MutableState<Boolean>?, employees: EmployeeContaine
                             rate = it
                         }
                     },
-                    label = { Text("Rate") }, modifier = Modifier.fillMaxWidth())
+                    label = { Text("Pay Rate (per ${if(hourly) "hour" else "year"})") }, modifier = Modifier.fillMaxWidth())
 
                 val datePickerState = rememberDatePickerState()
                 DatePick(datePickerState)
                 val birthday by remember { derivedStateOf { datePickerState.selectedDateMillis } }
 
+                var street by remember { mutableStateOf("") }
+                var city by remember { mutableStateOf("") }
+                var state by remember { mutableStateOf("") }
+                var zip by remember { mutableStateOf("") }
 
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Card(modifier = Modifier.fillMaxWidth(), border = BorderStroke(1.dp, MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled))) {
+                    Column {
+                        Text("Address", textAlign = TextAlign.Center, modifier = Modifier.padding(8.dp))
+                        OutlinedTextField(
+                            value = street,
+                            singleLine = true,
+                            onValueChange = { street = it },
+                            label = { Text("Street") },
+                            modifier = Modifier.width(350.dp).align(Alignment.CenterHorizontally)
+                        )
+                        OutlinedTextField(
+                            value = city,
+                            singleLine = true,
+                            onValueChange = { city = it },
+                            label = { Text("City") },
+                            modifier = Modifier.width(350.dp).align(Alignment.CenterHorizontally)
+                        )
+                        OutlinedTextField(
+                            value = state,
+                            singleLine = true,
+                            onValueChange = { state = it },
+                            label = { Text("State") },
+                            modifier = Modifier.width(350.dp).align(Alignment.CenterHorizontally)
+                        )
+                        OutlinedTextField(
+                            value = zip,
+                            singleLine = true,
+                            onValueChange = { zip = it },
+                            label = { Text("Zip") },
+                            modifier = Modifier.width(350.dp).align(Alignment.CenterHorizontally)
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+
+                Button(onClick = {
+                    val added = employees.add(Employee(
+                        name = name,
+                        id = id,
+                        pay = if(hourly) PayStrategy.Hourly(rate.toDouble()) else PayStrategy.Salaried(rate.toDouble()),
+                        birthday = Date(birthday!!),
+                        address = Address(street, city, state, zip)
+                    ))
+                    value.value = false
+
+                    if(!added) {
+                        value.value = null
+                    }
+                }) {
+                    Text("Add Employee")
+                }
             }
         }
     }
@@ -155,7 +226,10 @@ fun DropdownButton(
         content = content,
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
-        border = BorderStroke(1.dp, if(expanded) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled))
+        border = if(expanded)
+            BorderStroke(TextFieldDefaults.FocusedBorderThickness, MaterialTheme.colors.primary)
+        else
+            BorderStroke(TextFieldDefaults.UnfocusedBorderThickness, MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled))
     )
 
     DropdownMenu(
