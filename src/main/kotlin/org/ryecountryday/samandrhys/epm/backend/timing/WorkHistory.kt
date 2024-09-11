@@ -1,13 +1,5 @@
 package org.ryecountryday.samandrhys.epm.backend.timing
 
-class WorkHistory {
-    private val history = mutableListOf<WorkEntry>()
+import java.util.TreeSet
 
-    fun addEntry(entry: WorkEntry) {
-        history.add(entry)
-    }
-
-    fun getEntries(): List<WorkEntry> {
-        return history
-    }
-}
+class WorkHistory : MutableSet<WorkEntry> by TreeSet()

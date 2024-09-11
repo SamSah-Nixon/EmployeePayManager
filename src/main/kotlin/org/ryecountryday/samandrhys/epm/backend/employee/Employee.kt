@@ -9,6 +9,7 @@ data class Employee(
     val id: String,
     val salary: PayStrategy,
     val birthday: Date,
-    val address: Address,
-    val workHistory: WorkHistory
-)
+    val address: Address
+) {
+    val workHistory = WorkHistory()
+}

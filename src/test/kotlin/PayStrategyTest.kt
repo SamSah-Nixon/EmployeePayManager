@@ -10,10 +10,10 @@ class PayStrategyTest {
     fun `test hourly salary`() {
         val salary = PayStrategy.Hourly(20.0) // 20 bucks per hour
         val history = WorkHistory().apply {
-            addEntry(WorkEntry(Instant.ofEpochSecond(0), 2)) // start 0 hours, duration 2 hours
-            addEntry(WorkEntry(Instant.ofEpochSecond(3 * 3600), 2)) // start 3 hours, duration 2 hours
-            addEntry(WorkEntry(Instant.ofEpochSecond(24 * 3600), 8)) // start 10 hours, duration 8 hours
-            addEntry(WorkEntry(Instant.ofEpochSecond(50 * 3600), 4.5)) // start 20 hours, duration 4 hours 30 minutes
+            add(WorkEntry(Instant.ofEpochSecond(0), 2)) // start 0 hours, duration 2 hours
+            add(WorkEntry(Instant.ofEpochSecond(3 * 3600), 2)) // start 3 hours, duration 2 hours
+            add(WorkEntry(Instant.ofEpochSecond(24 * 3600), 8)) // start 10 hours, duration 8 hours
+            add(WorkEntry(Instant.ofEpochSecond(50 * 3600), 4.5)) // start 20 hours, duration 4 hours 30 minutes
         }
 
         //total worked hours = 2 + 2 + 8 + 4.5 = 16.5
@@ -32,11 +32,11 @@ class PayStrategyTest {
     fun `test yearly salary`() {
         val salary = PayStrategy.Salaried(100000.0) // 100k per year
         val history = WorkHistory().apply {
-            addEntry(WorkEntry(Instant.ofEpochSecond(0), 2)) // start 0 hours, duration 2 hours
-            addEntry(WorkEntry(Instant.ofEpochSecond(3 * 3600), 2)) // start 3 hours, duration 2 hours
-            addEntry(WorkEntry(Instant.ofEpochSecond(24 * 3600), 8)) // start 10 hours, duration 8 hours
-            addEntry(WorkEntry(Instant.ofEpochSecond(50 * 3600), 4.5)) // start 20 hours, duration 4 hours 30 minutes
-            addEntry(WorkEntry(Instant.ofEpochSecond(100 * 3600), 60)) // start 100 hours, duration 60 hours
+            add(WorkEntry(Instant.ofEpochSecond(0), 2)) // start 0 hours, duration 2 hours
+            add(WorkEntry(Instant.ofEpochSecond(3 * 3600), 2)) // start 3 hours, duration 2 hours
+            add(WorkEntry(Instant.ofEpochSecond(24 * 3600), 8)) // start 10 hours, duration 8 hours
+            add(WorkEntry(Instant.ofEpochSecond(50 * 3600), 4.5)) // start 20 hours, duration 4 hours 30 minutes
+            add(WorkEntry(Instant.ofEpochSecond(100 * 3600), 60)) // start 100 hours, duration 60 hours
         }
 
         // 100k / 365 = $273.97 per day
@@ -44,7 +44,7 @@ class PayStrategyTest {
 
         // total worked days = 6
         // first 2 on same day, 3rd on the next day, 4th on the next day, 5th on the next 2 days
-        assertEquals(6, history.getEntries().flatMap { it.datesWorked }.distinct().count())
+        assertEquals(6, history.flatMap { it.datesWorked }.distinct().count())
 
         // 293.97 * 6 = $1643.82
         assertEquals(1643.82, salary.calculateSalary(history))

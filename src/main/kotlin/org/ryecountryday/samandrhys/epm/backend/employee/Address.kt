@@ -1,6 +1,6 @@
 package org.ryecountryday.samandrhys.epm.backend.employee
 
-class Address(
+data class Address(
     val street: String,
     val city: String,
     val state: String,
