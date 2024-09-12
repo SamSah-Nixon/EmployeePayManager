@@ -1,8 +1,10 @@
 package org.ryecountryday.samandrhys.epm.backend.timing
 
+import kotlinx.serialization.Serializable
 import org.ryecountryday.samandrhys.epm.util.*
 import java.time.Instant
 
+@Serializable(with = WorkEntrySerializer::class)
 class WorkEntry(val start: Instant, val end: Instant) : Comparable<WorkEntry> {
     constructor(start: Instant, duration: Double) : this(start, start.plusHours(duration))
     constructor(start: Instant, duration: Int) : this(start, duration.toDouble())

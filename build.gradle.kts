@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.seriazliation)
 }
 
 allprojects {
@@ -22,8 +23,7 @@ allprojects {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation(kotlin("reflect"))
-    implementation(kotlin("serialization"))
+    implementation(libs.kotlinx.serialization.json)
 
     testImplementation(kotlin("test"))
 }
