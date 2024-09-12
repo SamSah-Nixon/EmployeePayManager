@@ -9,7 +9,7 @@ import kotlin.math.round
 @Suppress("SERIALIZER_TYPE_INCOMPATIBLE") // it's fine
 @Serializable(with = PayStrategySerializer::class)
 sealed class PayStrategy {
-    abstract fun calculateSalary(payPeriod : Int): Double
+    abstract fun calculateSalary(payPeriod: Instant, id : String): Double
 
     abstract val type: String
     abstract val rate: Double
@@ -25,11 +25,13 @@ sealed class PayStrategy {
 
         constructor(hourlyRate: Int) : this(hourlyRate.toDouble())
 
-        override fun calculateSalary(payPeriod: Int): Double {
-            val payTime : Instant = WorkHistory.payPeriod.get(payPeriod)
-
-            //TODO (calc salary) return (hourlyRate * ).roundToTwoDecimalPlaces()
-            return 0.0
+         override fun calculateSalary(payPeriod: Instant, id : String): Double {
+            val payTime = WorkHistory.entries[payPeriod]
+            var pay = 0.0
+            for(entry in WorkHistory.entries[payPeriod]!!) {
+                if(entry.id == id) pay += entry.durationHours
+            }
+             return pay
         }
 
         override fun toString(): String {
@@ -47,8 +49,8 @@ sealed class PayStrategy {
 
         constructor(annualSalary: Int) : this(annualSalary.toDouble())
 
-        override fun calculateSalary(payPeriod: Int): Double {
-            val payTime : Instant = WorkHistory.payPeriod.get(payPeriod)
+        override fun calculateSalary(payPeriod: Instant, id : String): Double {
+
             //TODO (calc salary) val daysWorked = history.flatMap { it.datesWorked }.distinct().count()
             //return (dailySalary * daysWorked).roundToTwoDecimalPlaces()
             return 0.0
