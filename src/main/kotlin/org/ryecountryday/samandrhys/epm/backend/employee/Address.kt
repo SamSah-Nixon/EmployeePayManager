@@ -1,5 +1,8 @@
 package org.ryecountryday.samandrhys.epm.backend.employee
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Address(
     val street: String,
     val city: String,

@@ -20,8 +20,16 @@ fun Instant.startOfDay(): Instant {
 /**
  * parse a date string in the format "MM/dd/yyyy"
  */
-fun parseDate(str: String, separator: Char = '/'): Date {
-    return SimpleDateFormat("MM${separator}dd${separator}yyyy").parse(str)
+fun parseDate(str: String): Date {
+    for(separator in listOf('/', '-', ' ', '.')) {
+        try {
+            return SimpleDateFormat("MM${separator}dd${separator}yyyy").parse(str)
+        } catch (e: Exception) {
+            continue
+        }
+    }
+
+    throw IllegalArgumentException("Invalid date format: $str")
 }
 
 fun Date.toDateString(separator: Char = '/'): String {

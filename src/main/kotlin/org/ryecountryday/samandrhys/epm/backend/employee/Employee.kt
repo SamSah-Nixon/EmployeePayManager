@@ -1,13 +1,17 @@
 package org.ryecountryday.samandrhys.epm.backend.employee
 
+import kotlinx.serialization.Serializable
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
+import org.ryecountryday.samandrhys.epm.util.DateSerializer
 import java.util.Date
 
+@Serializable
 data class Employee(
     var lastName: String,
     var firstName: String,
     val id: String,
     var pay: PayStrategy,
+    @Serializable(with = DateSerializer::class)
     val dateOfBirth: Date,
     var address: Address
 ) : Comparable<Employee> {
