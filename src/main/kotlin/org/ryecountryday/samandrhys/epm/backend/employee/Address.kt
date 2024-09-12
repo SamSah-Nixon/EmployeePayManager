@@ -7,6 +7,6 @@ data class Address(
     val zip: String
 ) {
     override fun toString(): String {
-        return "$street\n$city, $state $zip"
+        return "$street; $city, $state $zip"
     }
 }

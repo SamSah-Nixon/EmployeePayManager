@@ -9,6 +9,8 @@ abstract class PayStrategy {
     class Hourly(hourlyRate: Double) : PayStrategy() {
         private val hourlyRate: Double = hourlyRate.roundToTwoDecimalPlaces()
 
+        constructor(hourlyRate: Int) : this(hourlyRate.toDouble())
+
         override fun calculateSalary(history: WorkHistory): Double {
             val hoursWorked = history.sumOf { it.durationHours }
             return (hourlyRate * hoursWorked).roundToTwoDecimalPlaces()
@@ -21,6 +23,8 @@ abstract class PayStrategy {
 
     class Salaried(val annualSalary: Double) : PayStrategy() {
         val dailySalary: Double = (annualSalary / 365.0).roundToTwoDecimalPlaces()
+
+        constructor(annualSalary: Int) : this(annualSalary.toDouble())
 
         override fun calculateSalary(history: WorkHistory): Double {
             val daysWorked = history.flatMap { it.datesWorked }.distinct().count()

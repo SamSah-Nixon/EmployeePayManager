@@ -44,27 +44,10 @@ fun App() {
                 add(Employee(
                     name = "Admin",
                     id = "000100",
-                    pay = PayStrategy.Hourly(50.0),
+                    pay = PayStrategy.Hourly(0),
                     birthday = parseDate("01/01/2000"),
                     address = Address("3 Five Cedar", "Rye Land", "New York", "11122-1111"),
                 ))
-                add(Employee(
-                    name = "Sam",
-                    id = "abF31",
-                    pay = PayStrategy.Salaried(100000.0),
-                    birthday = parseDate("12/06/2006"),
-                    address = Address("123 Main St", "Rye", "New York", "10580"),
-                ))
-
-                for(i in 0..100) {
-                    add(Employee(
-                        name = "Employee $i",
-                        id = "id$i",
-                        pay = PayStrategy.Hourly(Math.random() * 100),
-                        birthday = parseDate("${i % 12 + 1}/${i % 28 + 1}/${2000 + i % 20}"),
-                        address = Address("3 Five Cedar", "Rye Land", "New York", "11122-1111"),
-                    ))
-                }
             }
         }
 
@@ -78,14 +61,14 @@ fun App() {
             }
         }
 
-        val openAddDialog: MutableState<Boolean?> = remember { mutableStateOf(false) }
+        val openAddDialog: MutableState<Any> = remember { mutableStateOf(false) }
         FloatingActionButton(onClick = { openAddDialog.value = true }) {
             Icon(Icons.Filled.Add, contentDescription = "Add Employee")
         }
 
         if(openAddDialog.value == true) {
             AddEmployeeDialog(openAddDialog, employees)
-        } else if(openAddDialog.value == null) {
+        } else if(openAddDialog.value is String) {
             Dialog(onDismissRequest = { openAddDialog.value = false }) {
                 Card(modifier = Modifier.fillMaxHeight()) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -114,9 +97,9 @@ fun EmployeeCard(employee: Employee) {
 }
 
 @Composable
-fun AddEmployeeDialog(value: MutableState<Boolean?>, employees: EmployeeContainer) {
+fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
     Dialog(onDismissRequest = { value.value = false }) {
-        Card(modifier = Modifier.fillMaxHeight()) {
+        Card(modifier = Modifier.height(700.dp).width(500.dp)) {
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.verticalScroll(rememberScrollState())) {
                 var name by remember { mutableStateOf("") }
                 var id by remember { mutableStateOf("") }
@@ -125,10 +108,10 @@ fun AddEmployeeDialog(value: MutableState<Boolean?>, employees: EmployeeContaine
 
                 Text("Add Employee", textAlign = TextAlign.Center, modifier = Modifier.padding(8.dp))
 
-                OutlinedTextField(value = name, singleLine = true, onValueChange = { name = it }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = id, singleLine = true, onValueChange = { id = it }, label = { Text("ID") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = name, singleLine = true, onValueChange = { name = it }, label = { Text("Name") }, modifier = Modifier.width(400.dp))
+                OutlinedTextField(value = id, singleLine = true, onValueChange = { id = it }, label = { Text("ID") }, modifier = Modifier.width(400.dp))
 
-                DropdownButton(items = listOf("Hourly", "Salaried"), onItemSelected = { hourly = it == "Hourly" }, modifier = Modifier.fillMaxWidth()) {
+                DropdownButton(items = listOf("Hourly", "Salaried"), onItemSelected = { hourly = it == "Hourly" }, modifier = Modifier.width(400.dp)) {
                     Text("Pay Type: ${if(hourly) "Hourly" else "Salaried"}")
                 }
 
@@ -144,10 +127,10 @@ fun AddEmployeeDialog(value: MutableState<Boolean?>, employees: EmployeeContaine
                             rate = it
                         }
                     },
-                    label = { Text("Pay Rate (per ${if(hourly) "hour" else "year"})") }, modifier = Modifier.fillMaxWidth())
+                    label = { Text("Pay Rate (per ${if(hourly) "hour" else "year"})") }, modifier = Modifier.width(400.dp))
 
                 val datePickerState = rememberDatePickerState()
-                DatePick(datePickerState)
+                DatePick(datePickerState, modifier = Modifier.width(400.dp).align(Alignment.CenterHorizontally))
                 val birthday by remember { derivedStateOf { datePickerState.selectedDateMillis } }
 
                 var street by remember { mutableStateOf("") }
@@ -155,11 +138,10 @@ fun AddEmployeeDialog(value: MutableState<Boolean?>, employees: EmployeeContaine
                 var state by remember { mutableStateOf("") }
                 var zip by remember { mutableStateOf("") }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                Card(modifier = Modifier.fillMaxWidth(), border = BorderStroke(1.dp, MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled))) {
+                LabeledCard("Address", modifier = Modifier.width(400.dp), border = BorderStroke(1.dp, MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled))) {
                     Column {
-                        Text("Address", textAlign = TextAlign.Center, modifier = Modifier.padding(8.dp))
                         OutlinedTextField(
                             value = street,
                             singleLine = true,
@@ -188,29 +170,97 @@ fun AddEmployeeDialog(value: MutableState<Boolean?>, employees: EmployeeContaine
                             label = { Text("Zip") },
                             modifier = Modifier.width(350.dp).align(Alignment.CenterHorizontally)
                         )
-
-                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
 
                 Button(onClick = {
-                    val added = employees.add(Employee(
+                    if(name.isBlank()) {
+                        value.value = "Name cannot be blank"
+                        return@Button
+                    }
+
+                    if(id.isBlank()) {
+                        value.value = "ID cannot be blank"
+                        return@Button
+                    }
+
+                    if(rate.isBlank()) {
+                        value.value = "Rate cannot be blank"
+                        return@Button
+                    }
+
+                    // birthday defaults to today
+
+                    if(street.isBlank()) {
+                        value.value = "Street cannot be blank"
+                        return@Button
+                    }
+
+                    if(city.isBlank()) {
+                        value.value = "City cannot be blank"
+                        return@Button
+                    }
+
+                    if(state.isBlank()) {
+                        value.value = "State cannot be blank"
+                        return@Button
+                    }
+
+                    if(zip.isBlank()) {
+                        value.value = "Zip cannot be blank"
+                        return@Button
+                    }
+
+                    val employee = Employee(
                         name = name,
                         id = id,
                         pay = if(hourly) PayStrategy.Hourly(rate.toDouble()) else PayStrategy.Salaried(rate.toDouble()),
-                        birthday = Date(birthday!!),
+                        birthday = Date(birthday ?: System.currentTimeMillis()),
                         address = Address(street, city, state, zip)
-                    ))
+                    )
+
+                    println("adding employee: $employee")
+
+                    val added = employees.add(employee)
+
                     value.value = false
 
                     if(!added) {
-                        value.value = null
+                        value.value = "Employee with ID $id already exists"
                     }
-                }) {
+                }, modifier = Modifier.width(400.dp)) {
                     Text("Add Employee")
                 }
             }
         }
+    }
+}
+
+@Composable
+fun LabeledCard(value: String,
+                modifier: Modifier = Modifier,
+                border: BorderStroke,
+                content: @Composable () -> Unit) {
+    Box(modifier = modifier) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            border = border
+        ) {
+            Column(modifier = Modifier.padding(top = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                content()
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+
+        // Label text that overlaps with the card's border
+        Text(value,
+            modifier = Modifier.padding(start = 16.dp)
+                .align(Alignment.TopStart).offset(y = (-8).dp)
+                .background(MaterialTheme.colors.background) // Add a background color to match the parent - gives the appearance of interrupting the border
+                .padding(horizontal = 4.dp), // Padding for the text itself
+            color = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium),
+            style = MaterialTheme.typography.caption
+        )
     }
 }
 
@@ -248,10 +298,10 @@ fun DropdownButton(
 }
 
 @Composable
-fun DatePick(state: DatePickerState) {
+fun DatePick(state: DatePickerState, modifier: Modifier = Modifier) {
     var showDatePicker by remember { mutableStateOf(false) }
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier
     ) {
         val timeMs = state.selectedDateMillis?.plus(86400000) ?: System.currentTimeMillis()
         OutlinedTextField(
@@ -267,9 +317,7 @@ fun DatePick(state: DatePickerState) {
                     )
                 }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
+            modifier = Modifier.fillMaxWidth().height(64.dp)
         )
 
         if (showDatePicker) {
