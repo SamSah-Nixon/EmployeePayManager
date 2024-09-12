@@ -1,10 +1,13 @@
 package org.ryecountryday.samandrhys.epm.backend
 
+import kotlinx.serialization.Serializable
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
 import java.util.TreeSet
 import java.util.function.Predicate
 
+@Serializable
 class EmployeeContainer(private val employees: MutableSet<Employee> = TreeSet()) : MutableSet<Employee> by employees {
+    constructor(vararg employees: Employee) : this(employees.toMutableSet())
 
     override fun remove(element: Employee): Boolean {
         throw UnsupportedOperationException("Cannot remove employees")
