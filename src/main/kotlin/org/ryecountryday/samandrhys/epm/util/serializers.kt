@@ -19,13 +19,14 @@ object WorkEntrySerializer : KSerializer<WorkEntry> {
     override fun serialize(encoder: Encoder, value: WorkEntry) {
         encoder.encodeStructure(descriptor) {
             encodeLongElement(descriptor, 0, value.start.epochSecond)
-            encodeLongElement(descriptor, 1, value.end.epochSecond)
+            value.end?.let { encodeLongElement(descriptor, 1, it.epochSecond) }
         }
     }
 
     override fun deserialize(decoder: Decoder): WorkEntry {
         var start: Instant? = null
         var end: Instant? = null
+        var id: String? = null
         decoder.decodeStructure(descriptor) {
             loop@ while (true) {
                 when (val index = decodeElementIndex(descriptor)) {
@@ -36,6 +37,6 @@ object WorkEntrySerializer : KSerializer<WorkEntry> {
                 }
             }
         }
-        return WorkEntry(start!!, end!!)
+        return WorkEntry(start!!, end!!, id!!)
     }
 }
