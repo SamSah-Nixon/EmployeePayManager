@@ -5,17 +5,14 @@ import org.ryecountryday.samandrhys.epm.util.*
 import java.time.Instant
 
 @Serializable(with = WorkEntrySerializer::class)
-class WorkEntry(val start: Instant, val end: Instant) : Comparable<WorkEntry> {
-    constructor(start: Instant, duration: Double) : this(start, start.plusHours(duration))
-    constructor(start: Instant, duration: Int) : this(start, duration.toDouble())
-
+class WorkEntry(val start: Instant, val end: Instant?, val id: Int) : Comparable<WorkEntry> {
     val datesWorked: Set<Instant>
         get() {
             val dates = mutableSetOf<Instant>()
             var current = start
             while (current.isBefore(end)) {
                 dates.add(current.startOfDay())
-                current = current.plusSeconds(86400)
+                current = current.plusDays(1)
             }
             return dates
         }

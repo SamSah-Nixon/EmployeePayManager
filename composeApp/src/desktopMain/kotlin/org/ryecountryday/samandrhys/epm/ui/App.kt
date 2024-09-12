@@ -34,10 +34,11 @@ fun App() {
         val employees = remember {
             EmployeeContainer().apply {
                 add(Employee(
-                    name = "Admin",
+                    lastName = "Crute",
+                    firstName = "Mr.",
                     id = "000100",
                     pay = PayStrategy.Hourly(0),
-                    birthday = parseDate("01/01/2000"),
+                    dateOfBirth = parseDate("01/01/2000"),
                     address = Address("3 Five Cedar", "Rye Land", "New York", "11122-1111"),
                 ))
             }
@@ -111,6 +112,9 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
         Card(modifier = Modifier.height(700.dp).width(500.dp)) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 var name by remember { mutableStateOf("") }
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.verticalScroll(rememberScrollState())) {
+                var lastName by remember { mutableStateOf("") }
+                var firstName by remember { mutableStateOf("") }
                 var id by remember { mutableStateOf("") }
                 var hourly by remember { mutableStateOf(true) }
                 var rate by remember { mutableStateOf("") }
@@ -118,11 +122,11 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
                 Text("Add Employee", modifier = Modifier.padding(8.dp))
 
                 val modifier = Modifier.width(400.dp).align(Alignment.CenterHorizontally)
+                OutlinedTextField(value = lastName, singleLine = true, onValueChange = { lastName = it }, label = { Text("Last Name") }, modifier = Modifier.width(400.dp))
+                OutlinedTextField(value = firstName, singleLine = true, onValueChange = { firstName = it }, label = { Text("First Name") }, modifier = Modifier.width(400.dp))
+                OutlinedTextField(value = id, singleLine = true, onValueChange = { id = it }, label = { Text("ID") }, modifier = Modifier.width(400.dp))
 
-                OutlinedTextField(value = name, singleLine = true, onValueChange = { name = it }, label = { Text("Name") }, modifier = modifier)
-                OutlinedTextField(value = id, singleLine = true, onValueChange = { id = it }, label = { Text("ID") }, modifier = modifier)
-
-                DropdownButton(items = listOf("Hourly", "Salaried"), onItemSelected = { hourly = it == "Hourly" }, modifier = modifier) {
+                DropdownButton(items = listOf("Hourly", "Salaried"), onItemSelected = { hourly = it == "Hourly" }, modifier = Modifier.width(400.dp)) {
                     Text("Pay Type: ${if(hourly) "Hourly" else "Salaried"}")
                 }
 
@@ -186,7 +190,7 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
 
                 Row(modifier = modifier) {
                     Button(onClick = {
-                        if (name.isBlank()) {
+                        if(lastName.isBlank() && firstName.isBlank()) {
                             value.value = "Name cannot be blank"
                             return@Button
                         }
@@ -223,13 +227,14 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
                             return@Button
                         }
 
-                        val employee = Employee(
-                            name = name,
-                            id = id,
-                            pay = if (hourly) PayStrategy.Hourly(rate.toDouble()) else PayStrategy.Salaried(rate.toDouble()),
-                            birthday = Date(birthday ?: System.currentTimeMillis()),
-                            address = Address(street, city, state, zip)
-                        )
+                    val employee = Employee(
+                        lastName = lastName,
+                        firstName = firstName,
+                        id = id,
+                        pay = if(hourly) PayStrategy.Hourly(rate.toDouble()) else PayStrategy.Salaried(rate.toDouble()),
+                        dateOfBirth = Date(birthday ?: System.currentTimeMillis()),
+                        address = Address(street, city, state, zip)
+                    )
 
                         println("adding employee: $employee")
 

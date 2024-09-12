@@ -15,9 +15,9 @@
 
 so:
 * keep the employees as an array of json objects with the info (or a map of id->info?)
-* Keep a seperate json object with each employee's hours worked (have some sort of range system)
+* Keep a separate json object with each employee's hours worked (have some sort of range system)
   * maybe keep them together? java file io is hilariously slow
-* i don't really get what "paydays vary" means but that should just be simple math with calculating the hours worked times the salary
+* I don't really get what "paydays vary" means but that should just be simple math with calculating the hours worked times the salary
 * restoring should be as simple as a shutdown hook
 
 some salary employees, some hourly employees

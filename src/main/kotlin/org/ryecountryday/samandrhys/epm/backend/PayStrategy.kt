@@ -12,7 +12,7 @@ abstract class PayStrategy {
         constructor(hourlyRate: Int) : this(hourlyRate.toDouble())
 
         override fun calculateSalary(history: WorkHistory): Double {
-            val hoursWorked = history.sumOf { it.durationHours }
+            //val hoursWorked = history.sumOf { it.durationHours }
             return (hourlyRate * hoursWorked).roundToTwoDecimalPlaces()
         }
 
