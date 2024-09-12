@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.compose.desktop.application.tasks.AbstractProguardTask
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -31,6 +32,12 @@ kotlin {
     }
 }
 
+afterEvaluate {
+    tasks.withType<AbstractProguardTask> {
+        proguardVersion = "7.5.0"
+        enabled = false // proguard is broken for some reason, maybe figure it out later
+    }
+}
 
 compose.desktop {
     application {
@@ -38,7 +45,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Pkg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "${project.group}.${project.name}"
+            packageName = "EPM"
             packageVersion = project.version.toString()
         }
     }
