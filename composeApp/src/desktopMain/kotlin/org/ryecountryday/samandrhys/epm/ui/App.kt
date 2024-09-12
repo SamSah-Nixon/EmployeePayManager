@@ -95,17 +95,26 @@ fun EmployeeCard(employee: Employee) {
 
                     LabeledCard("ID", border = mutedBorder(), modifier = modifier) { Text(employee.id) }
 
+                    var firstName by remember { mutableStateOf(employee.firstName) }
+                    var lastName by remember { mutableStateOf(employee.lastName) }
+
                     OutlinedTextField(
-                        value = employee.firstName,
+                        value = firstName,
                         singleLine = true,
-                        onValueChange = { employee.firstName = it },
+                        onValueChange = {
+                            employee.firstName = it
+                            firstName = it
+                        },
                         label = { Text("First Name") },
                         modifier = modifier,
                     )
                     OutlinedTextField(
-                        value = employee.lastName,
+                        value = lastName,
                         singleLine = true,
-                        onValueChange = { employee.lastName = it },
+                        onValueChange = {
+                            employee.lastName = it
+                            lastName = it
+                        },
                         label = { Text("Last Name") },
                         modifier = modifier,
                     )
@@ -126,7 +135,6 @@ fun EmployeeCard(employee: Employee) {
                     }
 
                     LabeledCard("Birthday", border = mutedBorder(), modifier = modifier) { Text(employee.dateOfBirth.toDateString()) }
-//                    LabeledCard("Address", border = mutedBorder(), modifier = modifier) { Text(employee.address.toStringMultiline()) }
 
                     val showAddressChangeDialog = remember { mutableStateOf(false) }
                     LabeledButton(
