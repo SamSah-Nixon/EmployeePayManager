@@ -3,6 +3,8 @@ package org.ryecountryday.samandrhys.epm.backend
 import kotlinx.serialization.Serializable
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
 import org.ryecountryday.samandrhys.epm.util.PayStrategySerializer
+import org.ryecountryday.samandrhys.epm.util.roundToTwoDecimalPlaces
+import org.ryecountryday.samandrhys.epm.util.toMoneyString
 import java.time.Instant
 import kotlin.math.round
 
@@ -59,17 +61,5 @@ sealed class PayStrategy {
         override fun toString(): String {
             return "Salaried ($${annualSalary.toMoneyString()}/year)"
         }
-    }
-
-    protected fun Double.roundToTwoDecimalPlaces(): Double {
-        return round(this * 100) / 100
-    }
-
-    protected fun Double.toMoneyString(): String {
-        var result = this.roundToTwoDecimalPlaces().toString()
-        if(result.substringAfter('.').length == 1) {
-            result += "0"
-        }
-        return result
     }
 }

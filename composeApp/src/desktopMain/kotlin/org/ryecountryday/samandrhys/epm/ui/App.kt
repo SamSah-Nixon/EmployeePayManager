@@ -23,8 +23,7 @@ import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.backend.employee.Address
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
-import org.ryecountryday.samandrhys.epm.util.parseDate
-import org.ryecountryday.samandrhys.epm.util.toDateString
+import org.ryecountryday.samandrhys.epm.util.*
 import java.util.*
 
 @Composable
@@ -88,18 +87,60 @@ fun EmployeeCard(employee: Employee) {
     if(show) {
         Dialog(onDismissRequest = { show = false }) {
             Card(modifier = Modifier.width(500.dp)) {
-                Column {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("Employee Details", modifier = Modifier.padding(8.dp))
                     Spacer(modifier = Modifier.height(8.dp))
 
                     val modifier = Modifier.width(350.dp).align(Alignment.CenterHorizontally)
 
-                    LabeledCard("First Name", border = mutedBorder(), modifier = modifier) { Text(employee.firstName) }
-                    LabeledCard("Last Name", border = mutedBorder(), modifier = modifier) { Text(employee.lastName) }
                     LabeledCard("ID", border = mutedBorder(), modifier = modifier) { Text(employee.id) }
-                    LabeledCard("Pay Type", border = mutedBorder(), modifier = modifier) { Text(employee.pay.toString()) }
+
+                    OutlinedTextField(
+                        value = employee.firstName,
+                        singleLine = true,
+                        onValueChange = { employee.firstName = it },
+                        label = { Text("First Name") },
+                        modifier = modifier,
+                    )
+                    OutlinedTextField(
+                        value = employee.lastName,
+                        singleLine = true,
+                        onValueChange = { employee.lastName = it },
+                        label = { Text("Last Name") },
+                        modifier = modifier,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    val showPayTypeChangeDialog = remember { mutableStateOf(false) }
+                    LabeledButton(
+                        "Pay Type",
+                        onClick = { showPayTypeChangeDialog.value = true },
+                        modifier = modifier,
+                        border = maybeSelectedBorder(showPayTypeChangeDialog.value)
+                    ) {
+                        Text(employee.pay.toString())
+
+                        if(showPayTypeChangeDialog.value) {
+                            PayTypeChangeDialog(showPayTypeChangeDialog, employee)
+                        }
+                    }
+
                     LabeledCard("Birthday", border = mutedBorder(), modifier = modifier) { Text(employee.dateOfBirth.toDateString()) }
-                    LabeledCard("Address", border = mutedBorder(), modifier = modifier) { Text(employee.address.toStringMultiline()) }
+//                    LabeledCard("Address", border = mutedBorder(), modifier = modifier) { Text(employee.address.toStringMultiline()) }
+
+                    val showAddressChangeDialog = remember { mutableStateOf(false) }
+                    LabeledButton(
+                        "Address",
+                        onClick = { showAddressChangeDialog.value = true },
+                        modifier = modifier,
+                        border = mutedBorder()
+                    ) {
+                        Text(employee.address.toStringMultiline())
+
+                        if(showAddressChangeDialog.value) {
+                            AddressChangeDialog(showAddressChangeDialog, employee.address)
+                        }
+                    }
                 }
             }
         }
@@ -153,24 +194,12 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
                     Text("Pay Type: ${if (hourly) "Hourly" else "Salaried"}")
                 }
 
-                fun String.isPositiveDouble(): Boolean {
-                    return toDoubleOrNull()?.let { it >= 0 } == true
-                }
-
-                fun String.numDecimalPlaces(): Int {
-                    return this.indexOf('.').let { if (it == -1) 0 else length - it - 1 }
-                }
-
                 OutlinedTextField(
                     value = rate,
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     onValueChange = {
-                        val valid = it.isEmpty() || it.isPositiveDouble()
-                                && !it.endsWith("f") && !it.endsWith("F")
-                                && !it.endsWith("d") && !it.endsWith("D")
-                                && it.numDecimalPlaces() <= 2
-                        if (valid) {
+                        if (it.isValidMoneyString()) {
                             rate = it
                         }
                     },
@@ -309,3 +338,103 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
 
 }
 
+@Composable
+fun PayTypeChangeDialog(value: MutableState<Boolean>, employee: Employee) {
+    Dialog(onDismissRequest = { value.value = false }) {
+        Card(modifier = Modifier.width(300.dp)) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("Change Pay Type", modifier = Modifier.padding(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                var rate by remember { mutableStateOf(employee.pay.rate.toString()) }
+                var hourly by remember { mutableStateOf(employee.pay is PayStrategy.Hourly) }
+
+                Button(onClick = {
+                    hourly = !hourly
+                }) {
+                    Text(if(hourly) "Change to Salaried" else "Change to Hourly")
+                }
+
+                OutlinedTextField(
+                    value = rate,
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    onValueChange = {
+                        if (it.isValidMoneyString()) {
+                            rate = it
+                        }
+                    },
+                    label = { Text("New Rate") },
+                    modifier = Modifier.width(200.dp)
+                )
+
+                Button(onClick = {
+                    value.value = false
+                    employee.pay = if(hourly) PayStrategy.Hourly(rate.toDouble()) else PayStrategy.Salaried(rate.toDouble())
+                }) {
+                    Text("Done")
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun AddressChangeDialog(value: MutableState<Boolean>, address: Address) {
+    Dialog(onDismissRequest = { value.value = false }) {
+        Card(modifier = Modifier.width(300.dp)) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("Change Address", modifier = Modifier.padding(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                var street by remember { mutableStateOf(address.street) }
+                var city by remember { mutableStateOf(address.city) }
+                var state by remember { mutableStateOf(address.state) }
+                var zip by remember { mutableStateOf(address.zip) }
+
+                OutlinedTextField(
+                    value = street,
+                    singleLine = true,
+                    onValueChange = { street = it },
+                    label = { Text("Street") },
+                    modifier = Modifier.width(200.dp)
+                )
+                OutlinedTextField(
+                    value = city,
+                    singleLine = true,
+                    onValueChange = { city = it },
+                    label = { Text("City") },
+                    modifier = Modifier.width(200.dp)
+                )
+                OutlinedTextField(
+                    value = state,
+                    singleLine = true,
+                    onValueChange = { state = it },
+                    label = { Text("State") },
+                    modifier = Modifier.width(200.dp)
+                )
+                OutlinedTextField(
+                    value = zip,
+                    singleLine = true,
+                    onValueChange = { zip = it },
+                    label = { Text("Zip") },
+                    modifier = Modifier.width(200.dp)
+                )
+
+                Button(onClick = {
+                    value.value = false
+                    address.street = street
+                    address.city = city
+                    address.state = state
+                    address.zip = zip
+                }) {
+                    Text("Done")
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+    }
+}

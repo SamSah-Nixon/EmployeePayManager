@@ -4,10 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Address(
-    val street: String,
-    val city: String,
-    val state: String,
-    val zip: String
+    var street: String,
+    var city: String,
+    var state: String,
+    var zip: String
 ) {
     override fun toString(): String {
         return "$street; $city, $state $zip"

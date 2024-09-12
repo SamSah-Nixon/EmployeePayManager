@@ -27,6 +27,6 @@ class EmployeeContainer(private val employees: MutableSet<Employee> = TreeSet())
     }
 
     fun findById(id: String): Employee? {
-        return employees.find { it.id == id }
+        return find { it.id == id }
     }
 }

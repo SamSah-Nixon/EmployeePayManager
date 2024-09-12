@@ -19,9 +19,6 @@ import org.ryecountryday.samandrhys.epm.util.toDateString
 import java.util.*
 
 @Composable
-fun mutedBorder() = BorderStroke(1.dp, MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled))
-
-@Composable
 fun LabeledCard(value: String,
                 modifier: Modifier = Modifier,
                 border: BorderStroke? = null,
@@ -52,6 +49,42 @@ fun LabeledCard(value: String,
 }
 
 @Composable
+fun LabeledButton(value: String,
+                  modifier: Modifier = Modifier,
+                  border: BorderStroke? = null,
+                  onClick: () -> Unit,
+                  content: @Composable () -> Unit) {
+    Box(modifier = modifier) {
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            border = border,
+            onClick = onClick,
+            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
+        ) {
+            ProvideTextStyle(MaterialTheme.typography.body1) {
+                Column(modifier = Modifier.padding(top = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    content()
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+        }
+
+        // Label text that overlaps with the button's border
+        Text(value,
+            modifier = Modifier.padding(start = 16.dp)
+                .align(Alignment.TopStart).offset(y = (-8).dp)
+                .background(MaterialTheme.colors.background) // Add a background color to match the parent - gives the appearance of interrupting the border
+                .padding(horizontal = 4.dp), // Padding for the text itself
+            color = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium),
+            style = MaterialTheme.typography.caption
+        )
+    }
+
+    Spacer(modifier = Modifier.height(8.dp))
+}
+
+
+@Composable
 fun DropdownButton(
     items: List<String>,
     onItemSelected: (String) -> Unit,
@@ -80,10 +113,7 @@ fun DropdownButton(
         },
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
-        border = if(expanded)
-            BorderStroke(TextFieldDefaults.FocusedBorderThickness, MaterialTheme.colors.primary)
-        else
-            BorderStroke(TextFieldDefaults.UnfocusedBorderThickness, MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled))
+        border = maybeSelectedBorder(expanded)
     )
 }
 
@@ -132,4 +162,15 @@ fun InlineDatePicker(state: DatePickerState, modifier: Modifier = Modifier) {
             }
         }
     }
+}
+
+@Composable
+fun mutedBorder() = BorderStroke(1.dp, MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled))
+
+@Composable
+fun maybeSelectedBorder(selected: Boolean): BorderStroke {
+    return if(selected)
+        BorderStroke(TextFieldDefaults.FocusedBorderThickness, MaterialTheme.colors.primary)
+    else
+        BorderStroke(TextFieldDefaults.UnfocusedBorderThickness, MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled))
 }
