@@ -5,6 +5,11 @@ import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.util.DateSerializer
 import java.util.Date
 
+/**
+ * Represents an employee in the company.
+ * @property id the employee's unique identifier.
+ * @property dateOfBirth the day on which this employee was born. Does not include the time (and time won't be serialized)
+ */
 @Serializable
 data class Employee(
     var lastName: String,

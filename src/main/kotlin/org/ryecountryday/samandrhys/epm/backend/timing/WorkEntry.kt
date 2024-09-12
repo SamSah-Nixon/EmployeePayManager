@@ -4,6 +4,9 @@ import kotlinx.serialization.Serializable
 import org.ryecountryday.samandrhys.epm.util.*
 import java.time.Instant
 
+/**
+ *
+ */
 @Serializable(with = WorkEntrySerializer::class)
 class WorkEntry(val start: Instant, var end: Instant?, val id: String) : Comparable<WorkEntry> {
 
@@ -21,6 +24,6 @@ class WorkEntry(val start: Instant, var end: Instant?, val id: String) : Compara
     }
 
     override fun toString(): String {
-        return "WorkEntry{start=$start, end=$end}"
+        return "WorkEntry{\"$id\";start=$start;end=$end}"
     }
 }

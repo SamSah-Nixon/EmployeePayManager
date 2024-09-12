@@ -2,6 +2,9 @@ package org.ryecountryday.samandrhys.epm.backend.employee
 
 import kotlinx.serialization.Serializable
 
+/**
+ * Represents an address for a building in the United States.
+ */
 @Serializable
 data class Address(
     var street: String,

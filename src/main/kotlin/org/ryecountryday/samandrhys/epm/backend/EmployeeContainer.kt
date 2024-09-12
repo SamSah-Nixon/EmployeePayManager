@@ -3,13 +3,20 @@ package org.ryecountryday.samandrhys.epm.backend
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
+import org.ryecountryday.samandrhys.epm.util.NonRemovalIterator
 import java.util.TreeSet
 import java.util.function.Predicate
 
+/**
+ * Represents a set of employees. Removing employees is disallowed and will throw [UnsupportedOperationException].
+ */
 @Serializable
 class EmployeeContainer(private val employees: MutableSet<Employee> = TreeSet()) : MutableSet<Employee> by employees {
     constructor(vararg employees: Employee) : this(employees.toMutableSet())
 
+    /**
+     * A list of blocks to call when this container is updated.
+     */
     @Transient
     private val listeners = mutableListOf<(EmployeeContainer) -> Unit>()
 
@@ -52,7 +59,7 @@ class EmployeeContainer(private val employees: MutableSet<Employee> = TreeSet())
     }
 
     override fun iterator(): MutableIterator<Employee> {
-        return Itr(employees.iterator())
+        return NonRemovalIterator(employees.iterator())
     }
 
     fun findById(id: String): Employee? {
@@ -61,11 +68,5 @@ class EmployeeContainer(private val employees: MutableSet<Employee> = TreeSet())
 
     fun addChangeListener(listener: (EmployeeContainer) -> Unit) {
         listeners.add(listener)
-    }
-
-    private class Itr(private val delegate: MutableIterator<Employee>) : MutableIterator<Employee> by delegate {
-        override fun remove() {
-            throw UnsupportedOperationException("Cannot remove employees")
-        }
     }
 }

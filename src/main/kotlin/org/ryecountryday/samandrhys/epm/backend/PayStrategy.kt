@@ -7,12 +7,23 @@ import org.ryecountryday.samandrhys.epm.util.roundToTwoDecimalPlaces
 import org.ryecountryday.samandrhys.epm.util.toMoneyString
 import java.time.Instant
 
+/**
+ * Represents some form of calculating a monetary value based on a number of hours worked.
+ */
 @Suppress("SERIALIZER_TYPE_INCOMPATIBLE") // it's fine
 @Serializable(with = PayStrategySerializer::class)
 sealed class PayStrategy {
-    abstract fun calculateSalary(payPeriod: Instant, id : String): Double
 
+    /**
+     * @return a [Double] representing the amount of money eared for the employee with ID [id]
+     * during the last pay period.
+     */
+    abstract fun calculateSalary(payPeriod: Instant, id: String): Double
+
+    /** A name for this pay strategy, for use when serializing. */
     abstract val type: String
+
+    /** Some constant number that is a part of the calculation for how much money is made during a pay period. */
     abstract val rate: Double
     abstract override fun toString(): String
 
