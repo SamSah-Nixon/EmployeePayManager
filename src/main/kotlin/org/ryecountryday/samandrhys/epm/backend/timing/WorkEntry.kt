@@ -6,6 +6,10 @@ import java.time.Instant
 
 @Serializable(with = WorkEntrySerializer::class)
 class WorkEntry(val start: Instant, var end: Instant?, val id: String) : Comparable<WorkEntry> {
+
+    constructor(start: Instant, id: String) : this(start, null, id)
+    constructor(start: Instant, duration: Double, id: String) : this(start, start.plusSeconds((duration * 3600).toLong()), id)
+
     val durationSeconds: Long
         get() = (end?.epochSecond ?: start.epochSecond) - start.epochSecond
 

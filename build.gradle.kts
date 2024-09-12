@@ -30,6 +30,7 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    outputs.upToDateWhen { false }
 }
 
 operator fun String.invoke(): String = rootProject.ext[this] as? String ?: error("Property $this is not defined")

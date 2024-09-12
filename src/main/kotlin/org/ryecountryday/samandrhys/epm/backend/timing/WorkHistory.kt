@@ -1,41 +1,35 @@
 package org.ryecountryday.samandrhys.epm.backend.timing
 
 import java.time.Instant
-import java.util.TreeSet
 
-public object WorkHistory{
+object WorkHistory {
 
-    val periods: MutableList<Instant> = ArrayList()
-    val clockedIn: MutableSet<WorkEntry> = TreeSet<WorkEntry>()
-    val entries: MutableSet<WorkEntry> = TreeSet<WorkEntry>()
+    val periods = mutableListOf<Instant>()
+    val clockedIn = mutableSetOf<WorkEntry>()
+    val entries = mutableListOf<WorkEntry>()
 
-    fun payPeriod(){
-
-        var currentWorkers : MutableSet<String> = TreeSet<String>()
+    fun payPeriod() {
+        val currentWorkers = mutableSetOf<String>()
         //Separates a workEntry when there is a pay period
-        for(entry : WorkEntry in clockedIn){
+        for(entry in clockedIn) {
             currentWorkers.add(entry.id)
             clockOut(entry.id)
         }
+
         periods.add(Instant.now())
-        for(id : String in currentWorkers){
+        for(id in currentWorkers) {
             clockIn(id)
         }
     }
 
     fun clockIn(id: String) {
-        clockedIn.add(WorkEntry(Instant.now(),null,id))
+        clockedIn.add(WorkEntry(Instant.now(), id))
     }
 
     fun clockOut(id: String) {
-        for (entry : WorkEntry in clockedIn) {
-            if(entry.id == id) {
-                val ent: WorkEntry = entry
-                ent.end = Instant.now()
-                clockedIn.remove(entry)
-                entries.add(ent)
-                break
-            }
+        clockedIn.firstOrNull { it.id == id }?.let {
+            it.end = Instant.now()
+            entries.add(it)
         }
     }
 }

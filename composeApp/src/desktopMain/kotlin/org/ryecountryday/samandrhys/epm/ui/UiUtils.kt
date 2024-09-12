@@ -60,7 +60,24 @@ fun DropdownButton(
 ) {
     var expanded by remember { mutableStateOf(false) }
     Button(onClick = { expanded = true },
-        content = content,
+        content = {
+            Column {
+                this@Button.content()
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    items.forEach { item ->
+                        DropdownMenuItem(onClick = {
+                            onItemSelected(item)
+                            expanded = false
+                        }) {
+                            Text(item)
+                        }
+                    }
+                }
+            }
+        },
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
         border = if(expanded)
@@ -68,20 +85,6 @@ fun DropdownButton(
         else
             BorderStroke(TextFieldDefaults.UnfocusedBorderThickness, MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled))
     )
-
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false }
-    ) {
-        items.forEach { item ->
-            DropdownMenuItem(onClick = {
-                onItemSelected(item)
-                expanded = false
-            }) {
-                Text(item)
-            }
-        }
-    }
 }
 
 @Composable

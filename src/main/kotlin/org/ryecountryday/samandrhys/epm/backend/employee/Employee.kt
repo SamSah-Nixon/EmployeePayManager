@@ -12,12 +12,18 @@ data class Employee(
     var address: Address
 ) : Comparable<Employee> {
 
+    constructor(name: String, id: String, pay: PayStrategy, dateOfBirth: Date, address: Address):
+            this(name.split(' ', limit = 2)[1], name.split(' ', limit = 2)[0], id, pay, dateOfBirth, address)
+
+    val name: String
+        get() = "$firstName $lastName"
+
     override fun hashCode(): Int {
         return id.hashCode()
     }
 
     override fun compareTo(other: Employee): Int {
-        return 0
+        return this.id.compareTo(other.id)
     }
 
     override fun equals(other: Any?): Boolean {
