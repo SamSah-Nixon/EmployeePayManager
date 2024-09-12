@@ -4,19 +4,28 @@ import java.time.Instant
 
 object WorkHistory {
 
-    val periods = mutableListOf<Instant>()
-    val clockedIn = mutableSetOf<WorkEntry>()
-    val entries = mutableListOf<WorkEntry>()
+    val payPeriod = mutableListOf<Instant>()
+    var clockedIn = mutableSetOf<WorkEntry>()
+    var currentPeriod = mutableSetOf<WorkEntry>()
+    val entries = mutableMapOf<Instant, MutableSet<WorkEntry>>()
 
+    //GET PAID HERE
     fun payPeriod() {
+        val now = Instant.now()
+
+        //Move clocked In workers to current period
         val currentWorkers = mutableSetOf<String>()
-        //Separates a workEntry when there is a pay period
         for(entry in clockedIn) {
             currentWorkers.add(entry.id)
             clockOut(entry.id)
         }
+        clockedIn = mutableSetOf()
+        //Move current period to entries
 
-        periods.add(Instant.now())
+        entries[now] = currentPeriod
+
+        payPeriod.add(now)
+        //clock current workers back in
         for(id in currentWorkers) {
             clockIn(id)
         }
@@ -29,7 +38,7 @@ object WorkHistory {
     fun clockOut(id: String) {
         clockedIn.firstOrNull { it.id == id }?.let {
             it.end = Instant.now()
-            entries.add(it)
+            currentPeriod.add(it)
         }
     }
 }

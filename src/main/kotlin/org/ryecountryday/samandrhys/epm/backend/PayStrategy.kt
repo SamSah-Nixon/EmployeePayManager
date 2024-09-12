@@ -26,7 +26,7 @@ sealed class PayStrategy {
         constructor(hourlyRate: Int) : this(hourlyRate.toDouble())
 
         override fun calculateSalary(payPeriod: Int): Double {
-            val payTime : Instant = WorkHistory.periods.get(payPeriod)
+            val payTime : Instant = WorkHistory.payPeriod.get(payPeriod)
 
             //TODO (calc salary) return (hourlyRate * ).roundToTwoDecimalPlaces()
             return 0.0
@@ -48,7 +48,7 @@ sealed class PayStrategy {
         constructor(annualSalary: Int) : this(annualSalary.toDouble())
 
         override fun calculateSalary(payPeriod: Int): Double {
-            val payTime : Instant = WorkHistory.periods.get(payPeriod)
+            val payTime : Instant = WorkHistory.payPeriod.get(payPeriod)
             //TODO (calc salary) val daysWorked = history.flatMap { it.datesWorked }.distinct().count()
             //return (dailySalary * daysWorked).roundToTwoDecimalPlaces()
             return 0.0
