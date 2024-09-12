@@ -84,7 +84,13 @@ class SerializationTest {
 
     @Test
     fun employees() {
-        val employee = Employee("Sam Sah-Nixon", "id", PayStrategy.Hourly(10.0), parseDate("1/1/2000"), Address("123 Main St", "Anytown", "USA", "12345"))
+        val employee = Employee(
+            name = "Sam Sah-Nixon",
+            id = "id",
+            pay = PayStrategy.Hourly(10.0),
+            dateOfBirth = parseDate("1/1/2000"),
+            address = Address("123 Main St", "Anytown", "USA", "12345")
+        )
 
         val json = Json {
             prettyPrint = true
