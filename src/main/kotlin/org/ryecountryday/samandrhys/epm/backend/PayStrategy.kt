@@ -1,19 +1,22 @@
 package org.ryecountryday.samandrhys.epm.backend
 
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
+import java.time.Instant
 import kotlin.math.round
 
 abstract class PayStrategy {
-    abstract fun calculateSalary(history: WorkHistory): Double
+    abstract fun calculateSalary(payPeriod : Int): Double
 
     class Hourly(hourlyRate: Double) : PayStrategy() {
         private val hourlyRate: Double = hourlyRate.roundToTwoDecimalPlaces()
 
         constructor(hourlyRate: Int) : this(hourlyRate.toDouble())
 
-        override fun calculateSalary(history: WorkHistory): Double {
-            val hoursWorked = history.sumOf { it.durationHours }
-            return (hourlyRate * hoursWorked).roundToTwoDecimalPlaces()
+        override fun calculateSalary(payPeriod: Int): Double {
+            val payTime : Instant = WorkHistory.periods.get(payPeriod)
+
+            //TODO (calc salary) return (hourlyRate * ).roundToTwoDecimalPlaces()
+            return 0.0
         }
 
         override fun toString(): String {
@@ -26,9 +29,11 @@ abstract class PayStrategy {
 
         constructor(annualSalary: Int) : this(annualSalary.toDouble())
 
-        override fun calculateSalary(history: WorkHistory): Double {
-            val daysWorked = history.flatMap { it.datesWorked }.distinct().count()
-            return (dailySalary * daysWorked).roundToTwoDecimalPlaces()
+        override fun calculateSalary(payPeriod: Int): Double {
+            val payTime : Instant = WorkHistory.periods.get(payPeriod)
+            //TODO (calc salary) val daysWorked = history.flatMap { it.datesWorked }.distinct().count()
+            //return (dailySalary * daysWorked).roundToTwoDecimalPlaces()
+            return 0.0
         }
 
         override fun toString(): String {

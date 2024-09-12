@@ -5,23 +5,9 @@ import org.ryecountryday.samandrhys.epm.util.*
 import java.time.Instant
 
 @Serializable(with = WorkEntrySerializer::class)
-class WorkEntry(val start: Instant, val end: Instant) : Comparable<WorkEntry> {
-    constructor(start: Instant, duration: Double) : this(start, start.plusHours(duration))
-    constructor(start: Instant, duration: Int) : this(start, duration.toDouble())
-
-    val datesWorked: Set<Instant>
-        get() {
-            val dates = mutableSetOf<Instant>()
-            var current = start
-            while (current.isBefore(end)) {
-                dates.add(current.startOfDay())
-                current = current.plusSeconds(86400)
-            }
-            return dates
-        }
-
+class WorkEntry(val start: Instant, var end: Instant?, val id: String) : Comparable<WorkEntry> {
     val durationSeconds: Long
-        get() = end.epochSecond - start.epochSecond
+        get() = (end?.epochSecond ?: start.epochSecond) - start.epochSecond
 
     val durationHours: Double
         get() = durationSeconds / 3600.0
