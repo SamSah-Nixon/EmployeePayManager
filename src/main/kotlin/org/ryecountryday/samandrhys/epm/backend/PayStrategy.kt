@@ -17,7 +17,7 @@ abstract class PayStrategy {
         }
 
         override fun toString(): String {
-            return "Hourly ($$hourlyRate/hour)"
+            return "Hourly ($${hourlyRate.toMoneyString()}/hour)"
         }
     }
 
@@ -32,11 +32,19 @@ abstract class PayStrategy {
         }
 
         override fun toString(): String {
-            return "Salaried ($$annualSalary/year)"
+            return "Salaried ($${annualSalary.toMoneyString()}/year)"
         }
     }
 
     protected fun Double.roundToTwoDecimalPlaces(): Double {
         return round(this * 100) / 100
+    }
+
+    protected fun Double.toMoneyString(): String {
+        var result = this.roundToTwoDecimalPlaces().toString()
+        if(result.substringAfter('.').length == 1) {
+            result += "0"
+        }
+        return result
     }
 }

@@ -9,4 +9,8 @@ data class Address(
     override fun toString(): String {
         return "$street; $city, $state $zip"
     }
+
+    fun toStringMultiline(): String {
+        return "$street\n$city, $state\n$zip"
+    }
 }

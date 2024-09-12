@@ -24,6 +24,6 @@ fun parseDate(str: String, separator: Char = '/'): Date {
     return SimpleDateFormat("MM${separator}dd${separator}yyyy").parse(str)
 }
 
-fun dateToString(date: Date, separator: Char = '/'): String {
-    return SimpleDateFormat("MM${separator}dd${separator}yyyy").format(date)
+fun Date.toDateString(separator: Char = '/'): String {
+    return SimpleDateFormat("MM${separator}dd${separator}yyyy").format(this)
 }
