@@ -10,10 +10,19 @@ class SerializationTest {
     fun `work entry serialization`() {
         val workEntry = WorkEntry(Instant.ofEpochSecond(0), 2)
 
-        val json = Json.encodeToString(workEntry)
+        val json = Json {
+            prettyPrint = true
+        }
 
-        val expected = """{"start":0,"end":7200}"""
+        val serialized = json.encodeToString(workEntry)
 
-        assertEquals(expected, json)
+        val expected = """
+            {
+                "start": 0,
+                "end": 7200
+            }
+        """.trimIndent()
+
+        assertEquals(expected, serialized)
     }
 }
