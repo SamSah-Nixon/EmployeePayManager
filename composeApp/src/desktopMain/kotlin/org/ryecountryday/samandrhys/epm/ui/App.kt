@@ -64,19 +64,8 @@ fun App() {
             Icon(Icons.Filled.Add, contentDescription = "Add Employee")
         }
 
-        if(addDialogState.value == true) {
+        if(addDialogState.value != false) {
             AddEmployeeDialog(addDialogState, employees)
-        } else if(addDialogState.value is String) {
-            Dialog(onDismissRequest = { addDialogState.value = false }) {
-                Card {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(addDialogState.value as String, textAlign = TextAlign.Center, modifier = Modifier.padding(8.dp))
-                        Button(onClick = { addDialogState.value = true }) {
-                            Text("Try Again")
-                        }
-                    }
-                }
-            }
         }
     }
 }
@@ -284,13 +273,26 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
 
                         val added = employees.add(employee)
 
-                        value.value = false
-
                         if (!added) {
                             value.value = "Employee with ID $id already exists"
+                        } else {
+                            value.value = false
                         }
                     }) {
                         Text("Add Employee")
+                    }
+
+                    if(value.value is String) {
+                        Dialog(onDismissRequest = { value.value = true }) {
+                            Card {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(value.value as String, textAlign = TextAlign.Center, modifier = Modifier.padding(8.dp))
+                                    Button(onClick = { value.value = true }) {
+                                        Text("Try Again")
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     Button(
