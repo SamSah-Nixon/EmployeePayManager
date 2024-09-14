@@ -38,6 +38,5 @@ class RandomOtherTests {
         assertFalse("100000.143".isValidMoneyString())
         assertFalse("-123.23".isValidMoneyString())
         assertFalse("not valid".isValidMoneyString())
-        assertFalse(true)
     }
 }
