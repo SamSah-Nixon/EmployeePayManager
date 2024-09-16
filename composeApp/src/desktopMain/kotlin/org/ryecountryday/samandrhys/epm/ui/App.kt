@@ -30,25 +30,6 @@ import java.util.*
 @Preview
 fun App() {
     MaterialTheme {
-        val employees = remember {
-            EmployeeContainer(
-                Employee(
-                    name = "Mr. Cruté",
-                    id = "000100",
-                    pay = PayStrategy.Hourly(0),
-                    dateOfBirth = parseDate("01/01/2000"),
-                    address = Address("3 Five Cedar", "Rye Land", "New York", "11122-1111"),
-                ),
-                Employee(
-                    name = "Jaymin Ding",
-                    id = "4",
-                    pay = PayStrategy.Hourly(13),
-                    dateOfBirth = parseDate("9/23/2007"),
-                    address = Address("3 Cedar Street", "Rye", "New York", "10580"),
-                )
-            )
-        }
-
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally

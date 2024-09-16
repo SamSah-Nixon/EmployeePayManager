@@ -33,21 +33,33 @@ class EmployeeContainer(private val employees: MutableSet<Employee> = TreeSet())
     }
 
     fun replaceEmployee(employee: Employee) {
-        employees.removeIf { it.id == employee.id }
+        employees.removeIf {
+            (it.id == employee.id).apply {
+                if(this) {
+                    it.clearChangeListeners()
+                }
+            }
+        }
         employees.add(employee)
         listeners.forEach { it(this) }
     }
 
     override fun add(element: Employee): Boolean {
+        element.addChangeListener { callListeners() }
         val a = employees.add(element)
-        listeners.forEach { it(this) }
+        callListeners()
         return a
     }
 
     override fun addAll(elements: Collection<Employee>): Boolean {
+        elements.forEach { it.addChangeListener { callListeners() } }
         val a = employees.addAll(elements)
-        listeners.forEach { it(this) }
+        callListeners()
         return a
+    }
+
+    fun addAll(vararg elements: Employee): Boolean {
+        return addAll(elements.toList())
     }
 
     override fun clear() {
@@ -62,11 +74,19 @@ class EmployeeContainer(private val employees: MutableSet<Employee> = TreeSet())
         return NonRemovalIterator(employees.iterator())
     }
 
+    override fun toString(): String {
+        return "EmployeeContainer$employees"
+    }
+
     fun findById(id: String): Employee? {
         return find { it.id == id }
     }
 
     fun addChangeListener(listener: (EmployeeContainer) -> Unit) {
         listeners.add(listener)
+    }
+
+    private fun callListeners() {
+        listeners.forEach { it(this) }
     }
 }

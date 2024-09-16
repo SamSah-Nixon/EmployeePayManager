@@ -7,6 +7,8 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.*
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
+import org.ryecountryday.samandrhys.epm.backend.employee.Address
+import org.ryecountryday.samandrhys.epm.backend.employee.Employee
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkEntry
 import java.time.Instant
 import java.util.*
@@ -120,5 +122,52 @@ object PayStrategySerializer : KSerializer<PayStrategy> {
         }
 
         error("Could not find a PayStrategy class for type: \"$type\"")
+    }
+}
+
+object EmployeeSerializer : KSerializer<Employee> {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("Employee") {
+        element("lastName", descriptor = PrimitiveSerialDescriptor("lastName", PrimitiveKind.STRING))
+        element("firstName", descriptor = PrimitiveSerialDescriptor("firstName", PrimitiveKind.STRING))
+        element("id", descriptor = PrimitiveSerialDescriptor("id", PrimitiveKind.STRING))
+        element("pay", descriptor = PayStrategySerializer.descriptor)
+        element("dateOfBirth", descriptor = DateSerializer.descriptor)
+        element("address", descriptor = Address.serializer().descriptor)
+    }
+
+    override fun serialize(encoder: Encoder, value: Employee) {
+        encoder.encodeStructure(descriptor) {
+            encodeStringElement(descriptor, 0, value.lastName)
+            encodeStringElement(descriptor, 1, value.firstName)
+            encodeStringElement(descriptor, 2, value.id)
+            encodeSerializableElement(descriptor, 3, PayStrategySerializer, value.pay)
+            encodeSerializableElement(descriptor, 4, DateSerializer, value.dateOfBirth)
+            encodeSerializableElement(descriptor, 5, Address.serializer(), value.address)
+        }
+    }
+
+    override fun deserialize(decoder: Decoder): Employee {
+        var lastName: String? = null
+        var firstName: String? = null
+        var id: String? = null
+        var pay: PayStrategy? = null
+        var dateOfBirth: Date? = null
+        var address: Address? = null
+        decoder.decodeStructure(descriptor) {
+            while (true) {
+                when (val index = decodeElementIndex(descriptor)) {
+                    0 -> lastName = decodeStringElement(descriptor, 0)
+                    1 -> firstName = decodeStringElement(descriptor, 1)
+                    2 -> id = decodeStringElement(descriptor, 2)
+                    3 -> pay = decodeSerializableElement(descriptor, 3, PayStrategySerializer)
+                    4 -> dateOfBirth = decodeSerializableElement(descriptor, 4, DateSerializer)
+                    5 -> address = decodeSerializableElement(descriptor, 5, Address.serializer())
+                    CompositeDecoder.DECODE_DONE -> break
+                    else -> error("Unexpected index: $index")
+                }
+            }
+        }
+
+        return Employee(lastName!!, firstName!!, id!!, pay!!, dateOfBirth!!, address!!)
     }
 }
