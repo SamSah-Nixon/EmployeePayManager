@@ -9,6 +9,7 @@ import kotlinx.serialization.encoding.*
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.backend.employee.Address
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
+import org.ryecountryday.samandrhys.epm.backend.employee.EmployeeStatus
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkEntry
 import java.time.Instant
 import java.util.*
@@ -133,6 +134,7 @@ object EmployeeSerializer : KSerializer<Employee> {
         element("pay", descriptor = PayStrategySerializer.descriptor)
         element("dateOfBirth", descriptor = DateSerializer.descriptor)
         element("address", descriptor = Address.serializer().descriptor)
+        element("active", descriptor = PrimitiveSerialDescriptor("active", PrimitiveKind.BOOLEAN))
     }
 
     override fun serialize(encoder: Encoder, value: Employee) {
@@ -143,6 +145,7 @@ object EmployeeSerializer : KSerializer<Employee> {
             encodeSerializableElement(descriptor, 3, PayStrategySerializer, value.pay)
             encodeSerializableElement(descriptor, 4, DateSerializer, value.dateOfBirth)
             encodeSerializableElement(descriptor, 5, Address.serializer(), value.address)
+            encodeBooleanElement(descriptor, 6, value.status == EmployeeStatus.ACTIVE)
         }
     }
 
@@ -153,6 +156,7 @@ object EmployeeSerializer : KSerializer<Employee> {
         var pay: PayStrategy? = null
         var dateOfBirth: Date? = null
         var address: Address? = null
+        var active: Boolean? = null
         decoder.decodeStructure(descriptor) {
             while (true) {
                 when (val index = decodeElementIndex(descriptor)) {
@@ -162,12 +166,17 @@ object EmployeeSerializer : KSerializer<Employee> {
                     3 -> pay = decodeSerializableElement(descriptor, 3, PayStrategySerializer)
                     4 -> dateOfBirth = decodeSerializableElement(descriptor, 4, DateSerializer)
                     5 -> address = decodeSerializableElement(descriptor, 5, Address.serializer())
+                    6 -> active = decodeBooleanElement(descriptor, 6)
                     CompositeDecoder.DECODE_DONE -> break
                     else -> error("Unexpected index: $index")
                 }
             }
         }
 
-        return Employee(lastName!!, firstName!!, id!!, pay!!, dateOfBirth!!, address!!)
+        return Employee(lastName!!, firstName!!, id!!, pay!!, dateOfBirth!!, address!!).apply {
+            if(active == false) {
+                status = EmployeeStatus.INACTIVE
+            }
+        }
     }
 }

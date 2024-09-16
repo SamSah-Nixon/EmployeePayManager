@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.materialIcon
+import androidx.compose.material.icons.materialPath
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,6 +15,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import org.ryecountryday.samandrhys.epm.util.toDateString
@@ -82,7 +86,6 @@ fun LabeledButton(value: String,
 
     Spacer(modifier = Modifier.height(8.dp))
 }
-
 
 @Composable
 fun DropdownButton(
@@ -173,4 +176,33 @@ fun maybeSelectedBorder(selected: Boolean): BorderStroke {
         BorderStroke(TextFieldDefaults.FocusedBorderThickness, MaterialTheme.colors.primary)
     else
         BorderStroke(TextFieldDefaults.UnfocusedBorderThickness, MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled))
+}
+
+private fun PathBuilder.person(x: Int, y: Int, scale: Float = 1.0F) {
+    @Suppress("NAME_SHADOWING")
+    val scale = 1.0F / scale
+    moveTo(x.toFloat(), y.toFloat())
+    curveToRelative(2.21f / scale, 0.0f, 4.0f / scale, -1.79f / scale, 4.0f / scale, -4.0f / scale)
+    reflectiveCurveToRelative(-1.79f / scale, -4.0f / scale, -4.0f / scale, -4.0f / scale)
+    reflectiveCurveToRelative(-4.0f / scale, 1.79f / scale, -4.0f / scale, 4.0f / scale)
+    reflectiveCurveToRelative(1.79f / scale, 4.0f / scale, 4.0f / scale, 4.0f / scale)
+    close()
+    moveTo(x.toFloat(), y + 2.0F / scale)
+    curveToRelative(-2.67f / scale, 0.0f, -8.0f / scale, 1.34f / scale, -8.0f / scale, 4.0f / scale)
+    verticalLineToRelative(2.0f / scale)
+    horizontalLineToRelative(16.0f / scale)
+    verticalLineToRelative(-2.0f / scale)
+    curveToRelative(0.0f, -2.66f / scale, -5.33f / scale, -4.0f / scale, -8.0f / scale, -4.0f / scale)
+    close()
+}
+
+val Icons.Filled.TwoPeople: ImageVector by lazy {
+    materialIcon("Filled.TwoPeople") {
+        materialPath {
+            person(6, 6, 0.5F)
+            person(18, 6, 0.5F)
+            person(6, 18, 0.5F)
+            person(18, 18, 0.5F)
+        }
+    }
 }

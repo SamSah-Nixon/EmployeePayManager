@@ -22,11 +22,17 @@ val employeesFile: Path = mainFolder.resolve("employees.json").also {
 
 val employees = EmployeeContainer().apply {
     addChangeListener {
-        println("EmployeeContainer changed")
         employeesFile.writeText(
             json.encodeToString(EmployeeContainer.serializer(), it)
         )
     }
+
+    Runtime.getRuntime().addShutdownHook(Thread { // super lazy way to save on exit but it works
+        println("Exiting!")
+        employeesFile.writeText(
+            json.encodeToString(EmployeeContainer.serializer(), this)
+        )
+    })
 
     if(employeesFile.exists()) {
         val container = json.decodeFromString(EmployeeContainer.serializer(), employeesFile.readText())

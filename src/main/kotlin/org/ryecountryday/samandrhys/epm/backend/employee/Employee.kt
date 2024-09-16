@@ -35,6 +35,8 @@ class Employee(
     val dateOfBirth by ValueWithListener(listeners, dateOfBirth, this)
     var address by ValueWithListener(listeners, address, this)
 
+    var status: EmployeeStatus by ValueWithListener(listeners, EmployeeStatus.ACTIVE, this)
+
     val name: String
         get() = "$firstName $lastName"
 
@@ -43,6 +45,8 @@ class Employee(
     }
 
     override fun compareTo(other: Employee): Int {
+        if(this.status == EmployeeStatus.ACTIVE && other.status == EmployeeStatus.INACTIVE) return -1
+        if(this.status == EmployeeStatus.INACTIVE && other.status == EmployeeStatus.ACTIVE) return 1
         return this.id.compareTo(other.id)
     }
 
