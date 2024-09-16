@@ -59,8 +59,15 @@ fun App() {
         }
 
         val addDialogState: MutableState<Any> = remember { mutableStateOf(false) }
-        FloatingActionButton(onClick = { addDialogState.value = true }) {
-            Icon(Icons.Filled.Add, contentDescription = "Add Employee")
+
+        Column {
+            Spacer(modifier = Modifier.height(4.dp))
+            Row {
+                Spacer(modifier = Modifier.width(4.dp))
+                FloatingActionButton(onClick = { addDialogState.value = true }) {
+                    Icon(Icons.Filled.Add, contentDescription = "Add Employee")
+                }
+            }
         }
 
         if(addDialogState.value != false) {
@@ -71,8 +78,8 @@ fun App() {
 
 @Composable
 fun EmployeeCard(employee: Employee) {
-
     var show by remember { mutableStateOf(false) }
+
     Button(onClick = { show = true },
         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
         modifier = Modifier.padding(2.dp),
@@ -331,6 +338,8 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
                             }
                         }
                     }
+
+                    Spacer(modifier = Modifier.width(2.dp))
 
                     Button(
                         onClick = { value.value = false },
