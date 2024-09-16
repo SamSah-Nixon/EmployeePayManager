@@ -82,6 +82,8 @@ class EmployeeContainer(private val employees: MutableSet<Employee> = TreeSet())
         return find { it.id == id }
     }
 
+    operator fun get(id: String): Employee? = findById(id)
+
     fun addChangeListener(listener: (EmployeeContainer) -> Unit) {
         listeners.add(listener)
     }

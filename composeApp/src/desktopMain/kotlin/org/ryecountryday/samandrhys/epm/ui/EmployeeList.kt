@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 package org.ryecountryday.samandrhys.epm.ui
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,6 +29,7 @@ import org.ryecountryday.samandrhys.epm.util.isValidMoneyString
 import org.ryecountryday.samandrhys.epm.util.toDateString
 import java.util.*
 
+@Preview
 @Composable
 fun EmployeeList(employees: EmployeeContainer) {
     val addDialogState: MutableState<Any> = remember { mutableStateOf(false) }
