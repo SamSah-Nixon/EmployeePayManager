@@ -52,3 +52,5 @@ fun String.isValidMoneyString(): Boolean {
             && !this[length - 1].lowercaseChar().let { it == 'd' || it == 'f' }
             && numDecimalPlaces() <= 2
 }
+
+fun <T> MutableCollection<T>.addAll(vararg elements: T) = addAll(elements)

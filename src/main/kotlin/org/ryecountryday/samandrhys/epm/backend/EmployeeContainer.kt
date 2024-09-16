@@ -58,10 +58,6 @@ class EmployeeContainer(private val employees: MutableSet<Employee> = TreeSet())
         return a
     }
 
-    fun addAll(vararg elements: Employee): Boolean {
-        return addAll(elements.toList())
-    }
-
     override fun clear() {
         throw UnsupportedOperationException("Cannot clear employees")
     }
