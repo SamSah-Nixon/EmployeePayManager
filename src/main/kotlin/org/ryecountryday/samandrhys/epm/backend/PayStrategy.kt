@@ -29,7 +29,7 @@ sealed class PayStrategy {
 
     @Serializable(with = PayStrategySerializer::class)
     class Hourly(hourlyRate: Double) : PayStrategy() {
-        override val type = "Hourly"
+        override val type = TYPE
         val hourlyRate: Double = hourlyRate.roundToTwoDecimalPlaces()
 
         override val rate: Double
@@ -49,11 +49,15 @@ sealed class PayStrategy {
         override fun toString(): String {
             return "Hourly ($${hourlyRate.toMoneyString()}/hour)"
         }
+
+        companion object {
+            const val TYPE = "Hourly"
+        }
     }
 
     @Serializable(with = PayStrategySerializer::class)
     class Salaried(val annualSalary: Double) : PayStrategy() {
-        override val type = "Salaried"
+        override val type = TYPE
         val dailySalary: Double = (annualSalary / 365.0).roundToTwoDecimalPlaces()
 
         override val rate: Double
@@ -70,6 +74,10 @@ sealed class PayStrategy {
 
         override fun toString(): String {
             return "Salaried ($${annualSalary.toMoneyString()}/year)"
+        }
+
+        companion object {
+            const val TYPE = "Salaried"
         }
     }
 }

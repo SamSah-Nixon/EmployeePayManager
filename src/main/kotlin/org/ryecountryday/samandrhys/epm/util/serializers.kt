@@ -114,15 +114,11 @@ object PayStrategySerializer : KSerializer<PayStrategy> {
             }
         }
 
-        // technically not necessary since PayStrategy is sealed but this is more extensible for the "future"
-        for(clazz in PayStrategy::class.sealedSubclasses) {
-            val inst = clazz.java.getDeclaredConstructor(Double::class.java).newInstance(rate)
-            if(inst.type == type) {
-                return inst
-            }
+        return when (type) {
+            PayStrategy.Hourly.TYPE -> PayStrategy.Hourly(rate!!)
+            PayStrategy.Salaried.TYPE -> PayStrategy.Salaried(rate!!)
+            else -> error("Could not find a PayStrategy class for type: \"$type\"")
         }
-
-        error("Could not find a PayStrategy class for type: \"$type\"")
     }
 }
 

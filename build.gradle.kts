@@ -23,7 +23,6 @@ allprojects {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation(kotlin("reflect"))
     implementation(libs.kotlinx.serialization.json)
 
     testImplementation(kotlin("test"))
