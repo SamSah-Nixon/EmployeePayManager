@@ -1,6 +1,5 @@
 package org.ryecountryday.samandrhys.epm.ui
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
 
-@Preview
 @Composable
 fun ClockInScreen(employees: EmployeeContainer) {
     var showPopup by remember { mutableStateOf(false) }
