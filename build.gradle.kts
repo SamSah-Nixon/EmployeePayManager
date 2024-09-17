@@ -1,5 +1,3 @@
-import java.util.Calendar
-
 plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
     // in each subproject's classloader
@@ -14,7 +12,7 @@ plugins {
 
 allprojects {
     apply(plugin = "idea")
-    apply(plugin = "org.cadixdev.licenser")
+    apply(plugin = "dev.yumi.gradle.licenser")
     idea {
         module {
             isDownloadSources = true
@@ -25,18 +23,10 @@ allprojects {
     group = "maven_group"()
 
     license {
-        header(rootProject.file("HEADER"))
+        rule(rootProject.file("HEADER"))
+
         include("**/*.kt")
-
-        tasks {
-            create("gradle") {
-                include("*.gradle.kts")
-            }
-        }
-
-        properties {
-            this["YEAR"] = Calendar.getInstance().get(Calendar.YEAR).toString()
-        }
+        include("*.gradle.kts")
     }
 }
 

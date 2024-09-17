@@ -1,3 +1,8 @@
+/*
+ * This file is a part of EmployeePayManager.
+ * Copyright (C) 2024 Rhys and Sam. All rights reserved.
+ */
+
 @file:JvmName("Main")
 
 package org.ryecountryday.samandrhys.epm.ui
@@ -6,6 +11,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
+import androidx.compose.ui.SystemTheme
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import kotlinx.serialization.json.Json
@@ -15,17 +21,16 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import kotlin.io.path.*
 
-// true = dark theme, false = light theme, null = system theme
-@Suppress("RedundantNullableReturnType")
-private val themeOverride: Boolean? = false
+// if unknown, use system theme
+private val themeOverride: SystemTheme = SystemTheme.Unknown
 
 // Kotlin doesn't have a concept of static-ness, so we have to do this to run code on startup
 private val staticInitializer: Unit = run {
     System.setProperty("apple.awt.application.name", "EmployeePayManager")
     System.setProperty("apple.awt.application.appearance", when (themeOverride) {
-        true -> "NSAppearanceNameDarkAqua"
-        false -> "NSAppearanceNameAqua"
-        null -> "system"
+        SystemTheme.Dark -> "NSAppearanceNameDarkAqua"
+        SystemTheme.Light -> "NSAppearanceNameAqua"
+        SystemTheme.Unknown -> "system"
     })
 }
 
@@ -73,7 +78,10 @@ fun main() = application {
         title = "EmployeePayManager",
         content = {
             MaterialTheme(
-                colors = if (themeOverride == true || (themeOverride == null && isSystemInDarkTheme())) darkColors() else lightColors()
+                colors =
+                if(themeOverride == SystemTheme.Light|| (themeOverride == SystemTheme.Unknown && isSystemInDarkTheme()))
+                    darkColors()
+                else lightColors()
             ) {
                 App()
             }

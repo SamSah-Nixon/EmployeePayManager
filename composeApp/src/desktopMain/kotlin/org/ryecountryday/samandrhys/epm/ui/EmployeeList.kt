@@ -1,3 +1,8 @@
+/*
+ * This file is a part of EmployeePayManager.
+ * Copyright (C) 2024 Rhys and Sam. All rights reserved.
+ */
+
 @file:OptIn(ExperimentalMaterial3Api::class)
 package org.ryecountryday.samandrhys.epm.ui
 
@@ -26,9 +31,6 @@ import org.ryecountryday.samandrhys.epm.backend.employee.Employee
 import org.ryecountryday.samandrhys.epm.util.LocalDate
 import org.ryecountryday.samandrhys.epm.util.isValidMoneyString
 import org.ryecountryday.samandrhys.epm.util.toDateString
-import java.time.Instant
-import java.time.LocalDate
-import java.util.*
 
 /**
  * A composable that displays a list of employees in a column.

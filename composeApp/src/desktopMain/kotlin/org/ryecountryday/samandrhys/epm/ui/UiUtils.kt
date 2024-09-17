@@ -1,3 +1,8 @@
+/*
+ * This file is a part of EmployeePayManager.
+ * Copyright (C) 2024 Rhys and Sam. All rights reserved.
+ */
+
 package org.ryecountryday.samandrhys.epm.ui
 
 import androidx.compose.foundation.BorderStroke
@@ -21,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import org.ryecountryday.samandrhys.epm.util.LocalDate
 import org.ryecountryday.samandrhys.epm.util.toDateString
-import java.util.*
 
 @Composable
 fun LabeledCard(value: String,
