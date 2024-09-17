@@ -23,7 +23,6 @@ import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.backend.employee.Address
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
-import org.ryecountryday.samandrhys.epm.backend.employee.EmployeeStatus
 import org.ryecountryday.samandrhys.epm.util.isValidMoneyString
 import org.ryecountryday.samandrhys.epm.util.toDateString
 import java.util.*
@@ -173,7 +172,7 @@ fun EmployeeCard(employee: Employee) {
                             status = employee.status
                         },
                     ) {
-                        Text(if(status == EmployeeStatus.ACTIVE) "Deactivate" else "Activate")
+                        Text(if(status.toBoolean()) "Deactivate" else "Activate")
                     }
                 }
             }
