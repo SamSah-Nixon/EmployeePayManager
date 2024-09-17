@@ -18,7 +18,7 @@ class WorkEntry(val start: Instant, var end: Instant?, val id: String) : Compara
     constructor(start: Instant, duration: Double, id: String) : this(start, start.plusSeconds((duration * 3600).toLong()), id)
 
     val durationSeconds: Long
-        get() = (end?.epochSecond ?: start.epochSecond) - start.epochSecond
+        get() = (end?.epochSecond ?: Instant.now().epochSecond) - start.epochSecond
 
     val durationHours: Double
         get() = durationSeconds / 3600.0

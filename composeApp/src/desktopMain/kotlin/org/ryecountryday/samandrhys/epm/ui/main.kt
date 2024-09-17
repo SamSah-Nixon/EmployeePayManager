@@ -15,10 +15,18 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import kotlin.io.path.*
 
+// true = dark theme, false = light theme, null = system theme
+@Suppress("RedundantNullableReturnType")
+private val themeOverride: Boolean? = false
+
 // Kotlin doesn't have a concept of static-ness, so we have to do this to run code on startup
 private val staticInitializer: Unit = run {
     System.setProperty("apple.awt.application.name", "EmployeePayManager")
-    System.setProperty("apple.awt.application.appearance", "system")
+    System.setProperty("apple.awt.application.appearance", when (themeOverride) {
+        true -> "NSAppearanceNameDarkAqua"
+        false -> "NSAppearanceNameAqua"
+        null -> "system"
+    })
 }
 
 val json = Json {
@@ -65,10 +73,7 @@ fun main() = application {
         title = "EmployeePayManager",
         content = {
             MaterialTheme(
-                colors = if (isSystemInDarkTheme())
-                    darkColors()
-                else
-                    lightColors()
+                colors = if (themeOverride == true || (themeOverride == null && isSystemInDarkTheme())) darkColors() else lightColors()
             ) {
                 App()
             }

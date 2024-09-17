@@ -12,6 +12,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
+import org.ryecountryday.samandrhys.epm.util.roundToTwoDecimalPlaces
 
 @Composable
 fun ClockInScreen(employees: EmployeeContainer) {
@@ -27,13 +28,7 @@ fun ClockInScreen(employees: EmployeeContainer) {
                 label = { Text("Employee ID") },
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
-                    onDone = {
-                        showPopup = employeeId.isNotEmpty().apply {
-                            if(this) {
-                                println("Clocking in employee $employeeId")
-                            }
-                        }
-                    }
+                    onDone = { showPopup = employeeId.isNotEmpty() }
                 )
             )
         }
@@ -49,28 +44,35 @@ fun ClockInScreen(employees: EmployeeContainer) {
 @Composable
 private fun ClockInPopup(employees: EmployeeContainer, employeeId: String, onClose: () -> Unit) {
     Dialog(onDismissRequest = onClose) {
-        Card(modifier = Modifier.width(500.dp)) {
+        Card(modifier = Modifier.width(350.dp)) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 val maybeEmployee by remember { mutableStateOf(employees[employeeId]) }
                 if (maybeEmployee == null) {
+                    Spacer(modifier = Modifier.height(16.dp))
                     Text("Employee not found")
+                    Spacer(modifier = Modifier.height(16.dp))
                     return@Column
                 }
 
                 val employee by remember { mutableStateOf(maybeEmployee!!) }
 
-                var mostRecentEntry = WorkHistory.entries.firstOrNull { it.id == employee.id }
-                val clockedIn =  mostRecentEntry != null && mostRecentEntry.end == null
+                var clockedIn by remember { mutableStateOf(WorkHistory.isClockedIn(employee.id)) }
+
+                Text("Welcome, ${employee.name}", style = MaterialTheme.typography.h5)
+                Spacer(modifier = Modifier.height(16.dp))
 
                 if (clockedIn) {
+                    Text("You have been working for ${(WorkHistory.getEntry(employee.id)!!.durationSeconds / 60.0).roundToTwoDecimalPlaces()} minutes")
                     Button(onClick = {
                         WorkHistory.clockOut(employee.id)
+                        clockedIn = WorkHistory.isClockedIn(employee.id)
                     }) {
                         Text("Clock out")
                     }
                 } else {
                     Button(onClick = {
                         WorkHistory.clockIn(employee.id)
+                        clockedIn = WorkHistory.isClockedIn(employee.id)
                     }) {
                         Text("Clock in")
                     }

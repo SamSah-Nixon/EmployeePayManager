@@ -7,9 +7,9 @@ import java.time.LocalDate
 /**
  * Stores work history for all employees.
  *
- * @property currentPeriod The work entries currently in the pay period.
- * @property entries The work entries for each pay period.
- * @property payPeriods The pay periods.
+ * @property currentPeriod
+ * @property entries
+ * @property payPeriods
  */
 object WorkHistory {
 
@@ -18,15 +18,23 @@ object WorkHistory {
     var payPeriods = mutableListOf<PayPeriod>()
 
     fun addPayPeriod(startDate : LocalDate, endDate : LocalDate) {
-        payPeriods.add(0,PayPeriod(startDate, endDate))
+        payPeriods.addFirst(PayPeriod(startDate, endDate))
     }
 
     fun clockIn(id: String) {
-        entries.add(0,WorkEntry(Instant.now(), id))
+        entries.addFirst(WorkEntry(Instant.now(), id))
+    }
+
+    fun isClockedIn(id: String) : Boolean {
+        return getEntry(id).let { it != null && it.end == null }
+    }
+
+    fun getEntry(id: String) : WorkEntry? {
+        return entries.firstOrNull { it.id == id }
     }
 
     fun clockOut(id: String) {
-        entries.firstOrNull { it.id == id }?.let {
+        getEntry(id)?.let {
             it.end = Instant.now()
             currentPeriod.add(it)
         }
