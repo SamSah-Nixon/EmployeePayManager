@@ -54,3 +54,7 @@ fun String.isValidMoneyString(): Boolean {
 }
 
 fun <T> MutableCollection<T>.addAll(vararg elements: T) = addAll(elements)
+
+fun addShutdownHook(block: () -> Unit) {
+    Runtime.getRuntime().addShutdownHook(Thread(block))
+}

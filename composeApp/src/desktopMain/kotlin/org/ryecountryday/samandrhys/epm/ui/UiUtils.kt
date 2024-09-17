@@ -65,7 +65,7 @@ fun LabeledButton(value: String,
             onClick = onClick,
             colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
         ) {
-            ProvideTextStyle(MaterialTheme.typography.body1) {
+            ProvideTextStyle(MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onSurface)) {
                 Column(modifier = Modifier.padding(top = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     content()
                     Spacer(modifier = Modifier.height(8.dp))
@@ -87,18 +87,22 @@ fun LabeledButton(value: String,
     Spacer(modifier = Modifier.height(8.dp))
 }
 
+/**
+ * A button that opens a dropdown menu when clicked. The button's content is defined by [content], and the
+ * dropdown menu items are defined by [items]. [onItemSelected] is called when an item is selected.
+ */
 @Composable
-fun DropdownButton(
-    items: List<String>,
-    onItemSelected: (String) -> Unit,
+fun <T> DropdownButton(
+    items: List<T>,
+    onItemSelected: (T) -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable RowScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     Button(onClick = { expanded = true },
         content = {
             Column {
-                this@Button.content()
+                content()
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
@@ -108,7 +112,7 @@ fun DropdownButton(
                             onItemSelected(item)
                             expanded = false
                         }) {
-                            Text(item)
+                            Text(item.toString())
                         }
                     }
                 }
@@ -120,9 +124,13 @@ fun DropdownButton(
     )
 }
 
+/**
+ * A TextField with a trailing icon that opens a DatePicker when clicked. The text field isn't editable, but instead
+ * 
+ */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun InlineDatePicker(state: DatePickerState, modifier: Modifier = Modifier) {
+fun InlineDatePicker(label: String, state: DatePickerState, modifier: Modifier = Modifier) {
     var showDatePicker by remember { mutableStateOf(false) }
     Box(
         modifier = modifier
@@ -130,8 +138,8 @@ fun InlineDatePicker(state: DatePickerState, modifier: Modifier = Modifier) {
         val timeMs = state.selectedDateMillis?.plus(86400000) ?: System.currentTimeMillis()
         OutlinedTextField(
             value = Date(timeMs).toDateString(),
-            onValueChange = { },
-            label = { Text("DOB") },
+            onValueChange = {},
+            label = { Text(label) },
             readOnly = true,
             trailingIcon = {
                 IconButton(onClick = { showDatePicker = !showDatePicker }) {
@@ -167,9 +175,15 @@ fun InlineDatePicker(state: DatePickerState, modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * A border that is 1dp thick and colored gray
+ */
 @Composable
 fun mutedBorder() = BorderStroke(1.dp, MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled))
 
+/**
+ * A border that is thicker and colored when selected, and thinner and muted/gray when not selected
+ */
 @Composable
 fun maybeSelectedBorder(selected: Boolean): BorderStroke {
     return if(selected)
@@ -178,6 +192,9 @@ fun maybeSelectedBorder(selected: Boolean): BorderStroke {
         BorderStroke(TextFieldDefaults.UnfocusedBorderThickness, MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled))
 }
 
+/**
+ * @see androidx.compose.material.icons.filled.Person
+ */
 private fun PathBuilder.person(x: Int, y: Int, scale: Float = 1.0F) {
     @Suppress("NAME_SHADOWING")
     val scale = 1.0F / scale
@@ -196,8 +213,11 @@ private fun PathBuilder.person(x: Int, y: Int, scale: Float = 1.0F) {
     close()
 }
 
-val Icons.Filled.TwoPeople: ImageVector by lazy {
-    materialIcon("Filled.TwoPeople") {
+/**
+ * an icon with 4 small people in a 2x2 grid
+ */
+val Icons.Filled.FourPeople: ImageVector by lazy {
+    materialIcon("Filled.FourPeople") {
         materialPath {
             person(6, 6, 0.5F)
             person(18, 6, 0.5F)

@@ -19,7 +19,7 @@ fun ClockInScreen(employees: EmployeeContainer) {
     var employeeId by remember { mutableStateOf("") }
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("Clock in", style = MaterialTheme.typography.h4)
+            Text("Clock in", style = MaterialTheme.typography.h4.copy(MaterialTheme.colors.onBackground))
             OutlinedTextField(
                 value = employeeId,
                 onValueChange = { employeeId = it },

@@ -28,11 +28,17 @@ import org.ryecountryday.samandrhys.epm.util.isValidMoneyString
 import org.ryecountryday.samandrhys.epm.util.toDateString
 import java.util.*
 
+/**
+ * A composable that displays a list of employees in a column.
+ * This also includes a floating action button to add a new employee (see [AddEmployeeDialog]).
+ * @param employees The list of employees to display.
+ */
 @Composable
 fun EmployeeList(employees: EmployeeContainer) {
     val addDialogState: MutableState<Any> = remember { mutableStateOf(false) }
     val employeeContainerState = remember { mutableStateOf(employees) }
 
+    // the main column that holds all the employee cards
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -42,6 +48,7 @@ fun EmployeeList(employees: EmployeeContainer) {
         }
     }
 
+    // the floating action button that opens the add employee dialog
     Column {
         Spacer(modifier = Modifier.height(4.dp))
         Row {
@@ -52,6 +59,11 @@ fun EmployeeList(employees: EmployeeContainer) {
         }
     }
 
+    if(addDialogState.value != false) {
+        AddEmployeeDialog(addDialogState, employeeContainerState.value)
+    }
+
+    // the refresh button that forces the state to refresh (specifically meant for the employee order, when you (de)activate an employee)
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.TopEnd
@@ -60,7 +72,8 @@ fun EmployeeList(employees: EmployeeContainer) {
             Spacer(modifier = Modifier.height(4.dp))
             Row {
                 FloatingActionButton(onClick = {
-                    // somewhat cursed way to force the state to refresh
+                    // cursed way to force the state to refresh, but I can't find anything better
+                    // compose states are weird
                     employeeContainerState.value = EmployeeContainer().apply { addAll(employees) }
                 }) {
                     Icon(Icons.Filled.Refresh, contentDescription = "Refresh Employee Order")
@@ -68,10 +81,6 @@ fun EmployeeList(employees: EmployeeContainer) {
                 Spacer(modifier = Modifier.width(4.dp))
             }
         }
-    }
-
-    if(addDialogState.value != false) {
-        AddEmployeeDialog(addDialogState, employeeContainerState.value)
     }
 }
 
@@ -90,6 +99,9 @@ fun EmployeeCard(employee: Employee) {
         }
     }
 
+    var firstName by remember { mutableStateOf(employee.firstName) }
+    var lastName by remember { mutableStateOf(employee.lastName) }
+
     if(show) {
         Dialog(onDismissRequest = { show = false }) {
             Card(modifier = Modifier.width(500.dp)) {
@@ -100,9 +112,6 @@ fun EmployeeCard(employee: Employee) {
                     val modifier = Modifier.width(350.dp).align(Alignment.CenterHorizontally)
 
                     LabeledCard("ID", border = mutedBorder(), modifier = modifier) { Text(employee.id) }
-
-                    var firstName by remember { mutableStateOf(employee.firstName) }
-                    var lastName by remember { mutableStateOf(employee.lastName) }
 
                     OutlinedTextField(
                         value = firstName,
@@ -183,8 +192,7 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
                 var lastName by remember { mutableStateOf("") }
                 var firstName by remember { mutableStateOf("") }
                 var id by remember { mutableStateOf("") }
-                var hourly by remember { mutableStateOf(true) }
-                var rate by remember { mutableStateOf("") }
+                var payStrategy: PayStrategy by remember { mutableStateOf(PayStrategy.Hourly(0.0)) }
 
                 Text("Add Employee", modifier = Modifier.padding(8.dp))
 
@@ -212,27 +220,36 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
                 )
 
                 DropdownButton(
-                    items = listOf("Hourly", "Salaried"),
-                    onItemSelected = { hourly = it == "Hourly" },
+                    items = listOf(PayStrategy.Hourly.TYPE, PayStrategy.Salaried.TYPE),
+                    onItemSelected = { payType ->
+                        payStrategy = when(payType) {
+                            PayStrategy.Hourly.TYPE -> PayStrategy.Hourly(payStrategy.rate)
+                            PayStrategy.Salaried.TYPE -> PayStrategy.Salaried(payStrategy.rate)
+                            else -> throw IllegalArgumentException("Invalid pay type")
+                        }
+                    },
                     modifier = Modifier.width(400.dp)
                 ) {
-                    Text("Pay Type: ${if (hourly) "Hourly" else "Salaried"}")
+                    Text("Pay Type: ${payStrategy.type}")
                 }
 
                 OutlinedTextField(
-                    value = rate,
+                    value = payStrategy.rate.toString(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     onValueChange = {
                         if (it.isValidMoneyString()) {
-                            rate = it
+                            payStrategy = payStrategy.javaClass.getDeclaredConstructor(Double::class.java)
+                                .newInstance(it.toDouble())
+                                    as PayStrategy
                         }
                     },
-                    label = { Text("Pay Rate (per ${if (hourly) "hour" else "year"})") }, modifier = modifier
+                    label = { Text("Pay Rate (per ${if (payStrategy is PayStrategy.Hourly) "hour" else "year"})") },
+                    modifier = modifier
                 )
 
                 val datePickerState = rememberDatePickerState()
-                InlineDatePicker(datePickerState, modifier = modifier)
+                InlineDatePicker("DOB", datePickerState, modifier = modifier)
                 val birthday by remember { derivedStateOf { datePickerState.selectedDateMillis } }
 
                 var street by remember { mutableStateOf("") }
@@ -287,11 +304,6 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
                             return@Button
                         }
 
-                        if (rate.isBlank()) {
-                            value.value = "Rate cannot be blank"
-                            return@Button
-                        }
-
                         // birthday defaults to today, so it's always valid
 
                         if (street.isBlank()) {
@@ -318,7 +330,7 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
                             lastName = lastName,
                             firstName = firstName,
                             id = id,
-                            pay = if (hourly) PayStrategy.Hourly(rate.toDouble()) else PayStrategy.Salaried(rate.toDouble()),
+                            pay = payStrategy,
                             dateOfBirth = Date(birthday ?: System.currentTimeMillis()),
                             address = Address(street, city, state, zip)
                         )
@@ -373,34 +385,44 @@ fun PayTypeChangeDialog(value: MutableState<Boolean>, employee: Employee) {
                 Text("Change Pay Type", modifier = Modifier.padding(8.dp))
                 Spacer(modifier = Modifier.height(8.dp))
 
-                var rate by remember { mutableStateOf(employee.pay.rate.toString()) }
-                var hourly by remember { mutableStateOf(employee.pay is PayStrategy.Hourly) }
+                var payStrategy by remember { mutableStateOf(employee.pay) }
 
-                Button(onClick = {
-                    hourly = !hourly
-                }) {
-                    Text(if(hourly) "Change to Salaried" else "Change to Hourly")
+                DropdownButton(
+                    items = listOf(PayStrategy.Hourly.TYPE, PayStrategy.Salaried.TYPE),
+                    onItemSelected = { payType ->
+                        payStrategy = when(payType) {
+                            PayStrategy.Hourly.TYPE -> PayStrategy.Hourly(payStrategy.rate)
+                            PayStrategy.Salaried.TYPE -> PayStrategy.Salaried(payStrategy.rate)
+                            else -> throw IllegalArgumentException("Invalid pay type")
+                        }
+                    },
+                    modifier = Modifier.width(200.dp)
+                ) {
+                    Text("Pay Type: ${payStrategy.type}")
                 }
 
                 OutlinedTextField(
-                    value = rate,
+                    value = payStrategy.rate.toString(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     onValueChange = {
                         if (it.isValidMoneyString()) {
-                            rate = it
+                            payStrategy = payStrategy.javaClass.getDeclaredConstructor(Double::class.java)
+                                .newInstance(it.toDouble())
+                                    as PayStrategy
                         }
                     },
                     label = { Text("New Rate") },
                     modifier = Modifier.width(200.dp)
                 )
 
-                Button(onClick = {
-                    value.value = false
-                    employee.pay = if(hourly) PayStrategy.Hourly(rate.toDouble()) else PayStrategy.Salaried(rate.toDouble())
-                }) {
-                    Text("Done")
-                }
+                Button(
+                    onClick = {
+                        value.value = false
+                        employee.pay = payStrategy
+                    },
+                    content = { Text("Done") }
+                )
 
                 Spacer(modifier = Modifier.height(8.dp))
             }
