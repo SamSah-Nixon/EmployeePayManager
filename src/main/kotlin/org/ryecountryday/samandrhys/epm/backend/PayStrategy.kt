@@ -31,6 +31,26 @@ sealed class PayStrategy {
     abstract val rate: Double
     abstract override fun toString(): String
 
+    fun findHours(payPeriod: PayPeriod, id: String): Double {
+        val PPStart : Instant = ZonedDateTime.of(payPeriod.payPeriodStart.atStartOfDay(),ZoneId.systemDefault()).toInstant()
+        val PPEnd : Instant = ZonedDateTime.of(payPeriod.payPeriodEnd.atTime(LocalTime.MAX),ZoneId.systemDefault()).toInstant()
+        //Find all workEntries that match the employee id and are within the pay period
+        val workEntries = WorkHistory.entries.filter {
+            it.id == id && ((it.end == null )|| it.end!!.isAfter(PPStart)) && it.start.isBefore(PPEnd)
+        }
+        var hours = 0.0
+        for (workEntry in workEntries) {
+            val WEStart: Instant = workEntry.start
+            val WEEnd: Instant = workEntry.end ?: Instant.now()
+            //This accounts for when working times can be outside the pay period
+            hours += if(WEStart.isAfter(PPStart) && WEEnd.isBefore(PPEnd)) workEntry.durationHours
+            else if(WEStart.isAfter(PPStart) && WEEnd.isAfter(PPEnd)) Duration.between(WEStart,PPEnd).toHours().toDouble()
+            else if(WEStart.isBefore(PPStart) && WEEnd.isBefore(PPEnd)) Duration.between(PPStart,WEEnd).toHours().toDouble()
+            else Duration.between(PPStart,PPEnd).toHours().toDouble()
+        }
+        return hours
+    }
+
     //Hourly pay strategy
     @Serializable(with = PayStrategySerializer::class)
     class Hourly(hourlyRate: Double) : PayStrategy() {
@@ -40,22 +60,7 @@ sealed class PayStrategy {
 
         constructor(hourlyRate: Int) : this(hourlyRate.toDouble())
         override fun calculateSalary(payPeriod: PayPeriod, id: String): Double {
-            val PPStart : Instant = ZonedDateTime.of(payPeriod.payPeriodStart.atStartOfDay(),ZoneId.systemDefault()).toInstant()
-            val PPEnd : Instant = ZonedDateTime.of(payPeriod.payPeriodEnd.atTime(LocalTime.MAX),ZoneId.systemDefault()).toInstant()
-            //Find all workEntries that match the employee id and are within the pay period
-            val workEntries = WorkHistory.entries.filter {
-                it.id == id && ((it.end == null )|| it.end!!.isAfter(PPStart)) && it.start.isBefore(PPEnd)
-            }
-            var hours = 0.0
-            for (workEntry in workEntries) {
-                val WEStart: Instant = workEntry.start
-                val WEEnd: Instant = workEntry.end ?: Instant.now()
-                //This accounts for when working times can be outside the pay period
-                hours += if(WEStart.isAfter(PPStart) && WEEnd.isBefore(PPEnd)) workEntry.durationHours
-                else if(WEStart.isAfter(PPStart) && WEEnd.isAfter(PPEnd)) Duration.between(WEStart,PPEnd).toHours().toDouble()
-                else if(WEStart.isBefore(PPStart) && WEEnd.isBefore(PPEnd)) Duration.between(PPStart,WEEnd).toHours().toDouble()
-                else Duration.between(PPStart,PPEnd).toHours().toDouble()
-            }
+            var hours = findHours(payPeriod, id)
             //Overtime 40+ hours
             if(hours > 40.0) hours =  (40.0 * rate) + ((hours - 40.0) * rate * 1.5)
             else hours *= rate
@@ -85,8 +90,25 @@ sealed class PayStrategy {
         constructor(annualSalary: Int) : this(annualSalary.toDouble())
 
         override fun calculateSalary(payPeriod: PayPeriod, id: String): Double {
-
-            return 0.0
+            val PPStart : Instant = ZonedDateTime.of(payPeriod.payPeriodStart.atStartOfDay(),ZoneId.systemDefault()).toInstant()
+            val PPEnd : Instant = ZonedDateTime.of(payPeriod.payPeriodEnd.atTime(LocalTime.MAX),ZoneId.systemDefault()).toInstant()
+            //Find all workEntries that match the employee id and are within the pay period
+            val workEntries = WorkHistory.entries.filter {
+                it.id == id && ((it.end == null )|| it.end!!.isAfter(PPStart)) && it.start.isBefore(PPEnd)
+            }
+            var hours = 0.0
+            var days = payPeriod.daysInPeriod
+            for (workEntry in workEntries) {
+                val WEStart: Instant = workEntry.start
+                val WEEnd: Instant = workEntry.end ?: Instant.now()
+                //This accounts for when working times can be outside the pay period
+                hours += if(WEStart.isAfter(PPStart) && WEEnd.isBefore(PPEnd)) workEntry.durationHours
+                else if(WEStart.isAfter(PPStart) && WEEnd.isAfter(PPEnd)) Duration.between(WEStart,PPEnd).toHours().toDouble()
+                else if(WEStart.isBefore(PPStart) && WEEnd.isBefore(PPEnd)) Duration.between(PPStart,WEEnd).toHours().toDouble()
+                else Duration.between(PPStart,PPEnd).toHours().toDouble()
+            }
+            //TODO Lazy people pay deduction. Does >=40 hours in a week mean mon-sun or 7 days from the start of the pay period???
+            return (days * rate) / 365.0
         }
 
         override fun toString(): String {
