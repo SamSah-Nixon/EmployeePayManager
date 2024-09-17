@@ -93,7 +93,7 @@ sealed class PayStrategy {
 
     /**
      * Pays the employee based on a fixed annual salary, which is divided by 365 to get a daily rate.
-     * If a salaried employee does not work at least 40 hours in a 1 week period, they lose 1 day's pay
+     * If a salaried employee does not work at least 40 hours in a 1-week period, they lose 1 day's pay
      * for every 8 hours they are short of 40.
      */
     @Serializable(with = PayStrategySerializer::class)
