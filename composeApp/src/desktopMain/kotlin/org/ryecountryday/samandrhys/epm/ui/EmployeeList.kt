@@ -53,14 +53,8 @@ fun EmployeeList(employees: EmployeeContainer) {
     }
 
     // the floating action button that opens the add employee dialog
-    Column {
-        Spacer(modifier = Modifier.height(4.dp))
-        Row {
-            Spacer(modifier = Modifier.width(4.dp))
-            FloatingActionButton(onClick = { addDialogState.value = true }) {
-                Icon(Icons.Filled.Add, contentDescription = "Add Employee")
-            }
-        }
+    FloatingActionButton(onClick = { addDialogState.value = true }, modifier = Modifier.padding(4.dp)) {
+        Icon(Icons.Filled.Add, contentDescription = "Add Employee")
     }
 
     if(addDialogState.value != false) {
@@ -68,22 +62,13 @@ fun EmployeeList(employees: EmployeeContainer) {
     }
 
     // the refresh button that forces the state to refresh (specifically meant for the employee order, when you (de)activate an employee)
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.TopEnd
-    ) {
-        Column(modifier = Modifier) {
-            Spacer(modifier = Modifier.height(4.dp))
-            Row {
-                FloatingActionButton(onClick = {
-                    // cursed way to force the state to refresh, but I can't find anything better
-                    // compose states are weird
-                    employeeContainerState.value = EmployeeContainer().apply { addAll(employees) }
-                }) {
-                    Icon(Icons.Filled.Refresh, contentDescription = "Refresh Employee Order")
-                }
-                Spacer(modifier = Modifier.width(4.dp))
-            }
+    Box(Modifier.fillMaxWidth(), Alignment.TopEnd) {
+        FloatingActionButton(onClick = {
+            // cursed way to force the state to refresh, but I can't find anything better
+            // compose states are weird
+            employeeContainerState.value = EmployeeContainer().apply { addAll(employees) }
+        }, modifier = Modifier.padding(4.dp)) {
+            Icon(Icons.Filled.Refresh, contentDescription = "Refresh Employee Order")
         }
     }
 }

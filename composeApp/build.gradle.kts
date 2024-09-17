@@ -1,5 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.desktop.application.tasks.AbstractProguardTask
+import java.time.LocalDate
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -47,7 +48,10 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Pkg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "EPM"
+            vendor = "RCDS"
+            copyright = "Copyright ${LocalDate.now().year} Rhys and Sam. All rights reserved."
             packageVersion = project.version.toString()
+            macOS.bundleID = project.group.toString()
             macOS.iconFile = rootProject.file("src/main/resources/icon.icns")
             windows.iconFile = rootProject.file("src/main/resources/icon.ico")
             linux.iconFile = rootProject.file("src/main/resources/icon.png")
