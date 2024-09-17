@@ -22,7 +22,7 @@ sealed class PayStrategy {
      * @return a [Double] representing the amount of money eared for the employee with ID [id]
      * during the last pay period.
      */
-    abstract fun calculateSalary(payPeriod: Instant, id: String): Double
+    abstract fun calculateSalary(payPeriod: PayPeriod, id: String): Double
 
     /** A name for this pay strategy, for use when serializing. */
     abstract val type: String
