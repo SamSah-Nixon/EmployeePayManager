@@ -1,10 +1,7 @@
 package org.ryecountryday.samandrhys.epm.util
 
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.backend.employee.Address
@@ -12,7 +9,6 @@ import org.ryecountryday.samandrhys.epm.backend.employee.Employee
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkEntry
 import java.time.Instant
 import java.time.LocalDate
-import java.util.*
 
 // Serializers for different objects using kotlinx.serialization
 // I'll document the first one, the rest are similar
@@ -24,9 +20,9 @@ object WorkEntrySerializer : KSerializer<WorkEntry> {
      * the serialized form of the class (which is all JSON in this case).
      */
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("WorkEntry") {
-        element("start", PrimitiveSerialDescriptor("start", PrimitiveKind.LONG))
-        element("end", PrimitiveSerialDescriptor("end", PrimitiveKind.LONG))
-        element("id", PrimitiveSerialDescriptor("id", PrimitiveKind.STRING))
+        element<Long>("start")
+        element<Long?>("end", isOptional = true)
+        element<String>("id")
     }
 
     /**
@@ -77,8 +73,8 @@ object WorkEntrySerializer : KSerializer<WorkEntry> {
 
 object PayStrategySerializer : KSerializer<PayStrategy> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("PayStrategy") {
-        element("type", descriptor = PrimitiveSerialDescriptor("type", PrimitiveKind.STRING))
-        element("rate", descriptor = PrimitiveSerialDescriptor("rate", PrimitiveKind.DOUBLE))
+        element<String>("type")
+        element<Double>("rate")
     }
 
     override fun serialize(encoder: Encoder, value: PayStrategy) {
@@ -112,13 +108,13 @@ object PayStrategySerializer : KSerializer<PayStrategy> {
 
 object EmployeeSerializer : KSerializer<Employee> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("Employee") {
-        element("lastName", descriptor = PrimitiveSerialDescriptor("lastName", PrimitiveKind.STRING))
-        element("firstName", descriptor = PrimitiveSerialDescriptor("firstName", PrimitiveKind.STRING))
-        element("id", descriptor = PrimitiveSerialDescriptor("id", PrimitiveKind.STRING))
-        element("pay", descriptor = PayStrategySerializer.descriptor)
-        element("dateOfBirth", descriptor = PrimitiveSerialDescriptor("dateOfBirth", PrimitiveKind.STRING))
-        element("address", descriptor = Address.serializer().descriptor)
-        element("active", descriptor = PrimitiveSerialDescriptor("active", PrimitiveKind.BOOLEAN))
+        element<String>("lastName")
+        element<String>("firstName")
+        element<String>("id")
+        element<PayStrategy>("pay")
+        element<String>("dateOfBirth")
+        element<Address>("address")
+        element<Boolean>("active")
     }
 
     override fun serialize(encoder: Encoder, value: Employee) {
