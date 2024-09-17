@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import org.ryecountryday.samandrhys.epm.util.LocalDate
 import org.ryecountryday.samandrhys.epm.util.toDateString
 import java.util.*
 
@@ -135,9 +136,8 @@ fun InlineDatePicker(label: String, state: DatePickerState, modifier: Modifier =
     Box(
         modifier = modifier
     ) {
-        val timeMs = state.selectedDateMillis?.plus(86400000) ?: System.currentTimeMillis()
         OutlinedTextField(
-            value = Date(timeMs).toDateString(),
+            value = LocalDate(state.selectedDateMillis).toDateString(),
             onValueChange = {},
             label = { Text(label) },
             readOnly = true,

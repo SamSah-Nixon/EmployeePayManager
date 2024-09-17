@@ -11,6 +11,7 @@ import org.ryecountryday.samandrhys.epm.backend.employee.Address
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkEntry
 import java.time.Instant
+import java.time.LocalDate
 import java.util.*
 
 // Serializers for different objects using kotlinx.serialization
@@ -74,18 +75,6 @@ object WorkEntrySerializer : KSerializer<WorkEntry> {
     }
 }
 
-object DateSerializer : KSerializer<Date> {
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("Date", PrimitiveKind.LONG)
-
-    override fun serialize(encoder: Encoder, value: Date) {
-        encoder.encodeString(value.toDateString())
-    }
-
-    override fun deserialize(decoder: Decoder): Date {
-        return parseDate(decoder.decodeString())
-    }
-}
-
 object PayStrategySerializer : KSerializer<PayStrategy> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("PayStrategy") {
         element("type", descriptor = PrimitiveSerialDescriptor("type", PrimitiveKind.STRING))
@@ -127,7 +116,7 @@ object EmployeeSerializer : KSerializer<Employee> {
         element("firstName", descriptor = PrimitiveSerialDescriptor("firstName", PrimitiveKind.STRING))
         element("id", descriptor = PrimitiveSerialDescriptor("id", PrimitiveKind.STRING))
         element("pay", descriptor = PayStrategySerializer.descriptor)
-        element("dateOfBirth", descriptor = DateSerializer.descriptor)
+        element("dateOfBirth", descriptor = PrimitiveSerialDescriptor("dateOfBirth", PrimitiveKind.STRING))
         element("address", descriptor = Address.serializer().descriptor)
         element("active", descriptor = PrimitiveSerialDescriptor("active", PrimitiveKind.BOOLEAN))
     }
@@ -138,7 +127,7 @@ object EmployeeSerializer : KSerializer<Employee> {
             encodeStringElement(descriptor, 1, value.firstName)
             encodeStringElement(descriptor, 2, value.id)
             encodeSerializableElement(descriptor, 3, PayStrategySerializer, value.pay)
-            encodeSerializableElement(descriptor, 4, DateSerializer, value.dateOfBirth)
+            encodeStringElement(descriptor, 4, value.dateOfBirth.toDateString())
             encodeSerializableElement(descriptor, 5, Address.serializer(), value.address)
             encodeBooleanElement(descriptor, 6, value.status == Employee.Status.ACTIVE)
         }
@@ -149,7 +138,7 @@ object EmployeeSerializer : KSerializer<Employee> {
         var firstName: String? = null
         var id: String? = null
         var pay: PayStrategy? = null
-        var dateOfBirth: Date? = null
+        var dateOfBirth: LocalDate? = null
         var address: Address? = null
         var active: Boolean? = null
         decoder.decodeStructure(descriptor) {
@@ -159,7 +148,7 @@ object EmployeeSerializer : KSerializer<Employee> {
                     1 -> firstName = decodeStringElement(descriptor, 1)
                     2 -> id = decodeStringElement(descriptor, 2)
                     3 -> pay = decodeSerializableElement(descriptor, 3, PayStrategySerializer)
-                    4 -> dateOfBirth = decodeSerializableElement(descriptor, 4, DateSerializer)
+                    4 -> dateOfBirth = parseDate(decodeStringElement(descriptor, 4))
                     5 -> address = decodeSerializableElement(descriptor, 5, Address.serializer())
                     6 -> active = decodeBooleanElement(descriptor, 6)
                     CompositeDecoder.DECODE_DONE -> break

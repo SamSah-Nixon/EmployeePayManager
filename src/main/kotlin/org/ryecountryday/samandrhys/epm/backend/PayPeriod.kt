@@ -2,7 +2,6 @@ package org.ryecountryday.samandrhys.epm.backend
 
 import java.time.LocalDate
 
-
 /**
  * Represents a pay period, which contains all the work entries for a given period of time.
  */

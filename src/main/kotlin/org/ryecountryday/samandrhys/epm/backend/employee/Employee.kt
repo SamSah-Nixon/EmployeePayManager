@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.util.EmployeeSerializer
 import org.ryecountryday.samandrhys.epm.util.HasListener
+import java.time.LocalDate
 import java.util.*
 
 /**
@@ -17,12 +18,12 @@ class Employee(
     firstName: String,
     val id: String,
     pay: PayStrategy,
-    val dateOfBirth: Date,
+    val dateOfBirth: LocalDate,
     address: Address,
     active: Boolean = true
 ) : Comparable<Employee>, HasListener<Employee>() {
 
-    constructor(name: String, id: String, pay: PayStrategy, dateOfBirth: Date, address: Address, active: Boolean = true):
+    constructor(name: String, id: String, pay: PayStrategy, dateOfBirth: LocalDate, address: Address, active: Boolean = true):
             this(name.split(' ', limit = 2)[1], name.split(' ', limit = 2)[0], id, pay, dateOfBirth, address, active)
 
     var lastName by value(lastName)

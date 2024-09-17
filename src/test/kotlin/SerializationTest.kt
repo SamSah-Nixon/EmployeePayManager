@@ -107,7 +107,7 @@ class SerializationTest {
                     "type": "Hourly",
                     "rate": 10.0
                 },
-                "dateOfBirth": "01/01/2000",
+                "dateOfBirth": "1/1/2000",
                 "address": {
                     "street": "123 Main St",
                     "city": "Anytown",
@@ -158,7 +158,7 @@ class SerializationTest {
                             "type": "Hourly",
                             "rate": 0.0
                         },
-                        "dateOfBirth": "01/01/2000",
+                        "dateOfBirth": "1/1/2000",
                         "address": {
                             "street": "3 Five Cedar",
                             "city": "Rye Land",
@@ -175,7 +175,7 @@ class SerializationTest {
                             "type": "Hourly",
                             "rate": 13.0
                         },
-                        "dateOfBirth": "09/23/2007",
+                        "dateOfBirth": "9/23/2007",
                         "address": {
                             "street": "3 Cedar Street",
                             "city": "Rye",

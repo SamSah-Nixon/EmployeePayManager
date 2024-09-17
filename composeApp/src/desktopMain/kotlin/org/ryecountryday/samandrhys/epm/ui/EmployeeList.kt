@@ -23,8 +23,11 @@ import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.backend.employee.Address
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
+import org.ryecountryday.samandrhys.epm.util.LocalDate
 import org.ryecountryday.samandrhys.epm.util.isValidMoneyString
 import org.ryecountryday.samandrhys.epm.util.toDateString
+import java.time.Instant
+import java.time.LocalDate
 import java.util.*
 
 /**
@@ -238,7 +241,7 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     onValueChange = {
                         if (it.isValidMoneyString()) {
-                            payStrategy = payStrategy.javaClass.getDeclaredConstructor(Double::class.java)
+                            payStrategy = payStrategy.javaClass.getDeclaredConstructor(Number::class.java)
                                 .newInstance(it.toDouble())
                                     as PayStrategy
                         }
@@ -330,7 +333,7 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
                             firstName = firstName,
                             id = id,
                             pay = payStrategy,
-                            dateOfBirth = Date(birthday ?: System.currentTimeMillis()),
+                            dateOfBirth = LocalDate(birthday),
                             address = Address(street, city, state, zip)
                         )
 

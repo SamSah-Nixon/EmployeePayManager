@@ -51,7 +51,15 @@ sealed class PayStrategy {
         return hours
     }
 
-    //Hourly pay strategy
+    /**
+     * Pays the employee based on a rate per hour worked. Overtime can occur in 2 scenarios:
+     * - Working more than 40 hours in a week (1.5x rate)
+     * - Working more than 9 days in a row (1.5x rate)
+     *
+     * These both can occur at the same time, in which case the rate is 2.25x the base rate.
+     *
+     * @param hourlyRate the rate per hour worked
+     */
     @Serializable(with = PayStrategySerializer::class)
     class Hourly(hourlyRate: Number) : PayStrategy() {
         override val type = TYPE
@@ -61,7 +69,7 @@ sealed class PayStrategy {
         override fun calculateSalary(payPeriod: PayPeriod, id: String): Double {
             var hours = findHours(payPeriod, id)
             //Overtime 40+ hours
-            if(hours > 40.0) hours =  (40.0 * rate) + ((hours - 40.0) * rate * 1.5)
+            if(hours > 40.0) hours = (40.0 * rate) + ((hours - 40.0) * rate * 1.5)
             else hours *= rate
             //TODO Overtime 9 days in a row
 
@@ -78,36 +86,23 @@ sealed class PayStrategy {
         }
     }
 
-    //Salaried pay strategy
+    /**
+     * Pays the employee based on a fixed annual salary, which is divided by 365 to get a daily rate.
+     * If a salaried employee does not work at least 40 hours in a 1 week period, they lose 1 day's pay
+     * for every 8 hours they are short of 40.
+     */
     @Serializable(with = PayStrategySerializer::class)
-    class Salaried(annualSalary: Double) : PayStrategy() {
+    class Salaried(annualSalary: Number) : PayStrategy() {
         override val type = TYPE
-        override val rate: Double = annualSalary.roundToTwoDecimalPlaces()
+        override val rate: Double = annualSalary.toDouble().roundToTwoDecimalPlaces()
 
-        val dailySalary: Double = (annualSalary / 365.0).roundToTwoDecimalPlaces()
-
-        constructor(annualSalary: Int) : this(annualSalary.toDouble())
+        val dailySalary: Double = (annualSalary.toDouble() / 365.0).roundToTwoDecimalPlaces()
 
         override fun calculateSalary(payPeriod: PayPeriod, id: String): Double {
-            val PPStart : Instant = ZonedDateTime.of(payPeriod.payPeriodStart.atStartOfDay(),ZoneId.systemDefault()).toInstant()
-            val PPEnd : Instant = ZonedDateTime.of(payPeriod.payPeriodEnd.atTime(LocalTime.MAX),ZoneId.systemDefault()).toInstant()
-            //Find all workEntries that match the employee id and are within the pay period
-            val workEntries = WorkHistory.entries.filter {
-                it.id == id && ((it.end == null )|| it.end!!.isAfter(PPStart)) && it.start.isBefore(PPEnd)
-            }
-            var hours = 0.0
-            var days = payPeriod.daysInPeriod
-            for (workEntry in workEntries) {
-                val WEStart: Instant = workEntry.start
-                val WEEnd: Instant = workEntry.end ?: Instant.now()
-                //This accounts for when working times can be outside the pay period
-                hours += if(WEStart.isAfter(PPStart) && WEEnd.isBefore(PPEnd)) workEntry.durationHours
-                else if(WEStart.isAfter(PPStart) && WEEnd.isAfter(PPEnd)) Duration.between(WEStart,PPEnd).toHours().toDouble()
-                else if(WEStart.isBefore(PPStart) && WEEnd.isBefore(PPEnd)) Duration.between(PPStart,WEEnd).toHours().toDouble()
-                else Duration.between(PPStart,PPEnd).toHours().toDouble()
-            }
+            val hours = findHours(payPeriod, id)
+            val days = payPeriod.daysInPeriod
             //TODO Lazy people pay deduction. Does >=40 hours in a week mean mon-sun or 7 days from the start of the pay period???
-            return (days * rate) / 365.0
+            return dailySalary * days
         }
 
         override fun toString(): String {
