@@ -1,3 +1,8 @@
+/*
+ * This file is a part of EmployeePayManager.
+ * Copyright (C) 2024 Rhys and Sam. All rights reserved.
+ */
+
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer

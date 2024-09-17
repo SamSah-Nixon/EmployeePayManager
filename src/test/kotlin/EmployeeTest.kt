@@ -1,3 +1,8 @@
+/*
+ * This file is a part of EmployeePayManager.
+ * Copyright (C) 2024 Rhys and Sam. All rights reserved.
+ */
+
 import org.junit.jupiter.api.Assertions.*
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.backend.employee.Address

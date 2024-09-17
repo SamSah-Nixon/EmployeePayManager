@@ -1,3 +1,8 @@
+/*
+ * This file is a part of EmployeePayManager.
+ * Copyright (C) 2024 Rhys and Sam. All rights reserved.
+ */
+
 package org.ryecountryday.samandrhys.epm.backend
 
 import kotlinx.serialization.Serializable

@@ -1,3 +1,8 @@
+/*
+ * This file is a part of EmployeePayManager.
+ * Copyright (C) 2024 Rhys and Sam. All rights reserved.
+ */
+
 import org.ryecountryday.samandrhys.epm.util.isPositiveDouble
 import org.ryecountryday.samandrhys.epm.util.isValidMoneyString
 import org.ryecountryday.samandrhys.epm.util.roundToTwoDecimalPlaces
