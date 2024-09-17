@@ -22,7 +22,7 @@ import java.nio.file.StandardOpenOption
 import kotlin.io.path.*
 
 // if unknown, use system theme
-private val themeOverride: SystemTheme = SystemTheme.Unknown
+private val themeOverride = SystemTheme.Light
 
 // Kotlin doesn't have a concept of static-ness, so we have to do this to run code on startup
 private val staticInitializer: Unit = run {
@@ -79,7 +79,7 @@ fun main() = application {
         content = {
             MaterialTheme(
                 colors =
-                if(themeOverride == SystemTheme.Light|| (themeOverride == SystemTheme.Unknown && isSystemInDarkTheme()))
+                if(themeOverride == SystemTheme.Dark || (themeOverride == SystemTheme.Unknown && isSystemInDarkTheme()))
                     darkColors()
                 else lightColors()
             ) {

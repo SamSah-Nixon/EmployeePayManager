@@ -37,8 +37,10 @@ fun LabeledCard(value: String,
             modifier = Modifier.fillMaxWidth(),
             border = border
         ) {
-            Column(modifier = Modifier.padding(top = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                content()
+            Column(modifier = Modifier.padding(top = 12.dp), horizontalAlignment = Alignment.Start) {
+                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    content()
+                }
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
@@ -71,8 +73,10 @@ fun LabeledButton(value: String,
             colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
         ) {
             ProvideTextStyle(MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onSurface)) {
-                Column(modifier = Modifier.padding(top = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    content()
+                Column(modifier = Modifier.padding(top = 12.dp), horizontalAlignment = Alignment.Start) {
+                    Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        content()
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
