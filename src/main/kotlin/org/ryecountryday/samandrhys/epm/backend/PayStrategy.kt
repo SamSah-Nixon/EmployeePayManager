@@ -53,12 +53,11 @@ sealed class PayStrategy {
 
     //Hourly pay strategy
     @Serializable(with = PayStrategySerializer::class)
-    class Hourly(hourlyRate: Double) : PayStrategy() {
+    class Hourly(hourlyRate: Number) : PayStrategy() {
         override val type = TYPE
 
-        override val rate: Double = hourlyRate.roundToTwoDecimalPlaces()
+        override val rate: Double = hourlyRate.toDouble().roundToTwoDecimalPlaces()
 
-        constructor(hourlyRate: Int) : this(hourlyRate.toDouble())
         override fun calculateSalary(payPeriod: PayPeriod, id: String): Double {
             var hours = findHours(payPeriod, id)
             //Overtime 40+ hours
