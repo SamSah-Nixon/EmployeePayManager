@@ -22,7 +22,7 @@ sealed class PayStrategy {
      * @return a [Double] representing the amount of money eared for the employee with ID [id]
      * during the last pay period.
      */
-    abstract fun calculateSalary(payPeriod: Instant, id: String): Double
+    abstract fun calculateSalary(payPeriod: PayPeriod, id: String): Double
 
     /** A name for this pay strategy, for use when serializing. */
     abstract val type: String
@@ -33,12 +33,11 @@ sealed class PayStrategy {
 
     //Hourly pay strategy
     @Serializable(with = PayStrategySerializer::class)
-    class Hourly(hourlyRate: Double) : PayStrategy() {
+    class Hourly(hourlyRate: Number) : PayStrategy() {
         override val type = TYPE
 
-        override val rate: Double = hourlyRate.roundToTwoDecimalPlaces()
+        override val rate: Double = hourlyRate.toDouble().roundToTwoDecimalPlaces()
 
-        constructor(hourlyRate: Int) : this(hourlyRate.toDouble())
         override fun calculateSalary(payPeriod: PayPeriod, id: String): Double {
             val PPStart : Instant = ZonedDateTime.of(payPeriod.payPeriodStart.atStartOfDay(),ZoneId.systemDefault()).toInstant()
             val PPEnd : Instant = ZonedDateTime.of(payPeriod.payPeriodEnd.atTime(LocalTime.MAX),ZoneId.systemDefault()).toInstant()

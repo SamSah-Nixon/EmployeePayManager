@@ -21,12 +21,13 @@ private val staticInitializer: Unit = run {
     System.setProperty("apple.awt.application.appearance", "system")
 }
 
-val json = Json(Json.Default) {
-    this.prettyPrint = true
+val json = Json {
+    prettyPrint = true
 }
 
 val mainFolder: Path = Path(System.getProperty("user.home")).resolve(".EmployeePayManager").also {
     if (!it.exists()) {
+        println("creating $it")
         it.createDirectories()
     }
 }
