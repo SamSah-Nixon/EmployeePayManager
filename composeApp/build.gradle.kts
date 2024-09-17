@@ -48,9 +48,9 @@ compose.desktop {
             targetFormats(TargetFormat.Pkg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "EPM"
             packageVersion = project.version.toString()
-            macOS.iconFile = rootProject.file(".idea/icon.png")
-            windows.iconFile = rootProject.file(".idea/icon.png")
-            linux.iconFile = rootProject.file(".idea/icon.png")
+            macOS.iconFile = rootProject.file("src/main/resources/icon.icns")
+            windows.iconFile = rootProject.file("src/main/resources/icon.ico")
+            linux.iconFile = rootProject.file("src/main/resources/icon.png")
         }
     }
 }
