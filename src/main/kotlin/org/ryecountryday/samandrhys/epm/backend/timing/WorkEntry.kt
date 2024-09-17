@@ -5,7 +5,11 @@ import org.ryecountryday.samandrhys.epm.util.*
 import java.time.Instant
 
 /**
+ * Represents a single work entry for an employee.
  *
+ * @property start The time someone clocked in
+ * @property end The time someone clocked out. If null, the work entry is still ongoing.
+ * @property id The ID of the work entry
  */
 @Serializable(with = WorkEntrySerializer::class)
 class WorkEntry(val start: Instant, var end: Instant?, val id: String) : Comparable<WorkEntry> {
