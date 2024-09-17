@@ -9,7 +9,6 @@ import kotlinx.serialization.encoding.*
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.backend.employee.Address
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
-import org.ryecountryday.samandrhys.epm.backend.employee.EmployeeStatus
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkEntry
 import java.time.Instant
 import java.util.*
@@ -141,7 +140,7 @@ object EmployeeSerializer : KSerializer<Employee> {
             encodeSerializableElement(descriptor, 3, PayStrategySerializer, value.pay)
             encodeSerializableElement(descriptor, 4, DateSerializer, value.dateOfBirth)
             encodeSerializableElement(descriptor, 5, Address.serializer(), value.address)
-            encodeBooleanElement(descriptor, 6, value.status == EmployeeStatus.ACTIVE)
+            encodeBooleanElement(descriptor, 6, value.status == Employee.Status.ACTIVE)
         }
     }
 
@@ -169,10 +168,6 @@ object EmployeeSerializer : KSerializer<Employee> {
             }
         }
 
-        return Employee(lastName!!, firstName!!, id!!, pay!!, dateOfBirth!!, address!!).apply {
-            if(active == false) {
-                status = EmployeeStatus.INACTIVE
-            }
-        }
+        return Employee(lastName!!, firstName!!, id!!, pay!!, dateOfBirth!!, address!!, active == true)
     }
 }

@@ -1,10 +1,9 @@
 package org.ryecountryday.samandrhys.epm.backend.employee
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.util.EmployeeSerializer
-import org.ryecountryday.samandrhys.epm.util.ValueWithListener
+import org.ryecountryday.samandrhys.epm.util.HasListener
 import java.util.*
 
 /**
@@ -16,26 +15,21 @@ import java.util.*
 class Employee(
     lastName: String,
     firstName: String,
-    id: String,
+    val id: String,
     pay: PayStrategy,
-    dateOfBirth: Date,
-    address: Address
-) : Comparable<Employee> {
+    val dateOfBirth: Date,
+    address: Address,
+    active: Boolean = true
+) : Comparable<Employee>, HasListener<Employee>() {
 
-    @Transient
-    private val listeners = mutableListOf<(Employee) -> Unit>()
+    constructor(name: String, id: String, pay: PayStrategy, dateOfBirth: Date, address: Address, active: Boolean = true):
+            this(name.split(' ', limit = 2)[1], name.split(' ', limit = 2)[0], id, pay, dateOfBirth, address, active)
 
-    constructor(name: String, id: String, pay: PayStrategy, dateOfBirth: Date, address: Address):
-            this(name.split(' ', limit = 2)[1], name.split(' ', limit = 2)[0], id, pay, dateOfBirth, address)
-
-    var lastName by ValueWithListener(listeners, lastName, this)
-    var firstName by ValueWithListener(listeners, firstName, this)
-    val id by ValueWithListener(listeners, id, this)
-    var pay by ValueWithListener(listeners, pay, this)
-    val dateOfBirth by ValueWithListener(listeners, dateOfBirth, this)
-    var address by ValueWithListener(listeners, address, this)
-
-    var status: EmployeeStatus by ValueWithListener(listeners, EmployeeStatus.ACTIVE, this)
+    var lastName by value(lastName)
+    var firstName by value(firstName)
+    var pay by value(pay)
+    var address by value(address)
+    var status by value(Status.bool(active))
 
     val name: String
         get() = "$firstName $lastName"
@@ -45,8 +39,8 @@ class Employee(
     }
 
     override fun compareTo(other: Employee): Int {
-        if(this.status == EmployeeStatus.ACTIVE && other.status == EmployeeStatus.INACTIVE) return -1
-        if(this.status == EmployeeStatus.INACTIVE && other.status == EmployeeStatus.ACTIVE) return 1
+        if(this.status == Status.ACTIVE && other.status == Status.INACTIVE) return -1
+        if(this.status == Status.INACTIVE && other.status == Status.ACTIVE) return 1
         return this.id.compareTo(other.id)
     }
 
@@ -54,15 +48,26 @@ class Employee(
         return this === other || (other is Employee && this.id == other.id)
     }
 
-    fun addChangeListener(listener: (Employee) -> Unit) {
-        listeners.add(listener)
-    }
-
-    fun clearChangeListeners() {
-        listeners.clear()
-    }
-
     override fun toString(): String {
         return "Employee(id=$id, name=$name, pay=$pay, dateOfBirth=$dateOfBirth, address=$address)"
+    }
+
+    enum class Status {
+        ACTIVE,
+        INACTIVE;
+
+        operator fun not(): Status {
+            return if(this == ACTIVE) INACTIVE else ACTIVE
+        }
+
+        fun toBoolean(): Boolean {
+            return this == ACTIVE
+        }
+
+        companion object {
+            fun bool(b: Boolean): Status {
+                return if(b) ACTIVE else INACTIVE
+            }
+        }
     }
 }

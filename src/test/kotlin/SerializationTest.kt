@@ -4,7 +4,6 @@ import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.backend.employee.Address
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
-import org.ryecountryday.samandrhys.epm.backend.employee.EmployeeStatus
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkEntry
 import org.ryecountryday.samandrhys.epm.util.parseDate
 import java.time.Instant
@@ -138,9 +137,8 @@ class SerializationTest {
                 pay = PayStrategy.Hourly(13),
                 dateOfBirth = parseDate("9/23/2007"),
                 address = Address("3 Cedar Street", "Rye", "New York", "10580"),
-            ).apply {
-                status = EmployeeStatus.INACTIVE
-            }
+                active = false
+            )
         )
 
         val json = Json {
