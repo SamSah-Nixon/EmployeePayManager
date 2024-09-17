@@ -59,7 +59,8 @@ private fun ClockInPopup(employees: EmployeeContainer, employeeId: String, onClo
 
                 val employee by remember { mutableStateOf(maybeEmployee!!) }
 
-                val clockedIn = WorkHistory.clockedIn.firstOrNull { it.id == employee.id } != null
+                var mostRecentEntry = WorkHistory.entries.firstOrNull { it.id == employee.id }
+                val clockedIn =  mostRecentEntry != null && mostRecentEntry.end == null
 
                 if (clockedIn) {
                     Button(onClick = {
