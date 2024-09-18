@@ -34,8 +34,8 @@ fun AdminScreen(employees: MutableSet<Employee>) {
 
         Box { // use Box to reset the alignments in the Column
             when (tab) {
-                0 -> EmployeeList(employees)
-                1 -> EmployeeList(
+                0 -> EmployeeList(employees) // just a regular list of all employees, sorted by id
+                1 -> EmployeeList( // list of clocked in employees, sorted by time working
                     @Suppress("RemoveExplicitTypeArguments") // seems to be a bug in the compiler
                     sortedSetOf<Employee>(::compareEmployeesByTimeWorking, *employees.filter { WorkHistory.isClockedIn(it.id) }.toTypedArray()),
                     false)
