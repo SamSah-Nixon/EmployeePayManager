@@ -59,10 +59,12 @@ fun App() {
                 )
             }
 
-            if (tab == 0) {
-                Box { EmployeeList(employees) } // use Box to reset the alignments in the Column
-            } else {
-                Box { EmployeeList(employees.filter { WorkHistory.isClockedIn(it.id) }.toMutableSet(), false) }
+            Box { // use Box to reset the alignments in the Column
+                if (tab == 0) {
+                    EmployeeList(employees)
+                } else if(tab == 1) {
+                    EmployeeList(employees.filter { WorkHistory.isClockedIn(it.id) }.toMutableSet(), false)
+                }
             }
         }
     } else {

@@ -33,76 +33,74 @@ import androidx.compose.ui.window.Popup
 import org.ryecountryday.samandrhys.epm.util.LocalDate
 import org.ryecountryday.samandrhys.epm.util.toDateString
 
+/**
+ * An [OutlinedCard] with a label that overlaps the top border. The card's content is defined by [content], and the label
+ * is defined by [value].
+ */
 @Composable
 fun LabeledCard(value: String,
                 modifier: Modifier = Modifier,
                 border: BorderStroke = mutedBorder(),
                 content: @Composable () -> Unit) {
-    LabeledCardImpl(value, modifier, false, border, null, content)
+    LabeledCardImpl(value, modifier, mutableStateOf(false), border, null, content)
 }
 
+/**
+ * An [OutlinedCard] with a label that overlaps the top border. The card's content is defined by [content], and the label
+ * is defined by [value]. When clicked, the card's border changes to the primary color, and [onClick] is called.
+ */
 @Composable
 fun LabeledButton(value: String,
                   modifier: Modifier = Modifier,
-                  selected: Boolean? = null,
-                  border: BorderStroke = selected?.let { maybeSelectedBorder(it) } ?: mutedBorder(),
+                  selected: MutableState<Boolean>? = null,
+                  border: BorderStroke = selected?.let { maybeSelectedBorder(it.value) } ?: mutedBorder(),
                   onClick: () -> Unit,
                   content: @Composable () -> Unit) {
     LabeledCardImpl(value, modifier, selected, border, onClick, content)
 }
 
+/**
+ * Common logic for [LabeledCard] and [LabeledButton].
+ */
 @Composable
 private fun LabeledCardImpl(value: String,
                             modifier: Modifier = Modifier,
-                            selected: Boolean? = null,
-                            border: BorderStroke = selected?.let { maybeSelectedBorder(it) } ?: mutedBorder(),
+                            selected: MutableState<Boolean>? = null,
+                            border: BorderStroke = selected?.let { maybeSelectedBorder(it.value) } ?: mutedBorder(),
                             onClick: (() -> Unit)?,
                             content: @Composable () -> Unit) {
     Box(modifier = modifier) {
+        val shape = MaterialTheme.shapes.small
+        val colors = CardDefaults.outlinedCardColors().let { // completely clear background
+            it.copy(
+                containerColor = MaterialTheme.colors.background.copy(alpha = 0f),
+                contentColor = it.contentColor.copy(alpha = 0f),
+                disabledContainerColor = it.disabledContainerColor.copy(alpha = 0f),
+                disabledContentColor = it.disabledContentColor.copy(alpha = 0f),
+            )
+        }
+        val content1 = @Composable {
+            Column(modifier = Modifier.padding(top = 12.dp), horizontalAlignment = Alignment.Start) {
+                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    content()
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
         if(onClick != null) {
             OutlinedCard(
-                shape = MaterialTheme.shapes.small,
-                colors = CardDefaults.outlinedCardColors().let { // completely clear background
-                    it.copy(
-                        containerColor = MaterialTheme.colors.background.copy(alpha = 0f),
-                        contentColor = it.contentColor.copy(alpha = 0f),
-                        disabledContainerColor = it.disabledContainerColor.copy(alpha = 0f),
-                        disabledContentColor = it.disabledContentColor.copy(alpha = 0f),
-                    )
-                },
                 onClick = onClick,
-                modifier = Modifier.fillMaxWidth(),
-                border = border,
-                content = {
-                    Column(modifier = Modifier.padding(top = 12.dp), horizontalAlignment = Alignment.Start) {
-                        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                            content()
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                }
+                shape = shape,
+                colors = colors,
+                content = { content1() },
+                modifier = Modifier.fillMaxWidth()
             )
         } else {
             OutlinedCard(
-                shape = MaterialTheme.shapes.small,
-                colors = CardDefaults.outlinedCardColors().let { // completely clear background
-                    it.copy(
-                        containerColor = MaterialTheme.colors.background.copy(alpha = 0f),
-                        contentColor = it.contentColor.copy(alpha = 0f),
-                        disabledContainerColor = it.disabledContainerColor.copy(alpha = 0f),
-                        disabledContentColor = it.disabledContentColor.copy(alpha = 0f),
-                    )
-                },
-                modifier = Modifier.fillMaxWidth(),
-                border = border,
-                content = {
-                    Column(modifier = Modifier.padding(top = 12.dp), horizontalAlignment = Alignment.Start) {
-                        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                            content()
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                }
+                shape = shape,
+                colors = colors,
+                content = { content1() },
+                modifier = Modifier.fillMaxWidth()
             )
         }
 
@@ -110,12 +108,12 @@ private fun LabeledCardImpl(value: String,
         Text(value,
             modifier = Modifier.padding(start = 16.dp)
                 .align(Alignment.TopStart).offset(y = (-8).dp)
-                .let {
+                .let { // Add a background color to match the parent - gives the appearance of interrupting the border
                     if(!MaterialTheme.colors.isLight) it.background(Color(0xFF1E1E1E))
                     else it.background(MaterialTheme.colors.background)
-                } // Add a background color to match the parent - gives the appearance of interrupting the border
+                }
                 .padding(horizontal = 4.dp), // Padding for the text itself
-            color = if(selected == true) MaterialTheme.colors.primary
+            color = if(selected?.value == true) MaterialTheme.colors.primary
                 else MaterialTheme.colors.onSurface.copy(ContentAlpha.medium),
             style = MaterialTheme.typography.caption
         )

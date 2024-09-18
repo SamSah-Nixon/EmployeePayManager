@@ -71,14 +71,14 @@ class SerializationTest {
 
         val expectedHourly = """
             {
-                "type": "Hourly",
+                "type": "hourly",
                 "rate": 10.0
             }
         """.trimIndent()
 
         val expectedSalaried = """
             {
-                "type": "Salaried",
+                "type": "salaried",
                 "rate": 100000.0
             }
         """.trimIndent()
@@ -109,7 +109,7 @@ class SerializationTest {
                 "firstName": "Sam",
                 "id": "id",
                 "pay": {
-                    "type": "Hourly",
+                    "type": "hourly",
                     "rate": 10.0
                 },
                 "dateOfBirth": "1/1/2000",
@@ -160,7 +160,7 @@ class SerializationTest {
                         "firstName": "Mr.",
                         "id": "000100",
                         "pay": {
-                            "type": "Hourly",
+                            "type": "hourly",
                             "rate": 0.0
                         },
                         "dateOfBirth": "1/1/2000",
@@ -177,7 +177,7 @@ class SerializationTest {
                         "firstName": "Jaymin",
                         "id": "4",
                         "pay": {
-                            "type": "Hourly",
+                            "type": "hourly",
                             "rate": 13.0
                         },
                         "dateOfBirth": "9/23/2007",

@@ -21,6 +21,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -171,7 +172,7 @@ fun EmployeeCard(employee: Employee) {
                         "Pay Type",
                         onClick = { showPayTypeChangeDialog.value = true },
                         modifier = modifier,
-                        selected = showPayTypeChangeDialog.value
+                        selected = showPayTypeChangeDialog
                     ) {
                         Text(employee.pay.toString())
 
@@ -187,7 +188,8 @@ fun EmployeeCard(employee: Employee) {
                         "Address",
                         onClick = { showAddressChangeDialog.value = true },
                         modifier = modifier,
-                        border = mutedBorder()
+                        border = mutedBorder(),
+                        selected = showAddressChangeDialog
                     ) {
                         Text(employee.address.toStringMultiline())
 
@@ -203,6 +205,10 @@ fun EmployeeCard(employee: Employee) {
                             employee.status = !employee.status
                             status = employee.status
                         },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = if(status.toBoolean()) MaterialTheme.colors.error else Color(0xFF4CAF50)
+                        ),
+                        modifier = Modifier.width(200.dp)
                     ) {
                         Text(if(status.toBoolean()) "Deactivate" else "Activate")
                     }

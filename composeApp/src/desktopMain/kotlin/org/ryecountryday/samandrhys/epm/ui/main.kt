@@ -4,7 +4,7 @@
  */
 
 @file:JvmName("Main")
-@file:OptIn(ExperimentalSerializationApi::class)
+@file:OptIn(ExperimentalSerializationApi::class, ExperimentalPathApi::class)
 
 package org.ryecountryday.samandrhys.epm.ui
 
@@ -40,6 +40,9 @@ private val setupTheming: Unit = run {
     })
 }
 
+/**
+ * The old main folder for the application's long-term storage. This is used to migrate data from the old location to the new one.
+ */
 val oldMainFolder: Path = Path(System.getProperty("user.home")).resolve(".EmployeePayManager")
 
 /**
@@ -48,10 +51,13 @@ val oldMainFolder: Path = Path(System.getProperty("user.home")).resolve(".Employ
 val mainFolder: Path = os.applicationDataFolder.resolve("EmployeePayManager")
 
 /**
- * The file that stores the list of employees.
+ * The file that stores [employees]. This is loaded from and saved to on startup and exit.
  */
 val employeesFile: Path = mainFolder.resolve("employees.json")
 
+/**
+ * The file that stores the [WorkHistory] instance.
+ */
 val workHistoryFile: Path = mainFolder.resolve("workHistory.json")
 
 /**
@@ -65,7 +71,6 @@ val employees = EmployeeContainer().apply {
     }
 }
 
-@OptIn(ExperimentalPathApi::class)
 private val setupLoadingAndSaving: Unit = run {
     addShutdownHook { // super lazy way to save on exit but it yk works
         json.encodeToStream(employees, employeesFile.outputStream())
