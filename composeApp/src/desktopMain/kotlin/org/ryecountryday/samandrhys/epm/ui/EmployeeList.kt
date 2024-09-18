@@ -3,7 +3,6 @@
  * Copyright (C) 2024 Rhys and Sam. All rights reserved.
  */
 
-@file:OptIn(ExperimentalMaterial3Api::class)
 package org.ryecountryday.samandrhys.epm.ui
 
 import androidx.compose.foundation.layout.*
@@ -27,11 +26,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import kotlinx.coroutines.delay
 import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.backend.employee.Address
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
+import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
 import org.ryecountryday.samandrhys.epm.util.LocalDate
+import org.ryecountryday.samandrhys.epm.util.formatTime
 import org.ryecountryday.samandrhys.epm.util.isValidMoneyString
 import org.ryecountryday.samandrhys.epm.util.toDateString
 
@@ -50,7 +52,7 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         for(employee in employeeContainerState.value) {
-            EmployeeCard(employee)
+            EmployeeCard(employee, !mainList)
         }
     }
 
@@ -117,7 +119,7 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true) {
  * When clicked, it opens a [Dialog] with more of the employee's details and allows for editing them.
  */
 @Composable
-fun EmployeeCard(employee: Employee) {
+fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
     var show by remember { mutableStateOf(false) }
 
     Button(onClick = { show = true },
@@ -128,6 +130,24 @@ fun EmployeeCard(employee: Employee) {
         Column(modifier = Modifier.padding(8.dp).width(400.dp)) {
             Text("Name: ${employee.name}", style = MaterialTheme.typography.body1)
             Text("ID: ${employee.id}", style = MaterialTheme.typography.body1)
+
+            if(showClockedInStatus) {
+                var isClockedIn by remember { mutableStateOf(WorkHistory.isClockedIn(employee.id)) }
+                var duration by remember { mutableStateOf(WorkHistory.getClockedInEntry(employee.id)?.durationSeconds) }
+
+                LaunchedEffect(employee.id) {
+                    while (true) {
+                        delay(1000)
+                        isClockedIn = WorkHistory.isClockedIn(employee.id)
+                        duration = WorkHistory.getClockedInEntry(employee.id)?.durationSeconds
+                    }
+                }
+
+                if(isClockedIn) {
+                    Text("Working for ${formatTime(duration ?: 0)}",
+                        style = MaterialTheme.typography.body1)
+                }
+            }
         }
     }
 
@@ -219,6 +239,7 @@ fun EmployeeCard(employee: Employee) {
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>) {
     Dialog(
         onDismissRequest = { value.value = false },

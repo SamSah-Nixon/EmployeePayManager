@@ -8,14 +8,15 @@ package org.ryecountryday.samandrhys.epm.backend.employee
 import kotlinx.serialization.Serializable
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.util.EmployeeSerializer
+import org.ryecountryday.samandrhys.epm.util.toLocalDate
 import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneId
 
 /**
  * Represents an employee in the company.
  * @property id the employee's unique identifier.
  * @property dateOfBirth the day on which this employee was born. Does not include the time (and time won't be serialized)
+ * @property address the employee's address.
  */
 @Serializable(with = EmployeeSerializer::class)
 class Employee(
@@ -36,9 +37,7 @@ class Employee(
     val name: String
         get() = "$firstName $lastName"
 
-    override fun hashCode(): Int {
-        return id.hashCode()
-    }
+    override fun hashCode() = id.hashCode()
 
     override fun compareTo(other: Employee): Int {
         if(this.status == Status.ACTIVE && other.status == Status.INACTIVE) return -1
@@ -50,9 +49,10 @@ class Employee(
         return this === other || (other is Employee && this.id == other.id)
     }
 
-    fun isBirthday(): Boolean{
-        return dateOfBirth.dayOfYear == Instant.now().atZone(ZoneId.systemDefault()).toLocalDate().dayOfYear
+    fun isBirthday(): Boolean {
+        return dateOfBirth.dayOfYear == Instant.now().toLocalDate().dayOfYear
     }
+
     override fun toString(): String {
         return "Employee(id=$id, name=$name, pay=$pay, dateOfBirth=$dateOfBirth, address=$address)"
     }

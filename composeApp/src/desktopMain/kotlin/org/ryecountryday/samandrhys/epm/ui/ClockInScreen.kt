@@ -14,9 +14,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
+import org.ryecountryday.samandrhys.epm.util.formatTime
 
 /**
  * A very simple screen that allows employees to clock in and out.
@@ -37,7 +39,8 @@ fun ClockInScreen(employees: EmployeeContainer) {
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
                     onDone = { showPopup = employeeId.isNotEmpty() }
-                )
+                ),
+                colors = TextFieldDefaults.outlinedTextFieldColors(MaterialTheme.colors.onBackground)
             )
         }
     }
@@ -71,44 +74,37 @@ private fun ClockInPopup(employees: EmployeeContainer, employeeId: String, onClo
                 var clockedIn by remember { mutableStateOf(WorkHistory.isClockedIn(employee.id)) }
 
                 if(employee.isBirthday()){
-                    Text("!!!Happy Birthday,\n${employee.name}!!!", style = MaterialTheme.typography.h5, modifier = Modifier.padding(16.dp))
+                    Text("!!! Happy Birthday,\n${employee.name} !!!",
+                        style = MaterialTheme.typography.h5,
+                        modifier = Modifier.padding(16.dp),
+                        textAlign = TextAlign.Center
+                    )
+                } else {
+                    Text("Welcome,\n${employee.name}",
+                        style = MaterialTheme.typography.h5,
+                        modifier = Modifier.padding(8.dp),
+                        textAlign = TextAlign.Center
+                    )
                 }
-                else{
-                    Text("Welcome,\n${employee.name}", style = MaterialTheme.typography.h5, modifier = Modifier.padding(16.dp))
-                }
-                val timeWorkedFormatted = run {
-                    val timeWorkedSeconds = WorkHistory.getClockedInEntry(employee.id)?.durationSeconds ?: 0
-                    val hours = timeWorkedSeconds / 3600
-                    val minutes = (timeWorkedSeconds % 3600) / 60
-                    val seconds = timeWorkedSeconds % 60
 
-                    buildString {
-                        if (hours > 0) append("$hours hours, ")
-                        if (minutes > 0) append("$minutes minutes, ")
-                        if (seconds > 0) append("$seconds seconds")
-
-                        if(isEmpty()) {
-                            append("0 seconds")
-                        }
-                    }
-                }
 
                 if (clockedIn) {
-                    Text("You have been working for $timeWorkedFormatted")
-                    Button(onClick = {
-                        WorkHistory.clockOut(employee.id)
-                        clockedIn = WorkHistory.isClockedIn(employee.id)
-                    }) {
-                        Text("Clock out")
-                    }
-                } else {
-                    Button(onClick = {
-                        WorkHistory.clockIn(employee.id)
-                        clockedIn = WorkHistory.isClockedIn(employee.id)
-                    }) {
-                        Text("Clock in")
-                    }
+                    Text(
+                        "You have been working for:\n${
+                            formatTime(WorkHistory.getClockedInEntry(employee.id)?.durationSeconds ?: 0)
+                        }",
+                        textAlign = TextAlign.Center)
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
+
+                Button(onClick = {
+                    if(clockedIn) {
+                        WorkHistory.clockOut(employee.id)
+                    } else {
+                        WorkHistory.clockIn(employee.id)
+                    }
+                    clockedIn = WorkHistory.isClockedIn(employee.id)
+                }, content = { Text("Clock ${if(clockedIn) "out" else "in"}") })
             }
         }
     }

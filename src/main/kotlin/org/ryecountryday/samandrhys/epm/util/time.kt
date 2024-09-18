@@ -7,6 +7,9 @@ package org.ryecountryday.samandrhys.epm.util
 
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 
 fun Instant.plusDays(days: Double): Instant {
@@ -47,4 +50,42 @@ fun LocalDate(ms: Long?): LocalDate {
  */
 fun LocalDate.toDateString(separator: Char = '/'): String {
     return "$monthValue$separator$dayOfMonth$separator$year"
+}
+
+/**
+ * Turns an [Instant] into an instance of [LocalDate]. Any time of day information will be discarded.
+ */
+fun Instant.toLocalDate(): LocalDate {
+    return this.atZone(ZoneId.systemDefault()).toLocalDate()
+}
+
+/**
+ * Turns a [LocalDate] into an instance of [Instant]. The time of day will be midnight.
+ */
+fun LocalDate.toInstant(): Instant {
+    return atStartOfDay(ZoneId.systemDefault()).toInstant()
+}
+
+fun LocalDateTime.toInstant(): Instant {
+    return ZonedDateTime.of(this, ZoneId.systemDefault()).toInstant()
+}
+
+fun formatTime(totalSeconds: Long): String {
+    val hours = totalSeconds / 3600
+    val minutes = (totalSeconds % 3600) / 60
+    val seconds = totalSeconds % 60
+
+    fun pluralize(value: Long): String {
+        return if (value == 1L) "" else "s"
+    }
+
+    return buildString {
+        if (hours > 0) append("$hours hour${pluralize(hours)}, ")
+        if (minutes > 0) append("$minutes minute${pluralize(minutes)}, ")
+        if (seconds > 0) append("$seconds second${pluralize(seconds)}")
+
+        if(isEmpty()) {
+            append("0 seconds")
+        }
+    }
 }

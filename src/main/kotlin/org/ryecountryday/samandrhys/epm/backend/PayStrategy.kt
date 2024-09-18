@@ -49,27 +49,26 @@ sealed class PayStrategy {
         override val rate: Double = hourlyRate.toDouble().roundToTwoDecimalPlaces()
 
         override fun calculateSalary(payPeriod: PayPeriod, id: String): Double {
-            var pay: Double = 0.0
+            var pay = 0.0
             var daysInRow = 0
-            var hoursPerWeek = payPeriod.hoursWorkedByWeek(id)
-            var hoursPerDay = payPeriod.hoursWorkedbyDay(id)
+            val hoursPerWeek = payPeriod.hoursWorkedByWeek(id)
+            val hoursPerDay = payPeriod.hoursWorkedbyDay(id)
 
+            // Overtime 9 days in a row
             for(hours in hoursPerDay){
-
                 if(hours > 0.0) daysInRow++
                 else daysInRow = 0
 
-                //Overtime 9 days in a row
                 if(daysInRow > 9) pay += hours*1.5
                 pay += hours
             }
 
-            //Overtime 40+ hours a week
+            // Overtime 40+ hours a week
             for (hours in hoursPerWeek){
                 if(hours > 40) pay += (hours-40)*0.5
             }
 
-            return pay
+            return pay * rate
         }
 
         override fun toString(): String {
@@ -91,19 +90,21 @@ sealed class PayStrategy {
         override val type = TYPE
         override val rate: Double = annualSalary.toDouble().roundToTwoDecimalPlaces()
 
-        val dailySalary: Double = (annualSalary.toDouble() / 365.0).roundToTwoDecimalPlaces()
+        private val dailySalary: Double = (annualSalary.toDouble() / 365.0).roundToTwoDecimalPlaces()
 
         override fun calculateSalary(payPeriod: PayPeriod, id: String): Double {
-            var pay: Double = rate * payPeriod.daysInPeriod / 365.0
-            var hoursPerWeek = payPeriod.hoursWorkedByWeek(id)
+            var days = payPeriod.daysInPeriod
+            val hoursPerWeek = payPeriod.hoursWorkedByWeek(id)
 
             //Deduction for under 40h a week
             for (hours in hoursPerWeek){
                 if(hours < 40) {
-                    pay -= (((40-hours).toInt()/8)+1)*dailySalary
+                    val numHoursUnder = (40 - hours).toInt()
+                    val deductions = (numHoursUnder / 8)
+                    days -= (deductions + 1)
                 }
             }
-            return pay
+            return days * dailySalary
         }
 
         override fun toString(): String {

@@ -17,7 +17,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,10 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathBuilder
-import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import org.ryecountryday.samandrhys.epm.util.LocalDate
@@ -261,7 +258,32 @@ private fun PathBuilder.person(x: Int, y: Int, scale: Float = 1.0F) {
 }
 
 /**
- * an icon with 4 small people in a 2x2 grid
+ * Utility delegate to construct a Material icon with default size information.
+ *
+ * @param name the full name of the generated icon
+ * @param viewportWith the width of the vector asset's viewport
+ * @param viewportHeight the height of the vector asset's viewport
+ * @param autoMirror determines if the vector asset should automatically be mirrored for right to
+ * left locales
+ * @param block builder lambda to add paths to this vector asset
+ */
+inline fun materialIcon(
+    name: String,
+    viewportWith: Float = 24f,
+    viewportHeight: Float = 24f,
+    autoMirror: Boolean = false,
+    block: ImageVector.Builder.() -> ImageVector.Builder
+): ImageVector = ImageVector.Builder(
+    name = name,
+    defaultWidth = 24.dp,
+    defaultHeight = 24.dp,
+    viewportWidth = viewportWith,
+    viewportHeight = viewportHeight,
+    autoMirror = autoMirror
+).block().build()
+
+/**
+ * An icon with 4 small people in a 2x2 grid
  */
 val Icons.Filled.FourPeople: ImageVector by lazy {
     materialIcon("Filled.FourPeople") {
@@ -274,48 +296,48 @@ val Icons.Filled.FourPeople: ImageVector by lazy {
     }
 }
 
+/**
+ * An icon with an open folder
+ */
 val Icons.Outlined.FolderOpen: ImageVector by lazy {
-    ImageVector.Builder(
-        name = "Outlined.FolderOpen", defaultWidth = 24.0.dp, defaultHeight = 24.0.dp,
-        viewportWidth = 960.0f, viewportHeight = 960.0f
-    ).path(
-        fill = SolidColor(Color(0xFFe8eaed))
-    ) {
-        moveTo(160.0f, 800.0f)
-        quadToRelative(-33.0f, 0.0f, -56.5f, -23.5f)
-        reflectiveQuadTo(80.0f, 720.0f)
-        verticalLineToRelative(-480.0f)
-        quadToRelative(0.0f, -33.0f, 23.5f, -56.5f)
-        reflectiveQuadTo(160.0f, 160.0f)
-        horizontalLineToRelative(240.0f)
-        lineToRelative(80.0f, 80.0f)
-        horizontalLineToRelative(320.0f)
-        quadToRelative(33.0f, 0.0f, 56.5f, 23.5f)
-        reflectiveQuadTo(880.0f, 320.0f)
-        lineTo(447.0f, 320.0f)
-        lineToRelative(-80.0f, -80.0f)
-        lineTo(160.0f, 240.0f)
-        verticalLineToRelative(480.0f)
-        lineToRelative(96.0f, -320.0f)
-        horizontalLineToRelative(684.0f)
-        lineTo(837.0f, 743.0f)
-        quadToRelative(-8.0f, 26.0f, -29.5f, 41.5f)
-        reflectiveQuadTo(760.0f, 800.0f)
-        lineTo(160.0f, 800.0f)
-        close()
-        moveTo(244.0f, 720.0f)
-        horizontalLineToRelative(516.0f)
-        lineToRelative(72.0f, -240.0f)
-        lineTo(316.0f, 480.0f)
-        lineToRelative(-72.0f, 240.0f)
-        close()
-        moveTo(244.0f, 720.0f)
-        lineTo(316.0f, 480.0f)
-        lineTo(244.0f, 720.0f)
-        close()
-        moveTo(160.0f, 320.0f)
-        verticalLineToRelative(-80.0f)
-        verticalLineToRelative(80.0f)
-        close()
-    }.build()
+    materialIcon("Outlined.FolderOpen", viewportHeight = 960f, viewportWith = 960f) {
+        materialPath {
+            moveTo(160.0f, 800.0f)
+            quadToRelative(-33.0f, 0.0f, -56.5f, -23.5f)
+            reflectiveQuadTo(80.0f, 720.0f)
+            verticalLineToRelative(-480.0f)
+            quadToRelative(0.0f, -33.0f, 23.5f, -56.5f)
+            reflectiveQuadTo(160.0f, 160.0f)
+            horizontalLineToRelative(240.0f)
+            lineToRelative(80.0f, 80.0f)
+            horizontalLineToRelative(320.0f)
+            quadToRelative(33.0f, 0.0f, 56.5f, 23.5f)
+            reflectiveQuadTo(880.0f, 320.0f)
+            lineTo(447.0f, 320.0f)
+            lineToRelative(-80.0f, -80.0f)
+            lineTo(160.0f, 240.0f)
+            verticalLineToRelative(480.0f)
+            lineToRelative(96.0f, -320.0f)
+            horizontalLineToRelative(684.0f)
+            lineTo(837.0f, 743.0f)
+            quadToRelative(-8.0f, 26.0f, -29.5f, 41.5f)
+            reflectiveQuadTo(760.0f, 800.0f)
+            lineTo(160.0f, 800.0f)
+            close()
+            moveTo(244.0f, 720.0f)
+            horizontalLineToRelative(516.0f)
+            lineToRelative(72.0f, -240.0f)
+            lineTo(316.0f, 480.0f)
+            lineToRelative(-72.0f, 240.0f)
+            close()
+            moveTo(244.0f, 720.0f)
+            lineTo(316.0f, 480.0f)
+            lineTo(244.0f, 720.0f)
+            close()
+            moveTo(160.0f, 320.0f)
+            verticalLineToRelative(-80.0f)
+            verticalLineToRelative(80.0f)
+            close()
+        }
+    }
 }

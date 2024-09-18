@@ -34,8 +34,6 @@ fun AdminScreen(employees: MutableSet<Employee>) {
                 0 -> EmployeeList(employees)
                 1 -> EmployeeList(employees.filter { WorkHistory.isClockedIn(it.id) }.toMutableSet(), false)
             }
-
-
         }
     }
 }

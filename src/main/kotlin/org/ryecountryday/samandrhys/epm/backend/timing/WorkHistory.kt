@@ -10,10 +10,11 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import org.ryecountryday.samandrhys.epm.backend.PayPeriod
 import org.ryecountryday.samandrhys.epm.util.json
+import org.ryecountryday.samandrhys.epm.util.startOfDay
+import org.ryecountryday.samandrhys.epm.util.toLocalDate
 import java.nio.file.Path
 import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneId
 import kotlin.io.path.outputStream
 import kotlin.io.path.readText
 
@@ -40,13 +41,13 @@ object WorkHistory {
      */
     fun addPayPeriod(startDate: LocalDate, endDate: LocalDate): Boolean {
         if(endDate.isEqual(payPeriods[0].payPeriodEnd)) return false
-        payPeriods.addFirst(PayPeriod(startDate, endDate, currentPeriod))
-        currentPeriod = mutableSetOf()
+        payPeriods.addFirst(PayPeriod(startDate, endDate, mutableSetOf(*currentPeriod.toTypedArray())))
+        currentPeriod.clear()
         return true
     }
 
     fun clockIn(id: String) {
-        clockedIn.add(WorkEntry(Instant.now(), id))
+        clockedIn.add(WorkEntry(id = id))
     }
 
     fun isClockedIn(id: String) : Boolean {
@@ -61,22 +62,22 @@ object WorkHistory {
         getClockedInEntry(id)?.let {
             it.end = Instant.now()
             //If a work entry spans multiple days split it into two
-            if(it.start.atZone(ZoneId.systemDefault()).toLocalDate().isBefore(it.end!!.atZone(ZoneId.systemDefault()).toLocalDate())) {
-                val startOfNewDay: Instant = it.end!!.atZone(ZoneId.systemDefault()).toLocalDate().atStartOfDay(ZoneId.systemDefault()).toInstant()
-                val entry1 = WorkEntry(it.start,startOfNewDay, id)
-                val entry2 = WorkEntry(startOfNewDay,it.end, id)
+            if(it.start.toLocalDate().isBefore(it.end!!.toLocalDate())) {
+                val startOfNewDay: Instant = it.end!!.startOfDay()
+                val entry1 = WorkEntry(it.start, startOfNewDay, id)
+                val entry2 = WorkEntry(startOfNewDay, it.end, id)
+
                 //If a work entry spreads across multiple pay periods add the second day into the new pay period
-                if(it.start.atZone(ZoneId.systemDefault()).toLocalDate().isEqual(payPeriods[0].payPeriodStart)) {
+                if(it.start.toLocalDate().isEqual(payPeriods[0].payPeriodStart)) {
                     payPeriods[0].workEntries.add(entry2)
-                }
-                else {
+                } else {
                     currentPeriod.add(entry2)
                 }
                 currentPeriod.add(entry1)
-            }
-            else{
+            } else {
                 currentPeriod.add(it)
             }
+
             clockedIn.remove(it)
         }
     }

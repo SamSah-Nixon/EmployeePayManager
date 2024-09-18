@@ -27,8 +27,13 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import kotlin.io.path.*
 
+/*
+ * The main file, contains the main function and other miscellaneous setup code.
+ * Also contains the paths for all the files the application uses.
+ */
+
 // if unknown, use system theme
-private val themeOverride = SystemTheme.Dark
+private val themeOverride = SystemTheme.Light
 
 // Kotlin doesn't have a concept of static-ness, so we have to do this to run code on startup
 private val setupTheming: Unit = run {

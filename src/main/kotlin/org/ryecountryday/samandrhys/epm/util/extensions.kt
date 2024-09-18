@@ -7,6 +7,10 @@ package org.ryecountryday.samandrhys.epm.util
 
 import kotlin.math.round
 
+/*
+ * Different utility and extension functions, used throughout the program.
+ */
+
 /**
  * @return this [Double], rounded to two decimal places.
  */
@@ -15,7 +19,7 @@ fun Double.roundToTwoDecimalPlaces(): Double {
 }
 
 /**
- * Converts the Double to a money-formatted string with exactly two decimal places.
+ * Converts this [Double] to a money-formatted string with exactly two decimal places.
  * If the number has fewer than two decimal places, trailing zeroes are added.
  *
  * For example, the result of `3.5.toMoneyString()` is `3.50`,

@@ -8,6 +8,9 @@ package org.ryecountryday.samandrhys.epm.util
 import java.nio.file.Path
 import kotlin.io.path.Path
 
+/**
+ * An enum representing different operating systems that the program can run on.
+ */
 enum class OperatingSystem {
     WINDOWS,
     MAC,
@@ -15,6 +18,9 @@ enum class OperatingSystem {
     UNKNOWN
 }
 
+/**
+ * The operating system the program is running on.
+ */
 val os: OperatingSystem = when {
     System.getProperty("os.name").contains("mac", ignoreCase = true) -> OperatingSystem.MAC
     System.getProperty("os.name").contains("win", ignoreCase = true) -> OperatingSystem.WINDOWS
@@ -22,6 +28,9 @@ val os: OperatingSystem = when {
     else -> OperatingSystem.UNKNOWN
 }
 
+/**
+ * The folder where applications' data is stored.
+ */
 val OperatingSystem.applicationDataFolder: Path
     get() = when (this) {
         OperatingSystem.MAC -> Path(System.getProperty("user.home")).resolve("Library/Application Support")
@@ -30,6 +39,9 @@ val OperatingSystem.applicationDataFolder: Path
         OperatingSystem.UNKNOWN -> throw UnsupportedOperationException("Unknown operating system")
     }
 
+/**
+ * Opens the folder at the given path in the system's file explorer.
+ */
 fun OperatingSystem.openFolder(path: Path) {
     val pb = ProcessBuilder().inheritIO()
     when (this) {

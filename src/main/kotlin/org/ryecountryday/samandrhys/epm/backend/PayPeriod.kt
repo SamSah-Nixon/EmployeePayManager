@@ -8,13 +8,12 @@ package org.ryecountryday.samandrhys.epm.backend
 import kotlinx.serialization.Serializable
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkEntry
 import org.ryecountryday.samandrhys.epm.util.PayPeriodSerializer
+import org.ryecountryday.samandrhys.epm.util.toInstant
+import org.ryecountryday.samandrhys.epm.util.toLocalDate
 import java.time.DayOfWeek
-import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
 
 /**
  * Represents a pay period, which contains all the work entries for a given period of time.
@@ -25,11 +24,11 @@ class PayPeriod(var payPeriodStart: LocalDate, var payPeriodEnd: LocalDate, var 
 
     //Find amount of hours worked for a specific employee in the pay period separated by day
     fun hoursWorkedbyDay(id: String): MutableList<Double> {
-        val PPStart : Instant = ZonedDateTime.of(payPeriodStart.atStartOfDay(),ZoneId.systemDefault()).toInstant()
-        val PPEnd : Instant = ZonedDateTime.of(payPeriodEnd.atTime(LocalTime.MAX),ZoneId.systemDefault()).toInstant()
+        val PPStart : Instant = payPeriodStart.toInstant()
+        val PPEnd : Instant = payPeriodEnd.atTime(LocalTime.MAX).toInstant()
         //Find all workEntries that match the employee id and are within the pay period
         val workEntries = workEntries.filter {
-            it.id == id && ((it.end == null )|| it.end!!.isAfter(PPStart)) && it.start.isBefore(PPEnd)
+            it.id == id && (it.end?.isAfter(PPStart) ?: true) && it.start.isBefore(PPEnd)
         }
 
         val hoursWorked: MutableList<Double> = mutableListOf()
@@ -39,7 +38,7 @@ class PayPeriod(var payPeriodStart: LocalDate, var payPeriodEnd: LocalDate, var 
         while (dateIterator.isBefore(payPeriodEnd)) {
             for (workEntry in workEntries) {
                 //Find all entries on this day
-                if (workEntry.start.atZone(ZoneId.systemDefault()).toLocalDate() == dateIterator) {
+                if (workEntry.start.toLocalDate() == dateIterator) {
                     hours += workEntry.durationHours
                 }
             }
@@ -50,9 +49,9 @@ class PayPeriod(var payPeriodStart: LocalDate, var payPeriodEnd: LocalDate, var 
         return hoursWorked
     }
 
-    fun hoursWorkedByWeek(id: String): MutableList<Double> {
+    fun hoursWorkedByWeek(id: String): List<Double> {
         val hoursWorkedByDay = hoursWorkedbyDay(id)
-        val hoursWorkedByWeek: MutableList<Double> = mutableListOf()
+        val hoursWorkedByWeek = mutableListOf<Double>()
         var hours = 0.0
         var dateIterator = payPeriodStart
         var index = 0
