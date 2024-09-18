@@ -8,9 +8,7 @@ package org.ryecountryday.samandrhys.epm.backend.employee
 import kotlinx.serialization.Serializable
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.util.EmployeeSerializer
-import org.ryecountryday.samandrhys.epm.util.HasListener
 import java.time.LocalDate
-import java.util.*
 
 /**
  * Represents an employee in the company.
@@ -19,23 +17,19 @@ import java.util.*
  */
 @Serializable(with = EmployeeSerializer::class)
 class Employee(
-    lastName: String,
-    firstName: String,
+    var lastName: String,
+    var firstName: String,
     val id: String,
-    pay: PayStrategy,
+    var pay: PayStrategy,
     val dateOfBirth: LocalDate,
-    address: Address,
+    var address: Address,
     active: Boolean = true
-) : Comparable<Employee>, HasListener<Employee>() {
+) : Comparable<Employee> {
 
     constructor(name: String, id: String, pay: PayStrategy, dateOfBirth: LocalDate, address: Address, active: Boolean = true):
             this(name.split(' ', limit = 2)[1], name.split(' ', limit = 2)[0], id, pay, dateOfBirth, address, active)
 
-    var lastName by value(lastName)
-    var firstName by value(firstName)
-    var pay by value(pay)
-    var address by value(address)
-    var status by value(Status.bool(active))
+    var status = Status.bool(active)
 
     val name: String
         get() = "$firstName $lastName"

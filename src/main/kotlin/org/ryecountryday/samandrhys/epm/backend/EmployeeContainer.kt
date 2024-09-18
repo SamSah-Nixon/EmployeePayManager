@@ -6,7 +6,6 @@
 package org.ryecountryday.samandrhys.epm.backend
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
 import org.ryecountryday.samandrhys.epm.util.NonRemovalIterator
 import java.util.TreeSet
@@ -18,12 +17,6 @@ import java.util.function.Predicate
 @Serializable
 class EmployeeContainer(private val employees: MutableSet<Employee> = TreeSet()) : MutableSet<Employee> by employees {
     constructor(vararg employees: Employee) : this(employees.toMutableSet())
-
-    /**
-     * A list of blocks to call when this container is updated.
-     */
-    @Transient
-    private val listeners = mutableListOf<(EmployeeContainer) -> Unit>()
 
     override fun remove(element: Employee): Boolean {
         throw UnsupportedOperationException("Cannot remove employees")
@@ -38,29 +31,8 @@ class EmployeeContainer(private val employees: MutableSet<Employee> = TreeSet())
     }
 
     fun replaceEmployee(employee: Employee) {
-        employees.removeIf {
-            (it.id == employee.id).apply {
-                if(this) {
-                    it.clearChangeListeners()
-                }
-            }
-        }
+        employees.removeIf { it.id == employee.id }
         employees.add(employee)
-        listeners.forEach { it(this) }
-    }
-
-    override fun add(element: Employee): Boolean {
-        element.addChangeListener { callListeners() }
-        val a = employees.add(element)
-        callListeners()
-        return a
-    }
-
-    override fun addAll(elements: Collection<Employee>): Boolean {
-        elements.forEach { it.addChangeListener { callListeners() } }
-        val a = employees.addAll(elements)
-        callListeners()
-        return a
     }
 
     override fun clear() {
@@ -84,12 +56,4 @@ class EmployeeContainer(private val employees: MutableSet<Employee> = TreeSet())
     }
 
     operator fun get(id: String): Employee? = findById(id)
-
-    fun addChangeListener(listener: (EmployeeContainer) -> Unit) {
-        listeners.add(listener)
-    }
-
-    private fun callListeners() {
-        listeners.forEach { it(this) }
-    }
 }

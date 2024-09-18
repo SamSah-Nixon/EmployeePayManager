@@ -5,9 +5,16 @@
 
 package org.ryecountryday.samandrhys.epm.backend.timing
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.*
 import org.ryecountryday.samandrhys.epm.backend.PayPeriod
+import org.ryecountryday.samandrhys.epm.util.json
+import java.nio.file.Path
 import java.time.Instant
 import java.time.LocalDate
+import kotlin.io.path.outputStream
+import kotlin.io.path.readText
 
 /**
  * Stores work history for all employees.
@@ -16,13 +23,14 @@ import java.time.LocalDate
  * @property entries
  * @property payPeriods
  */
+@Serializable
 object WorkHistory {
 
     var currentPeriod = mutableSetOf<WorkEntry>()
     val entries = mutableListOf<WorkEntry>()
     var payPeriods = mutableListOf<PayPeriod>()
 
-    fun addPayPeriod(startDate : LocalDate, endDate : LocalDate) {
+    fun addPayPeriod(startDate: LocalDate, endDate: LocalDate) {
         payPeriods.addFirst(PayPeriod(startDate, endDate))
     }
 
@@ -42,6 +50,25 @@ object WorkHistory {
         getEntry(id)?.let {
             it.end = Instant.now()
             currentPeriod.add(it)
+        }
+    }
+
+    fun load(path: Path) {
+        val element = json.parseToJsonElement(path.readText())
+        currentPeriod = json.decodeFromJsonElement(element.jsonObject["currentPeriod"]!!)
+        entries.addAll(json.decodeFromJsonElement(element.jsonObject["entries"]!!))
+        payPeriods.addAll(json.decodeFromJsonElement(element.jsonObject["payPeriods"]!!))
+    }
+
+    fun save(path: Path) {
+        val element = buildJsonObject {
+            put("currentPeriod", json.encodeToJsonElement(currentPeriod))
+            put("entries", json.encodeToJsonElement(entries))
+            put("payPeriods", json.encodeToJsonElement(payPeriods))
+        }
+
+        path.outputStream().use {
+            it.write(json.encodeToString(element as Map<String, JsonElement>).toByteArray())
         }
     }
 }

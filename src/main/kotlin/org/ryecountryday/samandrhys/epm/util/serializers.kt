@@ -8,12 +8,21 @@ package org.ryecountryday.samandrhys.epm.util
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
+import kotlinx.serialization.json.Json
+import org.ryecountryday.samandrhys.epm.backend.PayPeriod
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.backend.employee.Address
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkEntry
 import java.time.Instant
 import java.time.LocalDate
+
+/**
+ * The JSON encoder/decoder for data, with pretty printing enabled.
+ */
+val json = Json {
+    prettyPrint = true
+}
 
 // Serializers for different objects using kotlinx.serialization
 // I'll document the first one, the rest are similar
@@ -159,5 +168,36 @@ object EmployeeSerializer : KSerializer<Employee> {
         }
 
         return Employee(lastName!!, firstName!!, id!!, pay!!, dateOfBirth!!, address!!, active == true)
+    }
+}
+
+object PayPeriodSerializer : KSerializer<PayPeriod> {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("PayPeriod") {
+        element<String>("start")
+        element<String>("end")
+    }
+
+    override fun serialize(encoder: Encoder, value: PayPeriod) {
+        encoder.encodeStructure(descriptor) {
+            encodeStringElement(descriptor, 0, value.payPeriodStart.toDateString())
+            encodeStringElement(descriptor, 1, value.payPeriodEnd.toDateString())
+        }
+    }
+
+    override fun deserialize(decoder: Decoder): PayPeriod {
+        var start: LocalDate? = null
+        var end: LocalDate? = null
+        decoder.decodeStructure(descriptor) {
+            while (true) {
+                when (val index = decodeElementIndex(descriptor)) {
+                    0 -> start = parseDate(decodeStringElement(descriptor, 0))
+                    1 -> end = parseDate(decodeStringElement(descriptor, 1))
+                    CompositeDecoder.DECODE_DONE -> break
+                    else -> error("Unexpected index: $index")
+                }
+            }
+        }
+
+        return PayPeriod(start!!, end!!)
     }
 }
