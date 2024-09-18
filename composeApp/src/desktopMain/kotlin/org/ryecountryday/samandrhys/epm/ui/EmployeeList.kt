@@ -5,6 +5,7 @@
 
 package org.ryecountryday.samandrhys.epm.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -54,38 +55,34 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true) {
         for(employee in employeeContainerState.value) {
             EmployeeCard(employee, !mainList)
         }
-    }
 
-    if(employees.isEmpty()) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            if(mainList) {
-                Text("No employees found", style = MaterialTheme.typography.h4)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text("Create a new employee by clicking ", style = MaterialTheme.typography.body1)
-                    Box {
-                        // contrast color filled circle
-                        Card(
-                            shape = CircleShape,
-                            backgroundColor = MaterialTheme.colors.onBackground,
-                            modifier = Modifier.size(24.dp).padding(6.dp),
-                            content = {}
-                        )
-
-                        Icon(
-                            Icons.Filled.AddCircle,
-                            contentDescription = "Add Employee button",
-                            tint = MaterialTheme.colors.secondary
-                        )
-                    }
+        if(employees.isEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if(mainList) {
+                    Text("No employees found", style = MaterialTheme.typography.h4)
+                } else {
+                    Text("No employees are currently clocked in", style = MaterialTheme.typography.h5)
                 }
-            } else {
-                Text("No employees are currently clocked in", style = MaterialTheme.typography.h5)
+            }
+        }
+
+        // a row that tells the user how to add a new employee
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text("Create a new employee by clicking ", style = MaterialTheme.typography.body1)
+            Box(contentAlignment = Alignment.Center) {
+                // This box makes the clear space inside the icon below black
+                Box(modifier = Modifier.background(MaterialTheme.colors.onBackground, CircleShape).size(16.dp))
+                Icon(
+                    Icons.Filled.AddCircle,
+                    contentDescription = "Add Employee button",
+                    tint = MaterialTheme.colors.secondary
+                )
             }
         }
     }
@@ -172,6 +169,7 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                             employee.firstName = it
                             firstName = it
                         },
+                        enabled = employee != Employee.ADMIN,
                         label = { Text("First Name") },
                         modifier = modifier,
                     )
@@ -182,22 +180,26 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                             employee.lastName = it
                             lastName = it
                         },
+                        enabled = employee != Employee.ADMIN,
                         label = { Text("Last Name") },
                         modifier = modifier,
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    val showPayTypeChangeDialog = remember { mutableStateOf(false) }
-                    LabeledButton(
-                        "Pay Type",
-                        onClick = { showPayTypeChangeDialog.value = true },
-                        modifier = modifier,
-                        selected = showPayTypeChangeDialog
-                    ) {
-                        Text(employee.pay.toString())
+                    if(employee != Employee.ADMIN) {
 
-                        if(showPayTypeChangeDialog.value) {
-                            PayTypeChangeDialog(showPayTypeChangeDialog, employee)
+                        val showPayTypeChangeDialog = remember { mutableStateOf(false) }
+                        LabeledButton(
+                            "Pay Type",
+                            onClick = { showPayTypeChangeDialog.value = true },
+                            modifier = modifier,
+                            selected = showPayTypeChangeDialog
+                        ) {
+                            Text(employee.pay.toString())
+
+                            if (showPayTypeChangeDialog.value) {
+                                PayTypeChangeDialog(showPayTypeChangeDialog, employee)
+                            }
                         }
                     }
 
@@ -207,6 +209,7 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                     LabeledButton(
                         "Address",
                         onClick = { showAddressChangeDialog.value = true },
+                        enabled = employee != Employee.ADMIN,
                         modifier = modifier,
                         border = mutedBorder(),
                         selected = showAddressChangeDialog
@@ -218,19 +221,23 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                         }
                     }
 
-                    var status by remember { mutableStateOf(employee.status) }
+                    if(employee != Employee.ADMIN) {
+                        var status by remember { mutableStateOf(employee.status) }
 
-                    Button(
-                        onClick = {
-                            employee.status = !employee.status
-                            status = employee.status
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = if(status.toBoolean()) MaterialTheme.colors.error else Color(0xFF4CAF50)
-                        ),
-                        modifier = Modifier.width(200.dp)
-                    ) {
-                        Text(if(status.toBoolean()) "Deactivate" else "Activate")
+                        Button(
+                            onClick = {
+                                employee.status = !employee.status
+                                status = employee.status
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = if (status.toBoolean()) MaterialTheme.colors.error else Color(
+                                    0xFF4CAF50
+                                )
+                            ),
+                            modifier = Modifier.width(200.dp)
+                        ) {
+                            Text(if (status.toBoolean()) "Deactivate" else "Activate")
+                        }
                     }
                 }
             }

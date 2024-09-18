@@ -42,7 +42,7 @@ fun LabeledCard(
     border: BorderStroke = mutedBorder(),
     content: @Composable () -> Unit
 ) {
-    LabeledCardImpl(value, modifier, mutableStateOf(false), border, null, content)
+    LabeledCardImpl(value, modifier, mutableStateOf(false), border, null, true, content)
 }
 
 /**
@@ -56,9 +56,10 @@ fun LabeledButton(
     selected: MutableState<Boolean>? = null,
     border: BorderStroke = selected?.let { maybeSelectedBorder(it.value) } ?: mutedBorder(),
     onClick: () -> Unit,
+    enabled: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    LabeledCardImpl(value, modifier, selected, border, onClick, content)
+    LabeledCardImpl(value, modifier, selected, border, onClick, enabled, content)
 }
 
 /**
@@ -71,6 +72,7 @@ private fun LabeledCardImpl(
     selected: MutableState<Boolean>? = null,
     border: BorderStroke = selected?.let { maybeSelectedBorder(it.value) } ?: mutedBorder(),
     onClick: (() -> Unit)?,
+    enabled: Boolean = true,
     content: @Composable () -> Unit
 ) {
     Box(modifier = modifier) {
@@ -97,6 +99,7 @@ private fun LabeledCardImpl(
                 shape = shape,
                 colors = colors,
                 border = border,
+                enabled = enabled,
                 content = { content1() },
                 modifier = Modifier.fillMaxWidth()
             )

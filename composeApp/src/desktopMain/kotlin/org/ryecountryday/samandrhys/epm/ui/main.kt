@@ -20,6 +20,7 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
 import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
+import org.ryecountryday.samandrhys.epm.backend.employee.Employee
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
 import org.ryecountryday.samandrhys.epm.util.*
 import java.nio.file.FileSystemException
@@ -69,7 +70,7 @@ val workHistoryFile: Path = mainFolder.resolve("workHistory.json")
  * The list of employees. This is loaded from [employeesFile] on startup
  * and saved to it when it changes or the program exits.
  */
-val employees = EmployeeContainer().apply {
+val employees = EmployeeContainer(Employee.ADMIN).apply {
     if(employeesFile.exists()) {
         val container = json.decodeFromStream<EmployeeContainer>(employeesFile.inputStream())
         this.addAll(container)

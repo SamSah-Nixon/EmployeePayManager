@@ -8,6 +8,7 @@ package org.ryecountryday.samandrhys.epm.backend.employee
 import kotlinx.serialization.Serializable
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.util.EmployeeSerializer
+import org.ryecountryday.samandrhys.epm.util.LocalDate
 import org.ryecountryday.samandrhys.epm.util.toLocalDate
 import java.time.Instant
 import java.time.LocalDate
@@ -19,7 +20,7 @@ import java.time.LocalDate
  * @property address the employee's address.
  */
 @Serializable(with = EmployeeSerializer::class)
-class Employee(
+open class Employee(
     var lastName: String,
     var firstName: String,
     val id: String,
@@ -34,7 +35,7 @@ class Employee(
 
     var status = Status.bool(active)
 
-    val name: String
+    open val name: String
         get() = "$firstName $lastName"
 
     override fun hashCode() = id.hashCode()
@@ -49,7 +50,7 @@ class Employee(
         return this === other || (other is Employee && this.id == other.id)
     }
 
-    fun isBirthday(): Boolean {
+    open fun isBirthday(): Boolean {
         return dateOfBirth.dayOfYear == Instant.now().toLocalDate().dayOfYear
     }
 
@@ -73,6 +74,28 @@ class Employee(
             fun bool(b: Boolean): Status {
                 return if(b) ACTIVE else INACTIVE
             }
+        }
+    }
+
+    object ADMIN : Employee(
+        lastName = "Admin",
+        firstName = "Admin",
+        id = "000100",
+        pay = PayStrategy.Salaried(0),
+        dateOfBirth = LocalDate(0),
+        address = Address(
+            street = "3 Five Cedar",
+            city = "Rye Land",
+            state = "New York",
+            zip = "11122-1111"
+        ),
+    ) {
+        override val name = "Admin"
+
+        override fun isBirthday(): Boolean = false
+
+        override fun compareTo(other: Employee): Int {
+            return if(other is ADMIN) 0 else -1
         }
     }
 }
