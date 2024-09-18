@@ -92,6 +92,7 @@ private fun LabeledCardImpl(value: String,
                 onClick = onClick,
                 shape = shape,
                 colors = colors,
+                border = border,
                 content = { content1() },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -99,6 +100,7 @@ private fun LabeledCardImpl(value: String,
             OutlinedCard(
                 shape = shape,
                 colors = colors,
+                border = border,
                 content = { content1() },
                 modifier = Modifier.fillMaxWidth()
             )
