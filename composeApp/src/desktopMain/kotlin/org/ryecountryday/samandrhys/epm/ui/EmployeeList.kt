@@ -56,7 +56,7 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true) {
         }
     }
 
-    if(employeeContainerState.value.isEmpty()) {
+    if(employees.isEmpty()) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -98,7 +98,7 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true) {
         }
 
         if (addDialogState.value != false) {
-            AddEmployeeDialog(addDialogState, employeeContainerState.value)
+            AddEmployeeDialog(addDialogState, employees)
         }
     }
 

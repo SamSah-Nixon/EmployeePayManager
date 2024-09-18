@@ -83,7 +83,6 @@ private fun ClockInPopup(employees: EmployeeContainer, employeeId: String, onClo
                 }
 
                 val employee by remember { mutableStateOf(maybeEmployee!!) }
-
                 var clockedIn by remember { mutableStateOf(WorkHistory.isClockedIn(employee.id)) }
 
                 if(employee.isBirthday()){
@@ -118,11 +117,8 @@ private fun ClockInPopup(employees: EmployeeContainer, employeeId: String, onClo
                 }
 
                 Button(onClick = {
-                    if(clockedIn) {
-                        WorkHistory.clockOut(employee.id)
-                    } else {
-                        WorkHistory.clockIn(employee.id)
-                    }
+                    if(clockedIn) WorkHistory.clockOut(employee.id)
+                    else WorkHistory.clockIn(employee.id)
                     clockedIn = WorkHistory.isClockedIn(employee.id)
                 }, content = { Text("Clock ${if(clockedIn) "out" else "in"}") })
             }
