@@ -18,7 +18,7 @@ import kotlin.test.assertEquals
 class SerializationTest {
     @Test
     fun `work entry serialization`() {
-        val workEntry = WorkEntry(Instant.ofEpochSecond(0), 2.0, "id")
+        val workEntry = WorkEntry(Instant.ofEpochSecond(0), Instant.ofEpochSecond(7200), "id")
 
         val json = Json {
             prettyPrint = true
@@ -39,7 +39,7 @@ class SerializationTest {
 
     @Test
     fun `work entry with no end`() {
-        val workEntry = WorkEntry(Instant.ofEpochSecond(0), "id")
+        val workEntry = WorkEntry(Instant.ofEpochSecond(0), id = "id")
 
         val json = Json {
             prettyPrint = true

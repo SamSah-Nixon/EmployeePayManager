@@ -44,7 +44,7 @@ import org.ryecountryday.samandrhys.epm.util.toDateString
  */
 @Composable
 fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true) {
-    val employeeContainerState = remember { mutableStateOf(employees) }
+    val employeeContainerState = remember { mutableStateOf(employees, neverEqualPolicy()) }
 
     // the main column that holds all the employee cards
     Column(
