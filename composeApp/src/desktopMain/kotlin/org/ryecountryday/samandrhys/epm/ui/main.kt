@@ -28,7 +28,7 @@ import java.nio.file.StandardOpenOption
 import kotlin.io.path.*
 
 // if unknown, use system theme
-private val themeOverride = SystemTheme.Light
+private val themeOverride = SystemTheme.Dark
 
 // Kotlin doesn't have a concept of static-ness, so we have to do this to run code on startup
 private val setupTheming: Unit = run {

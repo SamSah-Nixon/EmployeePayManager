@@ -6,17 +6,10 @@
 package org.ryecountryday.samandrhys.epm.backend
 
 import kotlinx.serialization.Serializable
-import org.ryecountryday.samandrhys.epm.backend.timing.WorkEntry
-import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
 import org.ryecountryday.samandrhys.epm.util.PayStrategySerializer
 import org.ryecountryday.samandrhys.epm.util.roundToTwoDecimalPlaces
 import org.ryecountryday.samandrhys.epm.util.toMoneyString
-import java.time.Duration
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
+
 
 /**
  * Represents some form of calculating a monetary value based on a number of hours worked.
@@ -61,14 +54,14 @@ sealed class PayStrategy {
             var hoursPerWeek = payPeriod.hoursWorkedByWeek(id)
             var hoursPerDay = payPeriod.hoursWorkedbyDay(id)
 
-            for(day in hoursPerDay){
+            for(hours in hoursPerDay){
 
-                if(day > 0.0) daysInRow++
+                if(hours > 0.0) daysInRow++
                 else daysInRow = 0
 
                 //Overtime 9 days in a row
-                if(daysInRow > 9) pay += day*1.5
-                pay += day
+                if(daysInRow > 9) pay += hours*1.5
+                pay += hours
             }
 
             //Overtime 40+ hours a week

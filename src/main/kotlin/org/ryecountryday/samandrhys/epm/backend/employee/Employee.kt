@@ -8,7 +8,9 @@ package org.ryecountryday.samandrhys.epm.backend.employee
 import kotlinx.serialization.Serializable
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.util.EmployeeSerializer
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 
 /**
  * Represents an employee in the company.
@@ -48,6 +50,9 @@ class Employee(
         return this === other || (other is Employee && this.id == other.id)
     }
 
+    fun isBirthday(): Boolean{
+        return dateOfBirth.dayOfYear == Instant.now().atZone(ZoneId.systemDefault()).toLocalDate().dayOfYear
+    }
     override fun toString(): String {
         return "Employee(id=$id, name=$name, pay=$pay, dateOfBirth=$dateOfBirth, address=$address)"
     }

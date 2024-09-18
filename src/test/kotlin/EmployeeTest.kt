@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.backend.employee.Address
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
+import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
 import org.ryecountryday.samandrhys.epm.util.parseDate
 import kotlin.test.Test
 
@@ -34,5 +35,14 @@ class EmployeeTest {
 
         assertEquals("Rhys", e2.firstName)
         assertEquals("de Haan", e2.lastName)
+
+        WorkHistory.clockIn("a")
+        WorkHistory.clockIn("000100")
+        assertEquals(WorkHistory.isClockedIn("a"), true)
+        assertEquals(WorkHistory.isClockedIn("000100"), true)
+        WorkHistory.clockOut("a")
+        WorkHistory.clockOut("000100")
+        assertEquals(WorkHistory.isClockedIn("a"), false)
+        assertEquals(WorkHistory.isClockedIn("000100"), false)
     }
 }

@@ -70,8 +70,12 @@ private fun ClockInPopup(employees: EmployeeContainer, employeeId: String, onClo
 
                 var clockedIn by remember { mutableStateOf(WorkHistory.isClockedIn(employee.id)) }
 
-                Text("Welcome, ${employee.name}", style = MaterialTheme.typography.h5, modifier = Modifier.padding(16.dp))
-
+                if(employee.isBirthday()){
+                    Text("!!!Happy Birthday,\n${employee.name}!!!", style = MaterialTheme.typography.h5, modifier = Modifier.padding(16.dp))
+                }
+                else{
+                    Text("Welcome,\n${employee.name}", style = MaterialTheme.typography.h5, modifier = Modifier.padding(16.dp))
+                }
                 val timeWorkedFormatted = run {
                     val timeWorkedSeconds = WorkHistory.getClockedInEntry(employee.id)?.durationSeconds ?: 0
                     val hours = timeWorkedSeconds / 3600
