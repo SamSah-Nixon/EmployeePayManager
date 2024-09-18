@@ -17,8 +17,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
-import org.ryecountryday.samandrhys.epm.util.roundToTwoDecimalPlaces
 
+/**
+ * A very simple screen that allows employees to clock in and out.
+ * It just has a text field for the employee ID and a button to clock in, which opens a [ClockInPopup].
+ */
 @Composable
 fun ClockInScreen(employees: EmployeeContainer) {
     var showPopup by remember { mutableStateOf(false) }
@@ -46,6 +49,10 @@ fun ClockInScreen(employees: EmployeeContainer) {
     }
 }
 
+/**
+ * A popup that shows the employee's name and allows them to clock in or out.
+ * If the employee is already clocked in, it shows how long they have been working.
+ */
 @Composable
 private fun ClockInPopup(employees: EmployeeContainer, employeeId: String, onClose: () -> Unit) {
     Dialog(onDismissRequest = onClose) {
@@ -63,11 +70,27 @@ private fun ClockInPopup(employees: EmployeeContainer, employeeId: String, onClo
 
                 var clockedIn by remember { mutableStateOf(WorkHistory.isClockedIn(employee.id)) }
 
-                Text("Welcome, ${employee.name}", style = MaterialTheme.typography.h5)
-                Spacer(modifier = Modifier.height(16.dp))
+                Text("Welcome, ${employee.name}", style = MaterialTheme.typography.h5, modifier = Modifier.padding(16.dp))
+
+                val timeWorkedFormatted = run {
+                    val timeWorkedSeconds = WorkHistory.getEntry(employee.id)?.durationSeconds ?: 0
+                    val hours = timeWorkedSeconds / 3600
+                    val minutes = (timeWorkedSeconds % 3600) / 60
+                    val seconds = timeWorkedSeconds % 60
+
+                    buildString {
+                        if (hours > 0) append("$hours hours, ")
+                        if (minutes > 0) append("$minutes minutes, ")
+                        if (seconds > 0) append("$seconds seconds")
+
+                        if(isEmpty()) {
+                            append("0 seconds")
+                        }
+                    }
+                }
 
                 if (clockedIn) {
-                    Text("You have been working for ${(WorkHistory.getEntry(employee.id)!!.durationSeconds / 60.0).roundToTwoDecimalPlaces()} minutes")
+                    Text("You have been working for $timeWorkedFormatted")
                     Button(onClick = {
                         WorkHistory.clockOut(employee.id)
                         clockedIn = WorkHistory.isClockedIn(employee.id)

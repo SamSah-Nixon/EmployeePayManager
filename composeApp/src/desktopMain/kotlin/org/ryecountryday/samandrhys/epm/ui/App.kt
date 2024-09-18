@@ -8,41 +8,63 @@ package org.ryecountryday.samandrhys.epm.ui
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
 
 /**
  * The main entry point for the application. This is called by [main]
  * and holds the outer ui behind [EmployeeList] and [ClockInScreen].
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun App() {
-    var showEmployeeList by remember { mutableStateOf(false) }
+    var admin by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
         Row(modifier = Modifier.align(Alignment.BottomEnd)) {
             Button(
-                onClick = { showEmployeeList = !showEmployeeList },
+                onClick = { admin = !admin },
                 modifier = Modifier.padding(6.dp)
             ) {
                 Icon(
-                    imageVector = if (showEmployeeList) Icons.Filled.Person else Icons.Filled.FourPeople,
-                    contentDescription = "Switch to ${if (showEmployeeList) "Clock In" else "Employee List"} Screen"
+                    imageVector = if (admin) Icons.Filled.Person else Icons.Filled.FourPeople,
+                    contentDescription = "Switch to ${if (admin) "Clock In" else "Admin"} Screen"
                 )
             }
         }
     }
 
-    if (showEmployeeList) {
-        EmployeeList(employees)
+    if (admin) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            var tab by remember { mutableStateOf(0) }
+            SecondaryTabRow(selectedTabIndex = tab) {
+                Tab(
+                    selected = tab == 0,
+                    onClick = { tab = 0 },
+                    text = { Text("All Employees") }
+                )
+                Tab(
+                    selected = tab == 1,
+                    onClick = { tab = 1 },
+                    text = { Text("Clocked In Employees") }
+                )
+            }
+
+            if (tab == 0) {
+                Box { EmployeeList(employees) } // use Box to reset the alignments in the Column
+            } else {
+                Box { EmployeeList(employees.filter { WorkHistory.isClockedIn(it.id) }.toMutableSet(), false) }
+            }
+        }
     } else {
         ClockInScreen(employees)
     }

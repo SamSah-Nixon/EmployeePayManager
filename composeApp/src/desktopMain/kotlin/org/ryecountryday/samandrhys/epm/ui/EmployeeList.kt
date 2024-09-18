@@ -40,8 +40,7 @@ import org.ryecountryday.samandrhys.epm.util.toDateString
  * @param employees The list of employees to display.
  */
 @Composable
-fun EmployeeList(employees: EmployeeContainer) {
-    val addDialogState: MutableState<Any> = remember { mutableStateOf(false) }
+fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true) {
     val employeeContainerState = remember { mutableStateOf(employees) }
 
     // the main column that holds all the employee cards
@@ -59,36 +58,45 @@ fun EmployeeList(employees: EmployeeContainer) {
             modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("No employees found", style = MaterialTheme.typography.h4)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text("Create a new employee by clicking ", style = MaterialTheme.typography.body1)
-                Box {
-                    // contrast color filled circle
-                    Card(
-                        shape = CircleShape,
-                        backgroundColor = MaterialTheme.colors.onBackground,
-                        modifier = Modifier.size(24.dp).padding(6.dp),
-                        content = {}
-                    )
+            if(mainList) {
+                Text("No employees found", style = MaterialTheme.typography.h4)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text("Create a new employee by clicking ", style = MaterialTheme.typography.body1)
+                    Box {
+                        // contrast color filled circle
+                        Card(
+                            shape = CircleShape,
+                            backgroundColor = MaterialTheme.colors.onBackground,
+                            modifier = Modifier.size(24.dp).padding(6.dp),
+                            content = {}
+                        )
 
-                    Icon(Icons.Filled.AddCircle,
-                        contentDescription = "Add Employee button",
-                        tint = MaterialTheme.colors.secondary)
+                        Icon(
+                            Icons.Filled.AddCircle,
+                            contentDescription = "Add Employee button",
+                            tint = MaterialTheme.colors.secondary
+                        )
+                    }
                 }
+            } else {
+                Text("No employees are currently clocked in", style = MaterialTheme.typography.h5)
             }
         }
     }
 
-    // the floating action button that opens the add employee dialog
-    FloatingActionButton(onClick = { addDialogState.value = true }, modifier = Modifier.padding(4.dp)) {
-        Icon(Icons.Filled.Add, contentDescription = "Add Employee")
-    }
+    if(mainList) {
+        val addDialogState: MutableState<Any> = remember { mutableStateOf(false) }
+        // the floating action button that opens the add employee dialog
+        FloatingActionButton(onClick = { addDialogState.value = true }, modifier = Modifier.padding(4.dp)) {
+            Icon(Icons.Filled.Add, contentDescription = "Add Employee")
+        }
 
-    if(addDialogState.value != false) {
-        AddEmployeeDialog(addDialogState, employeeContainerState.value)
+        if (addDialogState.value != false) {
+            AddEmployeeDialog(addDialogState, employeeContainerState.value)
+        }
     }
 
     // the refresh button that forces the state to refresh (specifically meant for the employee order, when you (de)activate an employee)
@@ -205,7 +213,7 @@ fun EmployeeCard(employee: Employee) {
 }
 
 @Composable
-fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
+fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>) {
     Dialog(
         onDismissRequest = { value.value = false },
         properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
