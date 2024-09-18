@@ -50,21 +50,21 @@ object WorkHistory {
     }
 
     fun isClockedIn(id: String) : Boolean {
-        return getEntry(id).let { it != null && it.end == null }
+        return getClockedInEntry(id) != null
     }
 
-    fun getEntry(id: String) : WorkEntry? {
+    fun getClockedInEntry(id: String) : WorkEntry? {
         return clockedIn.firstOrNull { it.id == id }
     }
 
     fun clockOut(id: String) {
-        getEntry(id)?.let {
+        getClockedInEntry(id)?.let {
             it.end = Instant.now()
             //If a work entry spans multiple days split it into two
             if(it.start.atZone(ZoneId.systemDefault()).toLocalDate().isBefore(it.end!!.atZone(ZoneId.systemDefault()).toLocalDate())) {
                 val startOfNewDay: Instant = it.end!!.atZone(ZoneId.systemDefault()).toLocalDate().atStartOfDay(ZoneId.systemDefault()).toInstant()
-                val entry1: WorkEntry = WorkEntry(it.start,startOfNewDay, id)
-                val entry2: WorkEntry = WorkEntry(startOfNewDay,it.end, id)
+                val entry1 = WorkEntry(it.start,startOfNewDay, id)
+                val entry2 = WorkEntry(startOfNewDay,it.end, id)
                 //If a work entry spreads across multiple pay periods add the second day into the new pay period
                 if(it.start.atZone(ZoneId.systemDefault()).toLocalDate().isEqual(payPeriods[0].payPeriodStart)) {
                     payPeriods[0].workEntries.add(entry2)

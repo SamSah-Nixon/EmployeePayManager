@@ -29,3 +29,15 @@ val OperatingSystem.applicationDataFolder: Path
         OperatingSystem.LINUX -> Path(System.getProperty("user.home")).resolve(".EmployeePayManager")
         OperatingSystem.UNKNOWN -> throw UnsupportedOperationException("Unknown operating system")
     }
+
+fun OperatingSystem.openFolder(path: Path) {
+    val pb = ProcessBuilder().inheritIO()
+    when (this) {
+        OperatingSystem.MAC -> pb.command("open", "-R", path.toString())
+        OperatingSystem.WINDOWS -> pb.command("explorer", path.toString())
+        OperatingSystem.LINUX -> pb.command("xdg-open", path.toString())
+        OperatingSystem.UNKNOWN -> throw UnsupportedOperationException("Unknown operating system")
+    }
+
+    pb.start()
+}

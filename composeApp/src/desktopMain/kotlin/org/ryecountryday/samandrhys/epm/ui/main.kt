@@ -107,7 +107,7 @@ private val setupLoadingAndSaving: Unit = run {
     if(workHistoryFile.isDirectory()) workHistoryFile.deleteRecursively()
 
     if (!workHistoryFile.exists()) {
-        workHistoryFile.writeText("""{"currentPeriod":[],"entries":[],"payPeriods":[]}""", Charsets.UTF_8, StandardOpenOption.CREATE)
+        workHistoryFile.writeText("""{"currentPeriod":[],"clockedIn":[],"payPeriods":[]}""", Charsets.UTF_8, StandardOpenOption.CREATE)
 
         if(!workHistoryFile.exists()) {
             throw FileSystemException("Failed to create work history file at $workHistoryFile, do you have permission to write there?")

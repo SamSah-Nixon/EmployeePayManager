@@ -11,19 +11,17 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
+import org.ryecountryday.samandrhys.epm.util.openFolder
+import org.ryecountryday.samandrhys.epm.util.os
 
 /**
  * The main entry point for the application. This is called by [main]
  * and holds the outer ui behind [EmployeeList] and [ClockInScreen].
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun App() {
@@ -31,42 +29,34 @@ fun App() {
 
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
         Row(modifier = Modifier.align(Alignment.BottomEnd)) {
-            Button(
-                onClick = { admin = !admin },
-                modifier = Modifier.padding(6.dp)
-            ) {
-                Icon(
-                    imageVector = if (admin) Icons.Filled.Person else Icons.Filled.FourPeople,
-                    contentDescription = "Switch to ${if (admin) "Clock In" else "Admin"} Screen"
-                )
+            Column(modifier = Modifier.align(Alignment.Bottom)) {
+                if(admin) {
+                    Button(
+                        onClick = { os.openFolder(mainFolder) },
+                        modifier = Modifier.padding(horizontal = 6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.FolderOpen,
+                            contentDescription = "Open Application Data Folder"
+                        )
+                    }
+                }
+
+                Button(
+                    onClick = { admin = !admin },
+                    modifier = Modifier.padding(horizontal = 6.dp)
+                ) {
+                    Icon(
+                        imageVector = if (admin) Icons.Filled.Person else Icons.Filled.FourPeople,
+                        contentDescription = "Switch to ${if (admin) "Clock In" else "Admin"} Screen"
+                    )
+                }
             }
         }
     }
 
     if (admin) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            var tab by remember { mutableStateOf(0) }
-            SecondaryTabRow(selectedTabIndex = tab) {
-                Tab(
-                    selected = tab == 0,
-                    onClick = { tab = 0 },
-                    text = { Text("All Employees") }
-                )
-                Tab(
-                    selected = tab == 1,
-                    onClick = { tab = 1 },
-                    text = { Text("Clocked In Employees") }
-                )
-            }
-
-            Box { // use Box to reset the alignments in the Column
-                if (tab == 0) {
-                    EmployeeList(employees)
-                } else if(tab == 1) {
-                    EmployeeList(employees.filter { WorkHistory.isClockedIn(it.id) }.toMutableSet(), false)
-                }
-            }
-        }
+        AdminScreen(employees)
     } else {
         ClockInScreen(employees)
     }
