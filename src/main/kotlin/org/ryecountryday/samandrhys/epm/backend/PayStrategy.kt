@@ -6,12 +6,14 @@
 package org.ryecountryday.samandrhys.epm.backend
 
 import kotlinx.serialization.Serializable
+import org.ryecountryday.samandrhys.epm.backend.timing.WorkEntry
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
 import org.ryecountryday.samandrhys.epm.util.PayStrategySerializer
 import org.ryecountryday.samandrhys.epm.util.roundToTwoDecimalPlaces
 import org.ryecountryday.samandrhys.epm.util.toMoneyString
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -36,25 +38,7 @@ sealed class PayStrategy {
     abstract val rate: Double
     abstract override fun toString(): String
 
-    fun findHours(payPeriod: PayPeriod, id: String): Double {
-        val PPStart : Instant = ZonedDateTime.of(payPeriod.payPeriodStart.atStartOfDay(),ZoneId.systemDefault()).toInstant()
-        val PPEnd : Instant = ZonedDateTime.of(payPeriod.payPeriodEnd.atTime(LocalTime.MAX),ZoneId.systemDefault()).toInstant()
-        //Find all workEntries that match the employee id and are within the pay period
-        val workEntries = WorkHistory.entries.filter {
-            it.id == id && ((it.end == null )|| it.end!!.isAfter(PPStart)) && it.start.isBefore(PPEnd)
-        }
-        var hours = 0.0
-        for (workEntry in workEntries) {
-            val WEStart: Instant = workEntry.start
-            val WEEnd: Instant = workEntry.end ?: Instant.now()
-            //This accounts for when working times can be outside the pay period
-            hours += if(WEStart.isAfter(PPStart) && WEEnd.isBefore(PPEnd)) workEntry.durationHours
-            else if(WEStart.isAfter(PPStart) && WEEnd.isAfter(PPEnd)) Duration.between(WEStart,PPEnd).toHours().toDouble()
-            else if(WEStart.isBefore(PPStart) && WEEnd.isBefore(PPEnd)) Duration.between(PPStart,WEEnd).toHours().toDouble()
-            else Duration.between(PPStart,PPEnd).toHours().toDouble()
-        }
-        return hours
-    }
+
 
     /**
      * Pays the employee based on a rate per hour worked. Overtime can occur in 2 scenarios:
@@ -72,14 +56,27 @@ sealed class PayStrategy {
         override val rate: Double = hourlyRate.toDouble().roundToTwoDecimalPlaces()
 
         override fun calculateSalary(payPeriod: PayPeriod, id: String): Double {
-            var hours = findHours(payPeriod, id)
-            //Overtime 40+ hours
-            if(hours > 40.0) hours = (40.0 * rate) + ((hours - 40.0) * rate * 1.5)
-            else hours *= rate
-            //TODO Overtime 9 days in a row
+            var pay: Double = 0.0
+            var daysInRow = 0
+            var hoursPerWeek = payPeriod.hoursWorkedByWeek(id)
+            var hoursPerDay = payPeriod.hoursWorkedbyDay(id)
 
+            for(day in hoursPerDay){
 
-            return hours
+                if(day > 0.0) daysInRow++
+                else daysInRow = 0
+
+                //Overtime 9 days in a row
+                if(daysInRow > 9) pay += day*1.5
+                pay += day
+            }
+
+            //Overtime 40+ hours a week
+            for (hours in hoursPerWeek){
+                if(hours > 40) pay += (hours-40)*0.5
+            }
+
+            return pay
         }
 
         override fun toString(): String {
@@ -104,10 +101,16 @@ sealed class PayStrategy {
         val dailySalary: Double = (annualSalary.toDouble() / 365.0).roundToTwoDecimalPlaces()
 
         override fun calculateSalary(payPeriod: PayPeriod, id: String): Double {
-            val hours = findHours(payPeriod, id)
-            val days = payPeriod.daysInPeriod
-            //TODO Lazy people pay deduction. Does >=40 hours in a week mean mon-sun or 7 days from the start of the pay period???
-            return dailySalary * days
+            var pay: Double = rate * payPeriod.daysInPeriod / 365.0
+            var hoursPerWeek = payPeriod.hoursWorkedByWeek(id)
+
+            //Deduction for under 40h a week
+            for (hours in hoursPerWeek){
+                if(hours < 40) {
+                    pay -= (((40-hours).toInt()/8)+1)*dailySalary
+                }
+            }
+            return pay
         }
 
         override fun toString(): String {

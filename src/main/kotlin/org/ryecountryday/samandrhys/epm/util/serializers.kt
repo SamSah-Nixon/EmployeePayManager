@@ -201,7 +201,7 @@ object PayPeriodSerializer : KSerializer<PayPeriod> {
                 }
             }
         }
-
-        return PayPeriod(start!!, end!!)
+        
+        return PayPeriod(start!!, end!!, mutableSetOf<WorkEntry>())
     }
 }

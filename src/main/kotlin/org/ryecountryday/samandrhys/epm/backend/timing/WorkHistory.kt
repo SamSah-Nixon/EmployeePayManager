@@ -13,6 +13,7 @@ import org.ryecountryday.samandrhys.epm.util.json
 import java.nio.file.Path
 import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import kotlin.io.path.outputStream
 import kotlin.io.path.readText
 
@@ -26,16 +27,26 @@ import kotlin.io.path.readText
 @Serializable
 object WorkHistory {
 
+    var clockedIn = mutableSetOf<WorkEntry>()
     var currentPeriod = mutableSetOf<WorkEntry>()
-    val entries = mutableListOf<WorkEntry>()
     var payPeriods = mutableListOf<PayPeriod>()
 
-    fun addPayPeriod(startDate: LocalDate, endDate: LocalDate) {
-        payPeriods.addFirst(PayPeriod(startDate, endDate))
+    /**
+     * Adds a pay period to the list of pay periods.
+     * @param startDate the start date of the pay period
+     * @param endDate the end date of the pay period
+     * @return true if the pay period was added successfully,
+     * false if a pay period with the same end date already exists
+     */
+    fun addPayPeriod(startDate: LocalDate, endDate: LocalDate): Boolean {
+        if(endDate.isEqual(payPeriods[0].payPeriodEnd)) return false
+        payPeriods.addFirst(PayPeriod(startDate, endDate, currentPeriod))
+        currentPeriod = mutableSetOf()
+        return true
     }
 
     fun clockIn(id: String) {
-        entries.addFirst(WorkEntry(Instant.now(), id))
+        clockedIn.add(WorkEntry(Instant.now(), id))
     }
 
     fun isClockedIn(id: String) : Boolean {
@@ -43,27 +54,44 @@ object WorkHistory {
     }
 
     fun getEntry(id: String) : WorkEntry? {
-        return entries.firstOrNull { it.id == id }
+        return clockedIn.firstOrNull { it.id == id }
     }
 
     fun clockOut(id: String) {
         getEntry(id)?.let {
             it.end = Instant.now()
-            currentPeriod.add(it)
+            //If a work entry spans multiple days split it into two
+            if(it.start.atZone(ZoneId.systemDefault()).toLocalDate().isBefore(it.end!!.atZone(ZoneId.systemDefault()).toLocalDate())) {
+                val startOfNewDay: Instant = it.end!!.atZone(ZoneId.systemDefault()).toLocalDate().atStartOfDay(ZoneId.systemDefault()).toInstant()
+                val entry1: WorkEntry = WorkEntry(it.start,startOfNewDay, id)
+                val entry2: WorkEntry = WorkEntry(startOfNewDay,it.end, id)
+                //If a work entry spreads across multiple pay periods add the second day into the new pay period
+                if(it.start.atZone(ZoneId.systemDefault()).toLocalDate().isEqual(payPeriods[0].payPeriodStart)) {
+                    payPeriods[0].workEntries.add(entry2)
+                }
+                else {
+                    currentPeriod.add(entry2)
+                }
+                currentPeriod.add(entry1)
+            }
+            else{
+                currentPeriod.add(it)
+            }
+            clockedIn.remove(it)
         }
     }
 
     fun load(path: Path) {
         val element = json.parseToJsonElement(path.readText())
         currentPeriod = json.decodeFromJsonElement(element.jsonObject["currentPeriod"]!!)
-        entries.addAll(json.decodeFromJsonElement(element.jsonObject["entries"]!!))
+        clockedIn.addAll(json.decodeFromJsonElement(element.jsonObject["clockedIn"]!!))
         payPeriods.addAll(json.decodeFromJsonElement(element.jsonObject["payPeriods"]!!))
     }
 
     fun save(path: Path) {
         val element = buildJsonObject {
             put("currentPeriod", json.encodeToJsonElement(currentPeriod))
-            put("entries", json.encodeToJsonElement(entries))
+            put("clockedIn", json.encodeToJsonElement(clockedIn))
             put("payPeriods", json.encodeToJsonElement(payPeriods))
         }
 
@@ -72,3 +100,4 @@ object WorkHistory {
         }
     }
 }
+
