@@ -5,6 +5,7 @@
 
 package org.ryecountryday.samandrhys.epm.util
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
@@ -20,8 +21,11 @@ import java.time.LocalDate
 /**
  * The JSON encoder/decoder for data, with pretty printing enabled.
  */
+@OptIn(ExperimentalSerializationApi::class)
 val json = Json {
     prettyPrint = true
+    isLenient = true
+    prettyPrintIndent = "  "
 }
 
 // Serializers for different objects using kotlinx.serialization
@@ -93,7 +97,7 @@ object PayStrategySerializer : KSerializer<PayStrategy> {
 
     override fun serialize(encoder: Encoder, value: PayStrategy) {
         encoder.encodeStructure(descriptor) {
-            encodeStringElement(descriptor, 0, value.type)
+            encodeStringElement(descriptor, 0, value.type.lowercase())
             encodeDoubleElement(descriptor, 1, value.rate)
         }
     }
@@ -112,9 +116,9 @@ object PayStrategySerializer : KSerializer<PayStrategy> {
             }
         }
 
-        return when (type) {
-            PayStrategy.Hourly.TYPE -> PayStrategy.Hourly(rate!!)
-            PayStrategy.Salaried.TYPE -> PayStrategy.Salaried(rate!!)
+        return when (type?.lowercase()) {
+            PayStrategy.Hourly.TYPE.lowercase() -> PayStrategy.Hourly(rate!!)
+            PayStrategy.Salaried.TYPE.lowercase() -> PayStrategy.Salaried(rate!!)
             else -> error("Could not find a PayStrategy class for type: \"$type\"")
         }
     }

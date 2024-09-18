@@ -8,11 +8,13 @@ package org.ryecountryday.samandrhys.epm.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDatePickerState
@@ -49,6 +51,34 @@ fun EmployeeList(employees: EmployeeContainer) {
     ) {
         for(employee in employeeContainerState.value) {
             EmployeeCard(employee)
+        }
+    }
+
+    if(employeeContainerState.value.isEmpty()) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("No employees found", style = MaterialTheme.typography.h4)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text("Create a new employee by clicking ", style = MaterialTheme.typography.body1)
+                Box {
+                    // contrast color filled circle
+                    Card(
+                        shape = CircleShape,
+                        backgroundColor = MaterialTheme.colors.onBackground,
+                        modifier = Modifier.size(24.dp).padding(6.dp),
+                        content = {}
+                    )
+
+                    Icon(Icons.Filled.AddCircle,
+                        contentDescription = "Add Employee button",
+                        tint = MaterialTheme.colors.secondary)
+                }
+            }
         }
     }
 
@@ -226,11 +256,13 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
                     Text("Pay Type: ${payStrategy.type}")
                 }
 
+                var rateString by remember { mutableStateOf(payStrategy.rate.toString()) }
                 OutlinedTextField(
-                    value = payStrategy.rate.toString(),
+                    value = rateString,
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     onValueChange = {
+                        rateString = it
                         if (it.isValidMoneyString()) {
                             payStrategy = payStrategy.javaClass.getDeclaredConstructor(Number::class.java)
                                 .newInstance(it.toDouble())
@@ -394,13 +426,16 @@ fun PayTypeChangeDialog(value: MutableState<Boolean>, employee: Employee) {
                     Text("Pay Type: ${payStrategy.type}")
                 }
 
+                var rateString by remember { mutableStateOf(payStrategy.rate.toString()) }
+
                 OutlinedTextField(
-                    value = payStrategy.rate.toString(),
+                    value = rateString,
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     onValueChange = {
+                        rateString = it
                         if (it.isValidMoneyString()) {
-                            payStrategy = payStrategy.javaClass.getDeclaredConstructor(Double::class.java)
+                            payStrategy = payStrategy.javaClass.getDeclaredConstructor(Number::class.java)
                                 .newInstance(it.toDouble())
                                     as PayStrategy
                         }

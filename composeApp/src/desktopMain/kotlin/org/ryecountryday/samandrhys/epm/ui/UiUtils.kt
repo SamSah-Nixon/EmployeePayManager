@@ -110,7 +110,10 @@ private fun LabeledCardImpl(value: String,
         Text(value,
             modifier = Modifier.padding(start = 16.dp)
                 .align(Alignment.TopStart).offset(y = (-8).dp)
-                .background(Color(0xFF1E1E1E)) // Add a background color to match the parent - gives the appearance of interrupting the border
+                .let {
+                    if(!MaterialTheme.colors.isLight) it.background(Color(0xFF1E1E1E))
+                    else it.background(MaterialTheme.colors.background)
+                } // Add a background color to match the parent - gives the appearance of interrupting the border
                 .padding(horizontal = 4.dp), // Padding for the text itself
             color = if(selected == true) MaterialTheme.colors.primary
                 else MaterialTheme.colors.onSurface.copy(ContentAlpha.medium),
