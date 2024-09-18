@@ -13,6 +13,9 @@ import androidx.compose.ui.Modifier
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
 
+/**
+ * Main screen for viewing all employees and their status.
+ */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun AdminScreen(employees: MutableSet<Employee>) {

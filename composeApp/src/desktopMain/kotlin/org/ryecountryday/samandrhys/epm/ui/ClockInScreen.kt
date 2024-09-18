@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.window.Dialog
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
 import org.ryecountryday.samandrhys.epm.util.formatTime
@@ -31,24 +34,34 @@ fun ClockInScreen(employees: EmployeeContainer) {
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text("Clock in", style = MaterialTheme.typography.h4.copy(MaterialTheme.colors.onBackground))
-            OutlinedTextField(
-                value = employeeId,
-                onValueChange = { employeeId = it },
-                singleLine = true,
-                label = { Text("Employee ID") },
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = { showPopup = employeeId.isNotEmpty() }
-                ),
-                colors = TextFieldDefaults.outlinedTextFieldColors(MaterialTheme.colors.onBackground)
-            )
+            Row(verticalAlignment = Alignment.Bottom) {
+                OutlinedTextField(
+                    value = employeeId,
+                    onValueChange = { employeeId = it },
+                    singleLine = true,
+                    label = { Text("Employee ID") },
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = { showPopup = employeeId.isNotEmpty() }
+                    ),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(MaterialTheme.colors.onBackground)
+                )
+                Spacer(modifier = Modifier.width(2.dp))
+                Button(
+                    onClick = { showPopup = employeeId.isNotEmpty() },
+                    content = { Icon(Icons.Filled.Search, contentDescription = "Search") },
+                    modifier = Modifier.height(56.dp)
+                )
+            }
         }
     }
 
     if (showPopup) {
-        ClockInPopup(employees, employeeId) {
-            showPopup = false
-        }
+        ClockInPopup(
+            employees,
+            employeeId,
+            onClose = { showPopup = false }
+        )
     }
 }
 
@@ -89,10 +102,17 @@ private fun ClockInPopup(employees: EmployeeContainer, employeeId: String, onClo
 
 
                 if (clockedIn) {
+                    var state by remember { mutableStateOf(0L) }
+
+                    LaunchedEffect(Unit) {
+                        while (true) {
+                            state = WorkHistory.getClockedInEntry(employee.id)?.durationSeconds ?: 0
+                            delay(1000)
+                        }
+                    }
+
                     Text(
-                        "You have been working for:\n${
-                            formatTime(WorkHistory.getClockedInEntry(employee.id)?.durationSeconds ?: 0)
-                        }",
+                        "You have been working for:\n${formatTime(state)}",
                         textAlign = TextAlign.Center)
                     Spacer(modifier = Modifier.height(32.dp))
                 }

@@ -7,9 +7,7 @@ package org.ryecountryday.samandrhys.epm.util
 
 import kotlin.math.round
 
-/*
- * Different utility and extension functions, used throughout the program.
- */
+/* Different utility and extension functions, used throughout the program. */
 
 /**
  * @return this [Double], rounded to two decimal places.
