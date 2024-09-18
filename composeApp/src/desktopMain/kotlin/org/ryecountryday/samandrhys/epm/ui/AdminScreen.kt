@@ -21,7 +21,7 @@ import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
 fun AdminScreen(employees: MutableSet<Employee>) {
     Column(modifier = Modifier.fillMaxSize()) {
         var tab by remember { mutableStateOf(0) }
-        val tabs = listOf("All Employees", "Clocked In Employees")
+        val tabs = listOf("All Employees", "Clocked In Employees", "Payroll")
         SecondaryTabRow(selectedTabIndex = tab, containerColor = MaterialTheme.colors.background) {
             tabs.forEachIndexed { index, title ->
                 Tab(
@@ -35,8 +35,18 @@ fun AdminScreen(employees: MutableSet<Employee>) {
         Box { // use Box to reset the alignments in the Column
             when (tab) {
                 0 -> EmployeeList(employees)
-                1 -> EmployeeList(employees.filter { WorkHistory.isClockedIn(it.id) }.toMutableSet(), false)
+                1 -> EmployeeList(
+                    @Suppress("RemoveExplicitTypeArguments") // seems to be a bug in the compiler
+                    sortedSetOf<Employee>(::compareEmployeesByTimeWorking, *employees.filter { WorkHistory.isClockedIn(it.id) }.toTypedArray()),
+                    false)
+                2 -> {}//PayrollScreen(employees)
             }
         }
     }
+}
+
+private fun compareEmployeesByTimeWorking(e1: Employee, e2: Employee): Int {
+    val e1t = WorkHistory.getClockedInEntry(e1.id)?.durationSeconds!!
+    val e2t = WorkHistory.getClockedInEntry(e2.id)?.durationSeconds!!
+    return e2t.compareTo(e1t)
 }

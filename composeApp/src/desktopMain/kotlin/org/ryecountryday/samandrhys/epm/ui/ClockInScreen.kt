@@ -92,35 +92,29 @@ private fun ClockInPopup(
                 val employee by remember { mutableStateOf(maybeEmployee!!) }
                 var clockedIn by remember { mutableStateOf(WorkHistory.isClockedIn(employee.id)) }
 
-                if(employee.isBirthday()){
-                    Text("!!! Happy Birthday,\n${employee.name} !!!",
-                        style = MaterialTheme.typography.h5,
-                        modifier = Modifier.padding(16.dp),
-                        textAlign = TextAlign.Center
-                    )
-                } else {
-                    Text("Welcome, ${employee.name}",
-                        style = MaterialTheme.typography.h5,
-                        modifier = Modifier.padding(8.dp),
-                        textAlign = TextAlign.Center
-                    )
-                }
+                // If it's the employee's birthday, show a special message
+                Text(if(employee.isBirthday()) "Happy Birthday,\n${employee.name}!!!" else "Welcome, ${employee.name}",
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier.padding(16.dp),
+                    textAlign = TextAlign.Center
+                )
 
+                // If admin is logged in, don't show the clock in/out button, but show the admin button
                 if(employee == Employee.ADMIN) {
-                    Spacer(modifier = Modifier.height(32.dp))
-                    Button(onClick = onAdminButtonClicked, content = {
+                    Button(onClick = onAdminButtonClicked, modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Filled.FourPeople, contentDescription = "Admin")
+                            Icon(Icons.Filled.FourPeople, contentDescription = "Admin", modifier = Modifier.padding(end = 8.dp))
                             Text("Enter Admin Mode")
                         }
-                    })
-                    return@Card
+                    }
+                    return@Card // return early so the stuff below doesn't show
                 }
 
-                if (clockedIn) {
+                // If the employee is already clocked in, show how long they have been working
+                if(clockedIn) {
                     var state by remember { mutableStateOf(0L) }
 
-                    LaunchedEffect(Unit) {
+                    LaunchedEffect(Unit) { // update state every second
                         while (true) {
                             state = WorkHistory.getClockedInEntry(employee.id)?.durationSeconds ?: 0
                             delay(1000)

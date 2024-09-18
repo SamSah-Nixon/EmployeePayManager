@@ -52,16 +52,16 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true) {
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        for(employee in employeeContainerState.value) {
+        for (employee in employeeContainerState.value) {
             EmployeeCard(employee, !mainList)
         }
 
-        if(employees.isEmpty()) {
+        if (employees.isEmpty()) {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if(mainList) {
+                if (mainList) {
                     Text("No employees found", style = MaterialTheme.typography.h4)
                 } else {
                     Text("No employees are currently clocked in", style = MaterialTheme.typography.h5)
@@ -69,20 +69,22 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true) {
             }
         }
 
-        // a row that tells the user how to add a new employee
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text("Create a new employee by clicking ", style = MaterialTheme.typography.body1)
-            Box(contentAlignment = Alignment.Center) {
-                // This box makes the clear space inside the icon below black
-                Box(modifier = Modifier.background(MaterialTheme.colors.onBackground, CircleShape).size(16.dp))
-                Icon(
-                    Icons.Filled.AddCircle,
-                    contentDescription = "Add Employee button",
-                    tint = MaterialTheme.colors.secondary
-                )
+        if (mainList) {
+            // a line that tells the user how to add a new employee - only shown in the main list when the button itself is shown too
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text("Create a new employee by clicking ", style = MaterialTheme.typography.body1)
+                Box(contentAlignment = Alignment.Center) {
+                    // This box makes the clear space inside the icon below black
+                    Box(modifier = Modifier.background(MaterialTheme.colors.onBackground, CircleShape).size(16.dp))
+                    Icon(
+                        Icons.Filled.AddCircle,
+                        contentDescription = "Add Employee button",
+                        tint = MaterialTheme.colors.secondary
+                    )
+                }
             }
         }
     }
