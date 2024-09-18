@@ -9,17 +9,23 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.unit.dp
@@ -30,65 +36,84 @@ import org.ryecountryday.samandrhys.epm.util.toDateString
 @Composable
 fun LabeledCard(value: String,
                 modifier: Modifier = Modifier,
-                border: BorderStroke? = null,
+                border: BorderStroke = mutedBorder(),
                 content: @Composable () -> Unit) {
+    LabeledCardImpl(value, modifier, false, border, null, content)
+}
+
+@Composable
+fun LabeledButton(value: String,
+                  modifier: Modifier = Modifier,
+                  selected: Boolean? = null,
+                  border: BorderStroke = selected?.let { maybeSelectedBorder(it) } ?: mutedBorder(),
+                  onClick: () -> Unit,
+                  content: @Composable () -> Unit) {
+    LabeledCardImpl(value, modifier, selected, border, onClick, content)
+}
+
+@Composable
+private fun LabeledCardImpl(value: String,
+                            modifier: Modifier = Modifier,
+                            selected: Boolean? = null,
+                            border: BorderStroke = selected?.let { maybeSelectedBorder(it) } ?: mutedBorder(),
+                            onClick: (() -> Unit)?,
+                            content: @Composable () -> Unit) {
     Box(modifier = modifier) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            border = border
-        ) {
-            Column(modifier = Modifier.padding(top = 12.dp), horizontalAlignment = Alignment.Start) {
-                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    content()
+        if(onClick != null) {
+            OutlinedCard(
+                shape = MaterialTheme.shapes.small,
+                colors = CardDefaults.outlinedCardColors().let { // completely clear background
+                    it.copy(
+                        containerColor = MaterialTheme.colors.background.copy(alpha = 0f),
+                        contentColor = it.contentColor.copy(alpha = 0f),
+                        disabledContainerColor = it.disabledContainerColor.copy(alpha = 0f),
+                        disabledContentColor = it.disabledContentColor.copy(alpha = 0f),
+                    )
+                },
+                onClick = onClick,
+                modifier = Modifier.fillMaxWidth(),
+                border = border,
+                content = {
+                    Column(modifier = Modifier.padding(top = 12.dp), horizontalAlignment = Alignment.Start) {
+                        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            content()
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-            }
+            )
+        } else {
+            OutlinedCard(
+                shape = MaterialTheme.shapes.small,
+                colors = CardDefaults.outlinedCardColors().let { // completely clear background
+                    it.copy(
+                        containerColor = MaterialTheme.colors.background.copy(alpha = 0f),
+                        contentColor = it.contentColor.copy(alpha = 0f),
+                        disabledContainerColor = it.disabledContainerColor.copy(alpha = 0f),
+                        disabledContentColor = it.disabledContentColor.copy(alpha = 0f),
+                    )
+                },
+                modifier = Modifier.fillMaxWidth(),
+                border = border,
+                content = {
+                    Column(modifier = Modifier.padding(top = 12.dp), horizontalAlignment = Alignment.Start) {
+                        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            content()
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+            )
         }
 
         // Label text that overlaps with the card's border
         Text(value,
             modifier = Modifier.padding(start = 16.dp)
                 .align(Alignment.TopStart).offset(y = (-8).dp)
-                .background(MaterialTheme.colors.background) // Add a background color to match the parent - gives the appearance of interrupting the border
+                .background(Color(0xFF1E1E1E)) // Add a background color to match the parent - gives the appearance of interrupting the border
                 .padding(horizontal = 4.dp), // Padding for the text itself
-            color = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium),
-            style = MaterialTheme.typography.caption
-        )
-    }
-
-    Spacer(modifier = Modifier.height(8.dp))
-}
-
-@Composable
-fun LabeledButton(value: String,
-                  modifier: Modifier = Modifier,
-                  border: BorderStroke? = null,
-                  onClick: () -> Unit,
-                  content: @Composable () -> Unit) {
-    Box(modifier = modifier) {
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            border = border,
-            onClick = onClick,
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
-        ) {
-            ProvideTextStyle(MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onSurface)) {
-                Column(modifier = Modifier.padding(top = 12.dp), horizontalAlignment = Alignment.Start) {
-                    Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        content()
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-            }
-        }
-
-        // Label text that overlaps with the button's border
-        Text(value,
-            modifier = Modifier.padding(start = 16.dp)
-                .align(Alignment.TopStart).offset(y = (-8).dp)
-                .background(MaterialTheme.colors.background) // Add a background color to match the parent - gives the appearance of interrupting the border
-                .padding(horizontal = 4.dp), // Padding for the text itself
-            color = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium),
+            color = if(selected == true) MaterialTheme.colors.primary
+                else MaterialTheme.colors.onSurface.copy(ContentAlpha.medium),
             style = MaterialTheme.typography.caption
         )
     }

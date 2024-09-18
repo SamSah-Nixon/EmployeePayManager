@@ -18,6 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+/**
+ * The main entry point for the application. This is called by [main]
+ * and holds the outer ui behind [EmployeeList] and [ClockInScreen].
+ */
 @Preview
 @Composable
 fun App() {

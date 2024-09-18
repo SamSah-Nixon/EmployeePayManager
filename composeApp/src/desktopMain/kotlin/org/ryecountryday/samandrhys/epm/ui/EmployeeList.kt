@@ -73,6 +73,10 @@ fun EmployeeList(employees: EmployeeContainer) {
     }
 }
 
+/**
+ * A composable that displays a [Card] with the employee's name and ID.
+ * When clicked, it opens a [Dialog] with more of the employee's details and allows for editing them.
+ */
 @Composable
 fun EmployeeCard(employee: Employee) {
     var show by remember { mutableStateOf(false) }
@@ -93,14 +97,14 @@ fun EmployeeCard(employee: Employee) {
 
     if(show) {
         Dialog(onDismissRequest = { show = false }) {
-            Card(modifier = Modifier.width(500.dp)) {
+            Card(modifier = Modifier.width(500.dp), backgroundColor = MaterialTheme.colors.background) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("Employee Details", modifier = Modifier.padding(8.dp))
                     Spacer(modifier = Modifier.height(8.dp))
 
                     val modifier = Modifier.width(350.dp).align(Alignment.CenterHorizontally)
 
-                    LabeledCard("ID", border = mutedBorder(), modifier = modifier) { Text(employee.id) }
+                    LabeledCard("ID", modifier = modifier) { Text(employee.id) }
 
                     OutlinedTextField(
                         value = firstName,
@@ -129,7 +133,7 @@ fun EmployeeCard(employee: Employee) {
                         "Pay Type",
                         onClick = { showPayTypeChangeDialog.value = true },
                         modifier = modifier,
-                        border = maybeSelectedBorder(showPayTypeChangeDialog.value)
+                        selected = showPayTypeChangeDialog.value
                     ) {
                         Text(employee.pay.toString())
 
@@ -138,7 +142,7 @@ fun EmployeeCard(employee: Employee) {
                         }
                     }
 
-                    LabeledCard("Birthday", border = mutedBorder(), modifier = modifier) { Text(employee.dateOfBirth.toDateString()) }
+                    LabeledCard("Birthday", modifier = modifier) { Text(employee.dateOfBirth.toDateString()) }
 
                     val showAddressChangeDialog = remember { mutableStateOf(false) }
                     LabeledButton(
@@ -248,7 +252,7 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: EmployeeContainer) {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                LabeledCard("Address", modifier = modifier, border = mutedBorder()) {
+                LabeledCard("Address", modifier = modifier) {
                     Column {
                         OutlinedTextField(
                             value = street,

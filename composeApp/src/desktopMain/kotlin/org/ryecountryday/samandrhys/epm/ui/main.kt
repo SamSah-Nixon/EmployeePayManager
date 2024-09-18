@@ -22,7 +22,7 @@ import java.nio.file.StandardOpenOption
 import kotlin.io.path.*
 
 // if unknown, use system theme
-private val themeOverride = SystemTheme.Light
+private val themeOverride = SystemTheme.Dark
 
 // Kotlin doesn't have a concept of static-ness, so we have to do this to run code on startup
 private val staticInitializer: Unit = run {
@@ -34,10 +34,16 @@ private val staticInitializer: Unit = run {
     })
 }
 
+/**
+ * The JSON encoder/decoder for data.
+ */
 val json = Json {
     prettyPrint = true
 }
 
+/**
+ * The main folder for the application's long-term storage.
+ */
 val mainFolder: Path = Path(System.getProperty("user.home")).resolve(".EmployeePayManager").also {
     if (!it.exists()) {
         println("creating $it")
@@ -45,12 +51,19 @@ val mainFolder: Path = Path(System.getProperty("user.home")).resolve(".EmployeeP
     }
 }
 
+/**
+ * The file that stores the list of employees.
+ */
 val employeesFile: Path = mainFolder.resolve("employees.json").also {
     if (!it.exists()) {
         it.writeText(json.encodeToString(EmployeeContainer.serializer(), EmployeeContainer()), Charsets.UTF_8, StandardOpenOption.CREATE)
     }
 }
 
+/**
+ * The list of employees. This is loaded from [employeesFile] on startup
+ * and saved to it when it changes or the program exits.
+ */
 val employees = EmployeeContainer().apply {
     this.addChangeListener {
         employeesFile.writeText(
@@ -71,6 +84,9 @@ val employees = EmployeeContainer().apply {
     }
 }
 
+/**
+ * The main function. Calls [application] to start the application.
+ */
 fun main() = application {
     staticInitializer.toString() // trick the compiler into thinking we're using the staticInitializer
     Window(
