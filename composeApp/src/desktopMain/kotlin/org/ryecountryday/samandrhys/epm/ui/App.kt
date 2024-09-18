@@ -27,12 +27,10 @@ import org.ryecountryday.samandrhys.epm.util.os
 fun App() {
     var admin by remember { mutableStateOf(false) } // remember keeps this state across recompositions
 
-    // the box that contains the buttons in the bottom right, to switch between admin and clock in screens
-    // and to open the application data folder
-    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
-        Row(modifier = Modifier.align(Alignment.BottomEnd)) {
-            Column(modifier = Modifier.align(Alignment.Bottom)) {
-                if(admin) {
+    if (admin) {
+        Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
+            Row(modifier = Modifier.align(Alignment.BottomEnd)) {
+                Column(modifier = Modifier.align(Alignment.Bottom)) {
                     Button(
                         onClick = { os.openFolder(mainFolder) },
                         modifier = Modifier.padding(horizontal = 6.dp)
@@ -42,24 +40,22 @@ fun App() {
                             contentDescription = "Open Application Data Folder"
                         )
                     }
-                }
 
-                Button(
-                    onClick = { admin = !admin },
-                    modifier = Modifier.padding(horizontal = 6.dp)
-                ) {
-                    Icon(
-                        imageVector = if (admin) Icons.Filled.Person else Icons.Filled.FourPeople,
-                        contentDescription = "Switch to ${if (admin) "Clock In" else "Admin"} Screen"
-                    )
+                    Button(
+                        onClick = { admin = false },
+                        modifier = Modifier.padding(horizontal = 6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Person,
+                            contentDescription = "Exit Admin Mode"
+                        )
+                    }
                 }
             }
         }
-    }
 
-    if (admin) {
         AdminScreen(employees)
     } else {
-        ClockInScreen(employees)
+        ClockInScreen(employees, onAdminButtonClicked = { admin = true })
     }
 }

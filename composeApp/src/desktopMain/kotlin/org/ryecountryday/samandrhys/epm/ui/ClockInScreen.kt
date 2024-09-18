@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
+import org.ryecountryday.samandrhys.epm.backend.employee.Employee
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
 import org.ryecountryday.samandrhys.epm.util.formatTime
 
@@ -28,7 +29,7 @@ import org.ryecountryday.samandrhys.epm.util.formatTime
  * It just has a text field for the employee ID and a button to clock in, which opens a [ClockInPopup].
  */
 @Composable
-fun ClockInScreen(employees: EmployeeContainer) {
+fun ClockInScreen(employees: EmployeeContainer, onAdminButtonClicked: () -> Unit = {}) {
     var showPopup by remember { mutableStateOf(false) }
     var employeeId by remember { mutableStateOf("") }
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
@@ -60,7 +61,8 @@ fun ClockInScreen(employees: EmployeeContainer) {
         ClockInPopup(
             employees,
             employeeId,
-            onClose = { showPopup = false }
+            onClose = { showPopup = false },
+            onAdminButtonClicked = onAdminButtonClicked
         )
     }
 }
@@ -70,7 +72,12 @@ fun ClockInScreen(employees: EmployeeContainer) {
  * If the employee is already clocked in, it shows how long they have been working.
  */
 @Composable
-private fun ClockInPopup(employees: EmployeeContainer, employeeId: String, onClose: () -> Unit) {
+private fun ClockInPopup(
+    employees: EmployeeContainer,
+    employeeId: String,
+    onClose: () -> Unit,
+    onAdminButtonClicked: () -> Unit = {}
+) {
     Dialog(onDismissRequest = onClose) {
         Card(modifier = Modifier.width(350.dp)) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -92,13 +99,23 @@ private fun ClockInPopup(employees: EmployeeContainer, employeeId: String, onClo
                         textAlign = TextAlign.Center
                     )
                 } else {
-                    Text("Welcome,\n${employee.name}",
+                    Text("Welcome, ${employee.name}",
                         style = MaterialTheme.typography.h5,
                         modifier = Modifier.padding(8.dp),
                         textAlign = TextAlign.Center
                     )
                 }
 
+                if(employee == Employee.ADMIN) {
+                    Spacer(modifier = Modifier.height(32.dp))
+                    Button(onClick = onAdminButtonClicked, content = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Filled.FourPeople, contentDescription = "Admin")
+                            Text("Enter Admin Mode")
+                        }
+                    })
+                    return@Card
+                }
 
                 if (clockedIn) {
                     var state by remember { mutableStateOf(0L) }
