@@ -13,6 +13,7 @@ plugins {
 allprojects {
     apply(plugin = "idea")
     apply(plugin = "dev.yumi.gradle.licenser")
+
     idea {
         module {
             isDownloadSources = true
@@ -27,6 +28,12 @@ allprojects {
 
         include("**/*.kt")
         include("*.gradle.kts")
+    }
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 

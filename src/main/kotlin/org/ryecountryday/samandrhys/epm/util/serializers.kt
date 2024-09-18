@@ -7,6 +7,7 @@ package org.ryecountryday.samandrhys.epm.util
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.builtins.SetSerializer
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.json.Json
@@ -179,29 +180,33 @@ object PayPeriodSerializer : KSerializer<PayPeriod> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("PayPeriod") {
         element<String>("start")
         element<String>("end")
+        element<Set<WorkEntry>>("workEntries")
     }
 
     override fun serialize(encoder: Encoder, value: PayPeriod) {
         encoder.encodeStructure(descriptor) {
             encodeStringElement(descriptor, 0, value.payPeriodStart.toDateString())
             encodeStringElement(descriptor, 1, value.payPeriodEnd.toDateString())
+            encodeSerializableElement(descriptor, 2, SetSerializer(WorkEntrySerializer), value.workEntries)
         }
     }
 
     override fun deserialize(decoder: Decoder): PayPeriod {
         var start: LocalDate? = null
         var end: LocalDate? = null
+        var workEntries: Set<WorkEntry>? = null
         decoder.decodeStructure(descriptor) {
             while (true) {
                 when (val index = decodeElementIndex(descriptor)) {
                     0 -> start = parseDate(decodeStringElement(descriptor, 0))
                     1 -> end = parseDate(decodeStringElement(descriptor, 1))
+                    2 -> workEntries = decodeSerializableElement(descriptor, 2, SetSerializer(WorkEntrySerializer))
                     CompositeDecoder.DECODE_DONE -> break
                     else -> error("Unexpected index: $index")
                 }
             }
         }
         
-        return PayPeriod(start!!, end!!, mutableSetOf<WorkEntry>())
+        return PayPeriod(start!!, end!!, workEntries!!.toMutableSet())
     }
 }

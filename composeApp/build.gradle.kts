@@ -10,6 +10,10 @@ plugins {
 
 kotlin {
     jvm("desktop")
+
+    jvmToolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
     
     sourceSets {
         val desktopMain by getting
