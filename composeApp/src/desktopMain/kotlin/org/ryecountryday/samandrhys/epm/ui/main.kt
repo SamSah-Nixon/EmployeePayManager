@@ -77,14 +77,6 @@ private val setupLoadingAndSaving: Unit = run {
         WorkHistory.save(workHistoryFile)
     }
 
-    if(oldMainFolder.exists() && os != OperatingSystem.LINUX) {
-        // copy the old folder to the new one
-        oldMainFolder.copyToRecursively(mainFolder, overwrite = false, followLinks = true)
-
-        @OptIn(ExperimentalPathApi::class)
-        oldMainFolder.deleteRecursively()
-    }
-
     if(!mainFolder.isDirectory()) mainFolder.deleteIfExists()
     if (!mainFolder.exists()) {
         println("creating $mainFolder")
@@ -95,8 +87,15 @@ private val setupLoadingAndSaving: Unit = run {
         }
     }
 
-    if(employeesFile.isDirectory()) employeesFile.deleteRecursively()
+    if(oldMainFolder.exists() && os != OperatingSystem.LINUX) { // on linux old folder is the same as the new one
+        // copy the old folder to the new one
+        oldMainFolder.copyToRecursively(mainFolder, overwrite = false, followLinks = true)
 
+        @OptIn(ExperimentalPathApi::class)
+        oldMainFolder.deleteRecursively()
+    }
+
+    if(employeesFile.isDirectory()) employeesFile.deleteRecursively()
     if (!employeesFile.exists()) {
         employeesFile.writeText("{}", Charsets.UTF_8, StandardOpenOption.CREATE)
 

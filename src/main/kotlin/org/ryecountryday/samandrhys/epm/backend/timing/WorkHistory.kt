@@ -20,9 +20,9 @@ import kotlin.io.path.readText
 /**
  * Stores work history for all employees.
  *
- * @property currentPeriod
- * @property entries
- * @property payPeriods
+ * @property currentPeriod All work entries in the current pay period
+ * @property clockedIn All employees currently clocked in
+ * @property payPeriods All pay periods
  */
 @Serializable
 object WorkHistory {
@@ -84,7 +84,9 @@ object WorkHistory {
     fun load(path: Path) {
         val element = json.parseToJsonElement(path.readText())
         currentPeriod = json.decodeFromJsonElement(element.jsonObject["currentPeriod"]!!)
-        clockedIn.addAll(json.decodeFromJsonElement(element.jsonObject["clockedIn"]!!))
+        clockedIn.addAll(json.decodeFromJsonElement(element.jsonObject["clockedIn"].let {
+            it ?: element.jsonObject["entries"]!!
+        }))
         payPeriods.addAll(json.decodeFromJsonElement(element.jsonObject["payPeriods"]!!))
     }
 
