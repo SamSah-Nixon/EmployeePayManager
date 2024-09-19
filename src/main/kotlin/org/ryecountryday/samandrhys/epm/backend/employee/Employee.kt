@@ -7,9 +7,11 @@ package org.ryecountryday.samandrhys.epm.backend.employee
 
 import kotlinx.serialization.Serializable
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
+import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
 import org.ryecountryday.samandrhys.epm.util.EmployeeSerializer
 import org.ryecountryday.samandrhys.epm.util.LocalDate
 import org.ryecountryday.samandrhys.epm.util.toLocalDate
+import org.ryecountryday.samandrhys.epm.util.zeroToNull
 import java.time.Instant
 import java.time.LocalDate
 
@@ -33,6 +35,9 @@ open class Employee(
     constructor(name: String, id: String, pay: PayStrategy, dateOfBirth: LocalDate, address: Address, active: Boolean = true):
             this(name.split(' ', limit = 2)[1], name.split(' ', limit = 2)[0], id, pay, dateOfBirth, address, active)
 
+    /**
+     * Whether this employee is currently active. This doesn't actually make any functional differences except in [compareTo].
+     */
     var status = Status.bool(active)
 
     open val name: String
@@ -40,11 +45,7 @@ open class Employee(
 
     override fun hashCode() = id.hashCode()
 
-    override fun compareTo(other: Employee): Int {
-        if(this.status == Status.ACTIVE && other.status == Status.INACTIVE) return -1
-        if(this.status == Status.INACTIVE && other.status == Status.ACTIVE) return 1
-        return this.id.compareTo(other.id)
-    }
+    override fun compareTo(other: Employee) = Employees.defaultComparator.compare(this, other)
 
     override fun equals(other: Any?): Boolean {
         return this === other || (other is Employee && this.id == other.id)
@@ -76,7 +77,9 @@ open class Employee(
             }
         }
     }
+}
 
+object Employees {
     object ADMIN : Employee(
         lastName = "Admin",
         firstName = "Admin",
@@ -98,4 +101,21 @@ open class Employee(
             return if(other is ADMIN) 0 else -1
         }
     }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Comparable<T>> comparator(element: (Employee) -> Comparable<T>): Comparator<Employee> {
+        return Comparator { e1, e2 -> element(e1).compareTo(element(e2) as T) }
+    }
+
+    val adminFirstComparator = Comparator<Employee> { e1, e2 ->
+        if(e1 is ADMIN) -1
+        else if(e2 is ADMIN) 1
+        else 0
+    }
+
+    val defaultComparator: Comparator<Employee> = Comparator { e1, e2 ->
+        e1.status.compareTo(e2.status).zeroToNull() ?: e1.id.compareTo(e2.id)
+    }
+
+    val compareByTimeWorking = comparator { WorkHistory.getClockedInEntry(it.id)?.durationSeconds ?: -1 }
 }

@@ -11,6 +11,7 @@ import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
+import org.ryecountryday.samandrhys.epm.backend.employee.Employees
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
 
 /**
@@ -35,18 +36,13 @@ fun AdminScreen(employees: MutableSet<Employee>) {
         Box { // use Box to reset the alignments in the Column
             when (tab) {
                 0 -> EmployeeList(employees) // just a regular list of all employees, sorted by id
-                1 -> EmployeeList( // list of clocked in employees, sorted by time working
-                    @Suppress("RemoveExplicitTypeArguments") // seems to be a bug in the compiler
-                    sortedSetOf<Employee>(::compareEmployeesByTimeWorking, *employees.filter { WorkHistory.isClockedIn(it.id) }.toTypedArray()),
-                    false)
+                1 -> EmployeeList(
+                    employees.filter { WorkHistory.isClockedIn(it.id) }.toMutableSet(),
+                    mainList = false,
+                    defaultComparator = Employees.compareByTimeWorking
+                )
                 2 -> {}//PayrollScreen(employees)
             }
         }
     }
-}
-
-private fun compareEmployeesByTimeWorking(e1: Employee, e2: Employee): Int {
-    val e1t = WorkHistory.getClockedInEntry(e1.id)?.durationSeconds!!
-    val e2t = WorkHistory.getClockedInEntry(e2.id)?.durationSeconds!!
-    return e2t.compareTo(e1t)
 }

@@ -25,7 +25,7 @@ import org.ryecountryday.samandrhys.epm.util.os
 @Preview
 @Composable
 fun App() {
-    var admin by remember { mutableStateOf(false) } // remember keeps this state across recompositions
+    var admin by remember { mutableStateOf(true) } // remember keeps this state across recompositions
 
     if (admin) {
         Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {

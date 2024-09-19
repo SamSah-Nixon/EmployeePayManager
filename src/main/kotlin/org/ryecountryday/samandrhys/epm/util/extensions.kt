@@ -60,8 +60,21 @@ fun String.isValidMoneyString(): Boolean {
             && numDecimalPlaces() <= 2
 }
 
+/**
+ * vararg shortcut for [MutableCollection.addAll].
+ */
 fun <T> MutableCollection<T>.addAll(vararg elements: T) = addAll(elements)
 
+/**
+ * Run [block] right before the program exits.
+ */
 fun addShutdownHook(block: () -> Unit) {
     Runtime.getRuntime().addShutdownHook(Thread(block))
+}
+
+/**
+ * @return if this [Number] is equal to zero: `null`; otherwise, this.
+ */
+fun <T : Number> T.zeroToNull(): T? {
+    return if (this.toDouble() == 0.0) null else this
 }

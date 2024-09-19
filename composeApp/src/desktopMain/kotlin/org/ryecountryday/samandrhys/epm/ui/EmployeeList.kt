@@ -13,9 +13,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.*
@@ -32,11 +35,9 @@ import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
 import org.ryecountryday.samandrhys.epm.backend.PayStrategy
 import org.ryecountryday.samandrhys.epm.backend.employee.Address
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
+import org.ryecountryday.samandrhys.epm.backend.employee.Employees
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
-import org.ryecountryday.samandrhys.epm.util.LocalDate
-import org.ryecountryday.samandrhys.epm.util.formatTime
-import org.ryecountryday.samandrhys.epm.util.isValidMoneyString
-import org.ryecountryday.samandrhys.epm.util.toDateString
+import org.ryecountryday.samandrhys.epm.util.*
 
 /**
  * A composable that displays a list of employees in a column.
@@ -44,15 +45,20 @@ import org.ryecountryday.samandrhys.epm.util.toDateString
  * @param employees The list of employees to display.
  */
 @Composable
-fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true) {
-    val employeeContainerState = remember { mutableStateOf(employees, neverEqualPolicy()) }
+fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true, defaultComparator: Comparator<Employee> = Employees.defaultComparator) {
+    val employeeContainerState = remember { mutableStateOf(EmployeeContainer().apply { addAll(employees) }, neverEqualPolicy()) }
+
+    var comparator by remember { mutableStateOf(defaultComparator) }
+    var ascending by remember { mutableStateOf(true) }
 
     // the main column that holds all the employee cards
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        for (employee in employeeContainerState.value) {
+        for (employee in employeeContainerState.value.sortedWith(
+            Employees.adminFirstComparator.thenComparing(if(ascending) comparator else comparator.reversed())
+        )) {
             EmployeeCard(employee, !mainList)
         }
 
@@ -61,11 +67,7 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true) {
                 modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (mainList) {
-                    Text("No employees found", style = MaterialTheme.typography.h4)
-                } else {
-                    Text("No employees are currently clocked in", style = MaterialTheme.typography.h5)
-                }
+                Text(if(mainList) "No employees found" else "No employees are currently clocked in", style = MaterialTheme.typography.h4)
             }
         }
 
@@ -103,12 +105,48 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true) {
 
     // the refresh button that forces the state to refresh (specifically meant for the employee order, when you (de)activate an employee)
     Box(Modifier.fillMaxWidth(), Alignment.TopEnd) {
-        FloatingActionButton(onClick = {
-            // cursed way to force the state to refresh, but I can't find anything better
-            // compose states are weird
-            employeeContainerState.value = EmployeeContainer().apply { addAll(employees) }
-        }, modifier = Modifier.padding(4.dp)) {
-            Icon(Icons.Filled.Refresh, contentDescription = "Refresh Employee Order")
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            FloatingActionButton(onClick = {
+                // cursed way to force the state to refresh, but I can't find anything better
+                // compose states are weird
+                employeeContainerState.value = EmployeeContainer().apply { addAll(employees) }
+            }, modifier = Modifier.padding(4.dp)) {
+                Icon(Icons.Filled.Refresh, contentDescription = "Refresh Employee Order")
+            }
+
+            // Sorting options
+            Card(border = mutedBorder()) {
+                Column(modifier = Modifier.padding(4.dp)) {
+
+                    val sorts = mapOf(
+                        "Default" to defaultComparator,
+                        "First Name" to Employees.comparator { it.firstName },
+                        "Last Name" to Employees.comparator { it.lastName },
+                        "ID" to Employees.comparator { it.id },
+                        "DOB" to Employees.comparator { it.dateOfBirth }
+                    )
+
+                    DropdownButton(
+                        items = sorts.keys.toList(),
+                        onItemSelected = { item ->
+                            comparator = sorts[item]!!
+                        },
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Sort Order")
+                    }
+
+                    Button(
+                        onClick = { ascending = !ascending },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
+                        border = mutedBorder()
+                    ) {
+                        Icon(
+                            if (ascending) Icons.Outlined.KeyboardArrowDown else Icons.Outlined.KeyboardArrowUp,
+                            contentDescription = "Ascending/Descending"
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -164,6 +202,8 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
 
                     LabeledCard("ID", modifier = modifier) { Text(employee.id) }
 
+                    val isAdmin by remember { mutableStateOf(employee == Employees.ADMIN) }
+
                     OutlinedTextField(
                         value = firstName,
                         singleLine = true,
@@ -171,7 +211,7 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                             employee.firstName = it
                             firstName = it
                         },
-                        enabled = employee != Employee.ADMIN,
+                        enabled = !isAdmin,
                         label = { Text("First Name") },
                         modifier = modifier,
                     )
@@ -182,13 +222,13 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                             employee.lastName = it
                             lastName = it
                         },
-                        enabled = employee != Employee.ADMIN,
+                        enabled = !isAdmin,
                         label = { Text("Last Name") },
                         modifier = modifier,
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    if(employee != Employee.ADMIN) {
+                    if(!isAdmin) {
 
                         val showPayTypeChangeDialog = remember { mutableStateOf(false) }
                         LabeledButton(
@@ -211,7 +251,7 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                     LabeledButton(
                         "Address",
                         onClick = { showAddressChangeDialog.value = true },
-                        enabled = employee != Employee.ADMIN,
+                        enabled = !isAdmin,
                         modifier = modifier,
                         border = mutedBorder(),
                         selected = showAddressChangeDialog
@@ -223,7 +263,7 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                         }
                     }
 
-                    if(employee != Employee.ADMIN) {
+                    if(!isAdmin) {
                         var status by remember { mutableStateOf(employee.status) }
 
                         Button(

@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
-import org.ryecountryday.samandrhys.epm.backend.employee.Employee
+import org.ryecountryday.samandrhys.epm.backend.employee.Employees
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
 import org.ryecountryday.samandrhys.epm.util.formatTime
 
@@ -100,7 +100,7 @@ private fun ClockInPopup(
                 )
 
                 // If admin is logged in, don't show the clock in/out button, but show the admin button
-                if(employee == Employee.ADMIN) {
+                if(employee == Employees.ADMIN) {
                     Button(onClick = onAdminButtonClicked, modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Filled.FourPeople, contentDescription = "Admin", modifier = Modifier.padding(end = 8.dp))
