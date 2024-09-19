@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 rootProject.name = "Cruvna"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
@@ -28,4 +30,4 @@ dependencyResolutionManagement {
     }
 }
 
-include(":composeApp")
+include(":ui")
