@@ -1,3 +1,6 @@
+<p align="center"><img src="./.idea/icon.png" alt="Logo" width="200"></p>
+<h1 align="center">Cruvná</h1>
+
 This is a Kotlin Multiplatform project targeting Desktop.
 
 * `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
