@@ -1,12 +1,12 @@
 /*
- * This file is a part of EmployeePayManager.
+ * This file is a part of Cruvná.
  * Copyright (C) 2024 Rhys and Sam. All rights reserved.
  */
 
-package org.ryecountryday.samandrhys.epm.backend.timing
+package org.ryecountryday.samandrhys.cruvna.backend.timing
 
 import kotlinx.serialization.Serializable
-import org.ryecountryday.samandrhys.epm.util.*
+import org.ryecountryday.samandrhys.cruvna.util.*
 import java.time.Instant
 
 /**

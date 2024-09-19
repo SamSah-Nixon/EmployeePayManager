@@ -1,12 +1,12 @@
 /*
- * This file is a part of EmployeePayManager.
+ * This file is a part of Cruvná.
  * Copyright (C) 2024 Rhys and Sam. All rights reserved.
  */
 
-import org.ryecountryday.samandrhys.epm.util.isPositiveDouble
-import org.ryecountryday.samandrhys.epm.util.isValidMoneyString
-import org.ryecountryday.samandrhys.epm.util.roundToTwoDecimalPlaces
-import org.ryecountryday.samandrhys.epm.util.toMoneyString
+import org.ryecountryday.samandrhys.cruvna.util.isPositiveDouble
+import org.ryecountryday.samandrhys.cruvna.util.isValidMoneyString
+import org.ryecountryday.samandrhys.cruvna.util.roundToTwoDecimalPlaces
+import org.ryecountryday.samandrhys.cruvna.util.toMoneyString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

@@ -1,16 +1,16 @@
 /*
- * This file is a part of EmployeePayManager.
+ * This file is a part of Cruvná.
  * Copyright (C) 2024 Rhys and Sam. All rights reserved.
  */
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
-import org.ryecountryday.samandrhys.epm.backend.PayStrategy
-import org.ryecountryday.samandrhys.epm.backend.employee.Address
-import org.ryecountryday.samandrhys.epm.backend.employee.Employee
-import org.ryecountryday.samandrhys.epm.backend.timing.WorkEntry
-import org.ryecountryday.samandrhys.epm.util.parseDate
+import org.ryecountryday.samandrhys.cruvna.backend.EmployeeContainer
+import org.ryecountryday.samandrhys.cruvna.backend.PayStrategy
+import org.ryecountryday.samandrhys.cruvna.backend.employee.Address
+import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
+import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkEntry
+import org.ryecountryday.samandrhys.cruvna.util.parseDate
 import java.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals

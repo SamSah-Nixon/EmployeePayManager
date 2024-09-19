@@ -1,9 +1,9 @@
 /*
- * This file is a part of EmployeePayManager.
+ * This file is a part of Cruvná.
  * Copyright (C) 2024 Rhys and Sam. All rights reserved.
  */
 
-package org.ryecountryday.samandrhys.epm.ui
+package org.ryecountryday.samandrhys.cruvna.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -29,13 +29,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.delay
-import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
-import org.ryecountryday.samandrhys.epm.backend.PayStrategy
-import org.ryecountryday.samandrhys.epm.backend.employee.Address
-import org.ryecountryday.samandrhys.epm.backend.employee.Employee
-import org.ryecountryday.samandrhys.epm.backend.employee.Employees
-import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
-import org.ryecountryday.samandrhys.epm.util.*
+import org.ryecountryday.samandrhys.cruvna.backend.EmployeeContainer
+import org.ryecountryday.samandrhys.cruvna.backend.PayStrategy
+import org.ryecountryday.samandrhys.cruvna.backend.employee.Address
+import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
+import org.ryecountryday.samandrhys.cruvna.backend.employee.Employees
+import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkHistory
+import org.ryecountryday.samandrhys.cruvna.util.*
 
 /**
  * A composable that displays a list of employees in a column.

@@ -1,14 +1,14 @@
 /*
- * This file is a part of EmployeePayManager.
+ * This file is a part of Cruvná.
  * Copyright (C) 2024 Rhys and Sam. All rights reserved.
  */
 
-package org.ryecountryday.samandrhys.epm.backend
+package org.ryecountryday.samandrhys.cruvna.backend
 
 import kotlinx.serialization.Serializable
-import org.ryecountryday.samandrhys.epm.util.PayStrategySerializer
-import org.ryecountryday.samandrhys.epm.util.roundToTwoDecimalPlaces
-import org.ryecountryday.samandrhys.epm.util.toMoneyString
+import org.ryecountryday.samandrhys.cruvna.util.PayStrategySerializer
+import org.ryecountryday.samandrhys.cruvna.util.roundToTwoDecimalPlaces
+import org.ryecountryday.samandrhys.cruvna.util.toMoneyString
 
 
 /**

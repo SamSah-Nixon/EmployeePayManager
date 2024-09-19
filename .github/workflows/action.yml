@@ -21,7 +21,7 @@ jobs:
       - name: Upload binaries
         uses: actions/upload-artifact@v3
         with:
-          name: EPM
+          name: Cruvná
           path: "build/libs/*.jar"
       - name: Upload test results
         uses: actions/upload-artifact@v3

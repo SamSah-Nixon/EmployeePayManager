@@ -47,11 +47,11 @@ afterEvaluate {
 
 compose.desktop {
     application {
-        mainClass = "org.ryecountryday.samandrhys.epm.ui.Main"
+        mainClass = "org.ryecountryday.samandrhys.cruvna.ui.Main"
 
         nativeDistributions {
             targetFormats(TargetFormat.Pkg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "EPM"
+            packageName = "Cruvná"
             vendor = "RCDS"
             copyright = "Copyright ${LocalDate.now().year} Rhys and Sam. All rights reserved."
             packageVersion = project.version.toString()

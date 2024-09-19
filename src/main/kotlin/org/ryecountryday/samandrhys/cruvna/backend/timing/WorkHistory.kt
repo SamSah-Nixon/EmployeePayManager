@@ -1,17 +1,17 @@
 /*
- * This file is a part of EmployeePayManager.
+ * This file is a part of Cruvná.
  * Copyright (C) 2024 Rhys and Sam. All rights reserved.
  */
 
-package org.ryecountryday.samandrhys.epm.backend.timing
+package org.ryecountryday.samandrhys.cruvna.backend.timing
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
-import org.ryecountryday.samandrhys.epm.backend.PayPeriod
-import org.ryecountryday.samandrhys.epm.util.json
-import org.ryecountryday.samandrhys.epm.util.startOfDay
-import org.ryecountryday.samandrhys.epm.util.toLocalDate
+import org.ryecountryday.samandrhys.cruvna.backend.PayPeriod
+import org.ryecountryday.samandrhys.cruvna.util.json
+import org.ryecountryday.samandrhys.cruvna.util.startOfDay
+import org.ryecountryday.samandrhys.cruvna.util.toLocalDate
 import java.nio.file.Path
 import java.time.Instant
 import java.time.LocalDate

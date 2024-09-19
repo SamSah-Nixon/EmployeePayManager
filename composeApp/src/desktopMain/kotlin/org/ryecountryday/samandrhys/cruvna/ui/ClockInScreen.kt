@@ -1,9 +1,9 @@
 /*
- * This file is a part of EmployeePayManager.
+ * This file is a part of Cruvná.
  * Copyright (C) 2024 Rhys and Sam. All rights reserved.
  */
 
-package org.ryecountryday.samandrhys.epm.ui
+package org.ryecountryday.samandrhys.cruvna.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,10 +20,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
-import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
-import org.ryecountryday.samandrhys.epm.backend.employee.Employees
-import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
-import org.ryecountryday.samandrhys.epm.util.formatTime
+import org.ryecountryday.samandrhys.cruvna.backend.EmployeeContainer
+import org.ryecountryday.samandrhys.cruvna.backend.employee.Employees
+import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkHistory
+import org.ryecountryday.samandrhys.cruvna.util.formatTime
 
 /**
  * A very simple screen that allows employees to clock in and out.

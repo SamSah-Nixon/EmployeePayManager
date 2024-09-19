@@ -1,4 +1,4 @@
-rootProject.name = "EmployeePayManager"
+rootProject.name = "Cruvna"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

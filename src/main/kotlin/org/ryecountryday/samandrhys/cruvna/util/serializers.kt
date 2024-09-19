@@ -1,9 +1,9 @@
 /*
- * This file is a part of EmployeePayManager.
+ * This file is a part of Cruvná.
  * Copyright (C) 2024 Rhys and Sam. All rights reserved.
  */
 
-package org.ryecountryday.samandrhys.epm.util
+package org.ryecountryday.samandrhys.cruvna.util
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
@@ -11,11 +11,11 @@ import kotlinx.serialization.builtins.SetSerializer
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.json.Json
-import org.ryecountryday.samandrhys.epm.backend.PayPeriod
-import org.ryecountryday.samandrhys.epm.backend.PayStrategy
-import org.ryecountryday.samandrhys.epm.backend.employee.Address
-import org.ryecountryday.samandrhys.epm.backend.employee.Employee
-import org.ryecountryday.samandrhys.epm.backend.timing.WorkEntry
+import org.ryecountryday.samandrhys.cruvna.backend.PayPeriod
+import org.ryecountryday.samandrhys.cruvna.backend.PayStrategy
+import org.ryecountryday.samandrhys.cruvna.backend.employee.Address
+import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
+import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkEntry
 import java.time.Instant
 import java.time.LocalDate
 

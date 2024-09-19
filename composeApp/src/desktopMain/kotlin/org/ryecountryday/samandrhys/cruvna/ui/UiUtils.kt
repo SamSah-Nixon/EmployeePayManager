@@ -1,9 +1,9 @@
 /*
- * This file is a part of EmployeePayManager.
+ * This file is a part of Cruvná.
  * Copyright (C) 2024 Rhys and Sam. All rights reserved.
  */
 
-package org.ryecountryday.samandrhys.epm.ui
+package org.ryecountryday.samandrhys.cruvna.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -28,8 +28,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
-import org.ryecountryday.samandrhys.epm.util.LocalDate
-import org.ryecountryday.samandrhys.epm.util.toDateString
+import org.ryecountryday.samandrhys.cruvna.util.LocalDate
+import org.ryecountryday.samandrhys.cruvna.util.toDateString
 
 /**
  * An [OutlinedCard] with a label that overlaps the top border. The card's content is defined by [content], and the label

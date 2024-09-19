@@ -1,4 +1,9 @@
-package org.ryecountryday.samandrhys.epm.ui
+/*
+ * This file is a part of Cruvná.
+ * Copyright (C) 2024 Rhys and Sam. All rights reserved.
+ */
+
+package org.ryecountryday.samandrhys.cruvna.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,11 +16,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.ryecountryday.samandrhys.epm.backend.employee.Employee
-import org.ryecountryday.samandrhys.epm.backend.employee.Employees
-import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
-import org.ryecountryday.samandrhys.epm.util.openFolder
-import org.ryecountryday.samandrhys.epm.util.os
+import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
+import org.ryecountryday.samandrhys.cruvna.backend.employee.Employees
+import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkHistory
+import org.ryecountryday.samandrhys.cruvna.util.openFolder
+import org.ryecountryday.samandrhys.cruvna.util.os
 
 /**
  * Main screen for viewing all employees and their status.

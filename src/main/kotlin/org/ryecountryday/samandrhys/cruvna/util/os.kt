@@ -1,9 +1,9 @@
 /*
- * This file is a part of EmployeePayManager.
+ * This file is a part of Cruvná.
  * Copyright (C) 2024 Rhys and Sam. All rights reserved.
  */
 
-package org.ryecountryday.samandrhys.epm.util
+package org.ryecountryday.samandrhys.cruvna.util
 
 import java.nio.file.Path
 import kotlin.io.path.Path
@@ -34,8 +34,8 @@ val os: OperatingSystem = when {
 val OperatingSystem.applicationDataFolder: Path
     get() = when (this) {
         OperatingSystem.MAC -> Path(System.getProperty("user.home")).resolve("Library/Application Support")
-        OperatingSystem.WINDOWS -> Path(System.getenv("APPDATA")).resolve("EmployeePayManager")
-        OperatingSystem.LINUX -> Path(System.getProperty("user.home")).resolve(".EmployeePayManager")
+        OperatingSystem.WINDOWS -> Path(System.getenv("APPDATA"))
+        OperatingSystem.LINUX -> Path(System.getProperty("user.home"))
         OperatingSystem.UNKNOWN -> throw UnsupportedOperationException("Unknown operating system")
     }
 

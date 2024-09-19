@@ -1,12 +1,12 @@
 /*
- * This file is a part of EmployeePayManager.
+ * This file is a part of Cruvná.
  * Copyright (C) 2024 Rhys and Sam. All rights reserved.
  */
 
 @file:JvmName("Main")
 @file:OptIn(ExperimentalSerializationApi::class, ExperimentalPathApi::class)
 
-package org.ryecountryday.samandrhys.epm.ui
+package org.ryecountryday.samandrhys.cruvna.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
@@ -19,10 +19,10 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
-import org.ryecountryday.samandrhys.epm.backend.EmployeeContainer
-import org.ryecountryday.samandrhys.epm.backend.employee.Employees
-import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
-import org.ryecountryday.samandrhys.epm.util.*
+import org.ryecountryday.samandrhys.cruvna.backend.EmployeeContainer
+import org.ryecountryday.samandrhys.cruvna.backend.employee.Employees
+import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkHistory
+import org.ryecountryday.samandrhys.cruvna.util.*
 import java.nio.file.FileSystemException
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
@@ -38,7 +38,7 @@ private val themeOverride = SystemTheme.Dark
 
 // Kotlin doesn't have a concept of static-ness, so we have to do this to run code on startup
 private val setupTheming: Unit = run {
-    System.setProperty("apple.awt.application.name", "EmployeePayManager")
+    System.setProperty("apple.awt.application.name", "Cruvná")
     System.setProperty("apple.awt.application.appearance", when (themeOverride) {
         SystemTheme.Dark -> "NSAppearanceNameDarkAqua"
         SystemTheme.Light -> "NSAppearanceNameAqua"
@@ -49,12 +49,17 @@ private val setupTheming: Unit = run {
 /**
  * The old main folder for the application's long-term storage. This is used to migrate data from the old location to the new one.
  */
-val oldMainFolder: Path = Path(System.getProperty("user.home")).resolve(".EmployeePayManager")
+val oldMainFolders: List<Path> = listOf(
+    Path(System.getProperty("user.home")).resolve(".EmployeePayManager"),
+    os.applicationDataFolder.resolve("EmployeePayManager"),
+    os.applicationDataFolder.resolve("EmployeePayManager").resolve("EmployeePayManager"),
+    os.applicationDataFolder.resolve("EmployeePayManager").resolve(".EmployeePayManager")
+)
 
 /**
  * The main folder for the application's long-term storage.
  */
-val mainFolder: Path = os.applicationDataFolder.resolve("EmployeePayManager")
+val mainFolder: Path = os.applicationDataFolder.resolve("cruvna")
 
 /**
  * The file that stores [employees]. This is loaded from and saved to on startup and exit.
@@ -93,12 +98,14 @@ private val setupLoadingAndSaving: Unit = run {
         }
     }
 
-    if(oldMainFolder.exists() && os != OperatingSystem.LINUX) { // on linux old folder is the same as the new one
-        // copy the old folder to the new one
-        oldMainFolder.copyToRecursively(mainFolder, overwrite = false, followLinks = true)
+    for(oldMainFolder in oldMainFolders) {
+        if(oldMainFolder.exists() && os != OperatingSystem.LINUX) { // on linux old folder is the same as the new one
+            // copy the old folder to the new one
+            oldMainFolder.copyToRecursively(mainFolder, overwrite = false, followLinks = true)
 
-        @OptIn(ExperimentalPathApi::class)
-        oldMainFolder.deleteRecursively()
+            @OptIn(ExperimentalPathApi::class)
+            oldMainFolder.deleteRecursively()
+        }
     }
 
     if(employeesFile.isDirectory()) employeesFile.deleteRecursively()
@@ -133,7 +140,7 @@ fun main() = application {
 
     Window(
         onCloseRequest = ::exitApplication,
-        title = "EmployeePayManager",
+        title = "Cruvná",
         content = {
             MaterialTheme(
                 colors =

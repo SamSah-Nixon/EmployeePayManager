@@ -1,9 +1,9 @@
 /*
- * This file is a part of EmployeePayManager.
+ * This file is a part of Cruvná.
  * Copyright (C) 2024 Rhys and Sam. All rights reserved.
  */
 
-package org.ryecountryday.samandrhys.epm.util
+package org.ryecountryday.samandrhys.cruvna.util
 
 /**
  * A [MutableIterator] that does not allow removal of elements.
