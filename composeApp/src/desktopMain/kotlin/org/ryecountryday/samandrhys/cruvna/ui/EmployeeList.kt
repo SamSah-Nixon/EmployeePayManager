@@ -35,7 +35,10 @@ import org.ryecountryday.samandrhys.cruvna.backend.employee.Address
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Employees
 import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkHistory
-import org.ryecountryday.samandrhys.cruvna.util.*
+import org.ryecountryday.samandrhys.cruvna.util.LocalDate
+import org.ryecountryday.samandrhys.cruvna.util.formatTime
+import org.ryecountryday.samandrhys.cruvna.util.isValidMoneyString
+import org.ryecountryday.samandrhys.cruvna.util.toDateString
 
 /**
  * A composable that displays a list of employees in a column.
@@ -43,8 +46,13 @@ import org.ryecountryday.samandrhys.cruvna.util.*
  * @param employees The list of employees to display.
  */
 @Composable
-fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true, defaultComparator: Comparator<Employee> = Employees.defaultComparator) {
-    val employeeContainerState = remember { mutableStateOf(EmployeeContainer().apply { addAll(employees) }, neverEqualPolicy()) }
+fun EmployeeList(
+    employees: MutableSet<Employee>,
+    mainList: Boolean = true,
+    defaultComparator: Comparator<Employee> = Employees.defaultComparator
+) {
+    val employeeContainerState =
+        remember { mutableStateOf(EmployeeContainer().apply { addAll(employees) }, neverEqualPolicy()) }
 
     var comparator by remember { mutableStateOf(defaultComparator) }
     var ascending by remember { mutableStateOf(true) }
@@ -57,7 +65,7 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true, defa
     ) {
         for (employee in employeeContainerState.value.sortedWith(
             // Force admin to be at the top; then sort as configured
-            Employees.adminFirstComparator.thenComparing(if(ascending) comparator else comparator.reversed())
+            Employees.adminFirstComparator.thenComparing(if (ascending) comparator else comparator.reversed())
         )) {
             EmployeeCard(employee, !mainList)
         }
@@ -67,7 +75,10 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true, defa
                 modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(if(mainList) "No employees found" else "No employees are currently clocked in", style = MaterialTheme.typography.h4)
+                Text(
+                    if (mainList) "No employees found" else "No employees are currently clocked in",
+                    style = MaterialTheme.typography.h4.copy(color = MaterialTheme.colors.onBackground)
+                )
             }
         }
 
@@ -77,15 +88,22 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true, defa
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text("Create a new employee by clicking ", style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onBackground))
-                FloatingActionButton(onClick = { addDialogState.value = true }, modifier = Modifier.padding(4.dp).size(24.dp), shape = CircleShape) {
+                Text(
+                    "Create a new employee by clicking ",
+                    style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onBackground)
+                )
+                FloatingActionButton(
+                    onClick = { addDialogState.value = true },
+                    modifier = Modifier.padding(4.dp).size(24.dp),
+                    shape = CircleShape
+                ) {
                     Icon(Icons.Filled.Add, contentDescription = "Add Employee", modifier = Modifier.size(16.dp))
                 }
             }
         }
     }
 
-    if(mainList) {
+    if (mainList) {
         // the floating action button that opens the add employee dialog
         FloatingActionButton(onClick = { addDialogState.value = true }, modifier = Modifier.padding(4.dp)) {
             Icon(Icons.Filled.Add, contentDescription = "Add Employee")
@@ -98,45 +116,41 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true, defa
 
     // the refresh button that forces the state to refresh (specifically meant for the employee order, when you (de)activate an employee)
     Box(Modifier.fillMaxWidth(), Alignment.TopEnd) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            FloatingActionButton(onClick = {
-                // cursed way to force the state to refresh, but I can't find anything better
-                // compose states are weird
-                employeeContainerState.value = EmployeeContainer().apply { addAll(employees) }
-            }, modifier = Modifier.padding(4.dp)) {
-                Icon(Icons.Filled.Refresh, contentDescription = "Refresh Employee Order")
-            }
+        // Sorting options
+        Card(border = mutedBorder()) {
+            Column(modifier = Modifier.padding(4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Button(
+                    onClick = { employeeContainerState.value = EmployeeContainer().apply { addAll(employees) } },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
+                    border = mutedBorder()
+                ) {
+                    Icon(Icons.Filled.Refresh, contentDescription = "Refresh Employee Order")
+                }
 
-            // Sorting options
-            Card(border = mutedBorder()) {
-                Column(modifier = Modifier.padding(4.dp)) {
-                    val sorts = mapOf(
-                        "Default" to defaultComparator,
-                        "First Name" to Employees.comparator { it.firstName },
-                        "Last Name" to Employees.comparator { it.lastName },
-                        "ID" to Employees.comparator { it.id },
-                        "Birthday" to Employees.comparator { it.dateOfBirth }
+                val sorts = mapOf(
+                    "Default" to defaultComparator,
+                    "First Name" to Employees.comparator { it.firstName },
+                    "Last Name" to Employees.comparator { it.lastName },
+                    "ID" to Employees.comparator { it.id },
+                    "Birthday" to Employees.comparator { it.dateOfBirth }
+                )
+
+                DropdownButton(
+                    items = sorts.keys.toList(),
+                    onItemSelected = { item -> comparator = sorts[item]!! },
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Sort Order")
+                }
+
+                Button(
+                    onClick = { ascending = !ascending },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
+                    border = mutedBorder()
+                ) {
+                    Icon(
+                        if (ascending) Icons.Outlined.KeyboardArrowDown else Icons.Outlined.KeyboardArrowUp,
+                        contentDescription = "Ascending/Descending"
                     )
-
-                    DropdownButton(
-                        items = sorts.keys.toList(),
-                        onItemSelected = { item ->
-                            comparator = sorts[item]!!
-                        },
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Sort Order")
-                    }
-
-                    Button(
-                        onClick = { ascending = !ascending },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
-                        border = mutedBorder()
-                    ) {
-                        Icon(
-                            if (ascending) Icons.Outlined.KeyboardArrowDown else Icons.Outlined.KeyboardArrowUp,
-                            contentDescription = "Ascending/Descending"
-                        )
-                    }
                 }
             }
         }
@@ -151,7 +165,8 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true, defa
 fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
     var show by remember { mutableStateOf(false) }
 
-    Button(onClick = { show = true },
+    Button(
+        onClick = { show = true },
         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
         modifier = Modifier.padding(2.dp),
         border = mutedBorder()
@@ -160,7 +175,7 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
             Text("Name: ${employee.name}", style = MaterialTheme.typography.body1)
             Text("ID: ${employee.id}", style = MaterialTheme.typography.body1)
 
-            if(showClockedInStatus) {
+            if (showClockedInStatus) {
                 var isClockedIn by remember { mutableStateOf(WorkHistory.isClockedIn(employee.id)) }
                 var duration by remember { mutableStateOf(WorkHistory.getClockedInEntry(employee.id)?.durationSeconds) }
 
@@ -172,9 +187,11 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                     }
                 }
 
-                if(isClockedIn) {
-                    Text("Working for ${formatTime(duration ?: 0)}",
-                        style = MaterialTheme.typography.body1)
+                if (isClockedIn) {
+                    Text(
+                        "Working for ${formatTime(duration ?: 0)}",
+                        style = MaterialTheme.typography.body1
+                    )
                 } else {
                     Text("Not currently working", style = MaterialTheme.typography.body1)
                 }
@@ -185,7 +202,7 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
     var firstName by remember { mutableStateOf(employee.firstName) }
     var lastName by remember { mutableStateOf(employee.lastName) }
 
-    if(show) {
+    if (show) {
         Dialog(onDismissRequest = { show = false }) {
             Card(modifier = Modifier.width(500.dp), backgroundColor = MaterialTheme.colors.background) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -222,7 +239,7 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    if(!isAdmin) {
+                    if (!isAdmin) {
 
                         val showPayTypeChangeDialog = remember { mutableStateOf(false) }
                         LabeledButton(
@@ -252,12 +269,12 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                     ) {
                         Text(employee.address.toStringMultiline())
 
-                        if(showAddressChangeDialog.value) {
+                        if (showAddressChangeDialog.value) {
                             AddressChangeDialog(showAddressChangeDialog, employee.address)
                         }
                     }
 
-                    if(!isAdmin) {
+                    if (!isAdmin) {
                         var status by remember { mutableStateOf(employee.status) }
 
                         Button(
@@ -289,7 +306,10 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>)
         properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
     ) {
         Card(modifier = Modifier.width(500.dp)) {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 var lastName by remember { mutableStateOf("") }
                 var firstName by remember { mutableStateOf("") }
                 var id by remember { mutableStateOf("") }
@@ -323,7 +343,7 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>)
                 DropdownButton(
                     items = listOf(PayStrategy.Hourly.TYPE, PayStrategy.Salaried.TYPE),
                     onItemSelected = { payType ->
-                        payStrategy = when(payType) {
+                        payStrategy = when (payType) {
                             PayStrategy.Hourly.TYPE -> PayStrategy.Hourly(payStrategy.rate)
                             PayStrategy.Salaried.TYPE -> PayStrategy.Salaried(payStrategy.rate)
                             else -> throw IllegalArgumentException("Invalid pay type")
@@ -451,17 +471,24 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>)
                         Text("Add Employee")
                     }
 
-                    if(value.value is String) {
+                    if (value.value is String) {
                         Dialog(onDismissRequest = { value.value = true }) {
                             Card {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text(value.value as String, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 8.dp))
+                                    Text(
+                                        value.value as String,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.padding(top = 8.dp)
+                                    )
                                     Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.padding(8.dp)) {
                                         Button(onClick = { value.value = true }) {
                                             Text("Try Again")
                                         }
                                         Spacer(modifier = Modifier.width(2.dp))
-                                        Button(onClick = { value.value = false }, colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)) {
+                                        Button(
+                                            onClick = { value.value = false },
+                                            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
+                                        ) {
                                             Text("Cancel")
                                         }
                                     }
@@ -496,7 +523,7 @@ fun PayTypeChangeDialog(value: MutableState<Boolean>, employee: Employee) {
                 DropdownButton(
                     items = listOf(PayStrategy.Hourly.TYPE, PayStrategy.Salaried.TYPE),
                     onItemSelected = { payType ->
-                        payStrategy = when(payType) {
+                        payStrategy = when (payType) {
                             PayStrategy.Hourly.TYPE -> PayStrategy.Hourly(payStrategy.rate)
                             PayStrategy.Salaried.TYPE -> PayStrategy.Salaried(payStrategy.rate)
                             else -> throw IllegalArgumentException("Invalid pay type")

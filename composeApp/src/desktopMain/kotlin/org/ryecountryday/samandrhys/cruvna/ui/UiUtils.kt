@@ -212,6 +212,10 @@ fun InlineDatePicker(label: String, state: DatePickerState, modifier: Modifier =
                     DatePicker(
                         state = state,
                         showModeToggle = false,
+                        colors = DatePickerDefaults.colors().copy(
+                            dayContentColor = MaterialTheme.colors.onSurface,
+                            weekdayContentColor = MaterialTheme.colors.onSurface,
+                        )
                     )
                 }
             }

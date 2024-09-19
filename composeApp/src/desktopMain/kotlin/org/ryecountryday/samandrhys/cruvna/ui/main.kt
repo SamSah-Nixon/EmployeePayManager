@@ -34,7 +34,7 @@ import kotlin.io.path.*
  */
 
 // if unknown, use system theme
-private val themeOverride = SystemTheme.Dark
+private val themeOverride = SystemTheme.Light
 
 // Kotlin doesn't have a concept of static-ness, so we have to do this to run code on startup
 private val setupTheming: Unit = run {
@@ -118,7 +118,6 @@ private val setupLoadingAndSaving: Unit = run {
     }
 
     if(workHistoryFile.isDirectory()) workHistoryFile.deleteRecursively()
-
     if (!workHistoryFile.exists()) {
         workHistoryFile.writeText("""{"currentPeriod":[],"clockedIn":[],"payPeriods":[]}""", Charsets.UTF_8, StandardOpenOption.CREATE)
 
