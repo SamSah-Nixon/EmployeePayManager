@@ -5,6 +5,7 @@
 
 package org.ryecountryday.samandrhys.epm.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -32,16 +33,18 @@ import org.ryecountryday.samandrhys.epm.util.formatTime
 fun ClockInScreen(employees: EmployeeContainer, onAdminButtonClicked: () -> Unit = {}) {
     var showPopup by remember { mutableStateOf(false) }
     var employeeId by remember { mutableStateOf("") }
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text("Clock in", style = MaterialTheme.typography.h4.copy(MaterialTheme.colors.onBackground))
+
             Row(verticalAlignment = Alignment.Bottom) {
                 OutlinedTextField(
                     value = employeeId,
                     onValueChange = { employeeId = it },
                     singleLine = true,
                     label = { Text("Employee ID") },
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, autoCorrect = false),
                     keyboardActions = KeyboardActions(
                         onDone = { showPopup = employeeId.isNotEmpty() }
                     ),
@@ -70,6 +73,10 @@ fun ClockInScreen(employees: EmployeeContainer, onAdminButtonClicked: () -> Unit
 /**
  * A popup that shows the employee's name and allows them to clock in or out.
  * If the employee is already clocked in, it shows how long they have been working.
+ * @param employees The [EmployeeContainer] to get the employee from.
+ * @param employeeId The ID of the employee to clock in. May not exist in the container.
+ * @param onClose A callback to close the popup.
+ * @param onAdminButtonClicked A callback to call when the admin button is clicked, if the employee is the admin.
  */
 @Composable
 private fun ClockInPopup(
@@ -93,7 +100,7 @@ private fun ClockInPopup(
                 var clockedIn by remember { mutableStateOf(WorkHistory.isClockedIn(employee.id)) }
 
                 // If it's the employee's birthday, show a special message
-                Text(if(employee.isBirthday()) "Happy Birthday,\n${employee.name}!!!" else "Welcome, ${employee.name}",
+                Text(if(employee.isBirthday()) "Happy Birthday,\n${employee.name}!!!" else "Welcome, ${employee.name}.",
                     style = MaterialTheme.typography.h5,
                     modifier = Modifier.padding(16.dp),
                     textAlign = TextAlign.Center

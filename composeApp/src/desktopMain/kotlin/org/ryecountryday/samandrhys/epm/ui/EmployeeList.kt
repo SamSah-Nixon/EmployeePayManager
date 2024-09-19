@@ -5,7 +5,6 @@
 
 package org.ryecountryday.samandrhys.epm.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -15,7 +14,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
@@ -50,6 +48,7 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true, defa
 
     var comparator by remember { mutableStateOf(defaultComparator) }
     var ascending by remember { mutableStateOf(true) }
+    val addDialogState: MutableState<Any> = remember { mutableStateOf(false) }
 
     // the main column that holds all the employee cards
     Column(
@@ -57,6 +56,7 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true, defa
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         for (employee in employeeContainerState.value.sortedWith(
+            // Force admin to be at the top; then sort as configured
             Employees.adminFirstComparator.thenComparing(if(ascending) comparator else comparator.reversed())
         )) {
             EmployeeCard(employee, !mainList)
@@ -77,22 +77,15 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true, defa
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text("Create a new employee by clicking ", style = MaterialTheme.typography.body1)
-                Box(contentAlignment = Alignment.Center) {
-                    // This box makes the clear space inside the icon below black
-                    Box(modifier = Modifier.background(MaterialTheme.colors.onBackground, CircleShape).size(16.dp))
-                    Icon(
-                        Icons.Filled.AddCircle,
-                        contentDescription = "Add Employee button",
-                        tint = MaterialTheme.colors.secondary
-                    )
+                Text("Create a new employee by clicking ", style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onBackground))
+                FloatingActionButton(onClick = { addDialogState.value = true }, modifier = Modifier.padding(4.dp).size(24.dp), shape = CircleShape) {
+                    Icon(Icons.Filled.Add, contentDescription = "Add Employee", modifier = Modifier.size(16.dp))
                 }
             }
         }
     }
 
     if(mainList) {
-        val addDialogState: MutableState<Any> = remember { mutableStateOf(false) }
         // the floating action button that opens the add employee dialog
         FloatingActionButton(onClick = { addDialogState.value = true }, modifier = Modifier.padding(4.dp)) {
             Icon(Icons.Filled.Add, contentDescription = "Add Employee")
@@ -117,13 +110,12 @@ fun EmployeeList(employees: MutableSet<Employee>, mainList: Boolean = true, defa
             // Sorting options
             Card(border = mutedBorder()) {
                 Column(modifier = Modifier.padding(4.dp)) {
-
                     val sorts = mapOf(
                         "Default" to defaultComparator,
                         "First Name" to Employees.comparator { it.firstName },
                         "Last Name" to Employees.comparator { it.lastName },
                         "ID" to Employees.comparator { it.id },
-                        "DOB" to Employees.comparator { it.dateOfBirth }
+                        "Birthday" to Employees.comparator { it.dateOfBirth }
                     )
 
                     DropdownButton(
@@ -183,6 +175,8 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                 if(isClockedIn) {
                     Text("Working for ${formatTime(duration ?: 0)}",
                         style = MaterialTheme.typography.body1)
+                } else {
+                    Text("Not currently working", style = MaterialTheme.typography.body1)
                 }
             }
         }
@@ -358,7 +352,7 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>)
                 )
 
                 val datePickerState = rememberDatePickerState()
-                InlineDatePicker("DOB", datePickerState, modifier = modifier)
+                InlineDatePicker("Birthday", datePickerState, modifier = modifier)
                 val birthday by remember { derivedStateOf { datePickerState.selectedDateMillis } }
 
                 var street by remember { mutableStateOf("") }
@@ -461,9 +455,15 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>)
                         Dialog(onDismissRequest = { value.value = true }) {
                             Card {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text(value.value as String, textAlign = TextAlign.Center, modifier = Modifier.padding(8.dp))
-                                    Button(onClick = { value.value = true }) {
-                                        Text("Try Again")
+                                    Text(value.value as String, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 8.dp))
+                                    Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.padding(8.dp)) {
+                                        Button(onClick = { value.value = true }) {
+                                            Text("Try Again")
+                                        }
+                                        Spacer(modifier = Modifier.width(2.dp))
+                                        Button(onClick = { value.value = false }, colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)) {
+                                            Text("Cancel")
+                                        }
                                     }
                                 }
                             }
@@ -474,16 +474,13 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>)
 
                     Button(
                         onClick = { value.value = false },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
-                    ) {
-                        Text("Cancel")
-                    }
+                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error),
+                        content = { Text("Cancel") }
+                    )
                 }
             }
-
         }
     }
-
 }
 
 @Composable

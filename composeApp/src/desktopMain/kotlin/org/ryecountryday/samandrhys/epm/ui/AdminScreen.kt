@@ -1,25 +1,56 @@
 package org.ryecountryday.samandrhys.epm.ui
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Tab
-import androidx.compose.material.Text
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import org.ryecountryday.samandrhys.epm.backend.employee.Employee
 import org.ryecountryday.samandrhys.epm.backend.employee.Employees
 import org.ryecountryday.samandrhys.epm.backend.timing.WorkHistory
+import org.ryecountryday.samandrhys.epm.util.openFolder
+import org.ryecountryday.samandrhys.epm.util.os
 
 /**
  * Main screen for viewing all employees and their status.
  */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun AdminScreen(employees: MutableSet<Employee>) {
+fun AdminScreen(employees: MutableSet<Employee>, exitFunc: () -> Unit) {
+    // Admin controls
+    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
+        Row(modifier = Modifier.align(Alignment.BottomEnd)) {
+            Column(modifier = Modifier.align(Alignment.Bottom)) {
+                Button(
+                    onClick = { os.openFolder(mainFolder) },
+                    modifier = Modifier.padding(horizontal = 6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.FolderOpen,
+                        contentDescription = "Open Application Data Folder"
+                    )
+                }
+
+                Button(
+                    onClick = exitFunc,
+                    modifier = Modifier.padding(horizontal = 6.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                        contentDescription = "Exit Admin Mode"
+                    )
+                }
+            }
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         var tab by remember { mutableStateOf(0) }
         val tabs = listOf("All Employees", "Clocked In Employees", "Payroll")

@@ -12,14 +12,9 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 
-fun Instant.plusDays(days: Double): Instant {
-    return this.plusSeconds((days * 86400).toLong())
-}
-
-fun Instant.plusHours(hours: Double): Instant {
-    return this.plusSeconds((hours * 3600).toLong())
-}
-
+/**
+ * @return The start of the day of this [Instant].
+ */
 fun Instant.startOfDay(): Instant {
     return this.truncatedTo(ChronoUnit.DAYS)
 }
@@ -60,12 +55,15 @@ fun Instant.toLocalDate(): LocalDate {
 }
 
 /**
- * Turns a [LocalDate] into an instance of [Instant]. The time of day will be midnight.
+ * Turns this [LocalDate] into an instance of [Instant]. The time of day will be midnight in the system default time zone.
  */
 fun LocalDate.toInstant(): Instant {
-    return atStartOfDay(ZoneId.systemDefault()).toInstant()
+    return this.atStartOfDay().toInstant()
 }
 
+/**
+ * Turns this [LocalDateTime] into an instance of [Instant] using the system default time zone.
+ */
 fun LocalDateTime.toInstant(): Instant {
     return ZonedDateTime.of(this, ZoneId.systemDefault()).toInstant()
 }
@@ -75,17 +73,17 @@ fun formatTime(totalSeconds: Long): String {
     val minutes = (totalSeconds % 3600) / 60
     val seconds = totalSeconds % 60
 
-    fun pluralize(value: Long): String {
-        return if (value == 1L) "" else "s"
+    /**
+     * Adds an "s" to the end of a string if the number is not 1.
+     */
+    fun Long.p(): String {
+        return if (this == 1L) "" else "s"
     }
 
-    return buildString {
-        if (hours > 0) append("$hours hour${pluralize(hours)}, ")
-        if (minutes > 0) append("$minutes minute${pluralize(minutes)}, ")
-        if (seconds > 0) append("$seconds second${pluralize(seconds)}")
-
-        if(isEmpty()) {
-            append("0 seconds")
-        }
-    }
+    return buildList {
+        if (hours > 0) add("$hours hour${hours.p()}")
+        if (minutes > 0) add("$minutes minute${minutes.p()}")
+        if (seconds > 0) add("$seconds second${seconds.p()}")
+        if(isEmpty()) add("0 seconds")
+    }.joinToString(", ")
 }
