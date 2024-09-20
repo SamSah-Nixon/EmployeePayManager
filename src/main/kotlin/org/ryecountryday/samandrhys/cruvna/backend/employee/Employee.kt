@@ -105,9 +105,8 @@ object Employees {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <T : Comparable<T>> comparator(element: (Employee) -> Comparable<T>): Comparator<Employee> {
-        return Comparator { e1, e2 -> element(e1).compareTo(element(e2) as T) }
+    fun <T : Comparable<T>> comparator(element: (Employee) -> T): Comparator<Employee> {
+        return Comparator { e1, e2 -> element(e1).compareTo(element(e2)) }
     }
 
     val adminFirstComparator = Comparator<Employee> { e1, e2 ->
