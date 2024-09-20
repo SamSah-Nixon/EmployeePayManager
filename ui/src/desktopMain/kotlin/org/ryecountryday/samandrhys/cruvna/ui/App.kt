@@ -7,10 +7,11 @@ package org.ryecountryday.samandrhys.cruvna.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.*
+import org.ryecountryday.samandrhys.cruvna.ui.admin.AdminScreen
 
 /**
  * The main entry point for the application. This is called by [main]
- * and holds the outer ui behind [EmployeeList] and [ClockInScreen].
+ * and holds the outer ui behind [AdminScreen] and [ClockInScreen].
  */
 @Preview
 @Composable

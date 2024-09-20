@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask
 import org.jetbrains.compose.desktop.application.tasks.AbstractProguardTask
 import java.time.LocalDate
 
@@ -43,6 +44,12 @@ afterEvaluate {
         proguardVersion = "7.5.0"
         enabled = false // proguard is broken for some reason, maybe figure it out later
     }
+
+    tasks.named<AbstractJPackageTask>("createDistributable") {
+        mangleJarFilesNames = true
+
+        destinationDir = rootProject.file("build/dist")
+    }
 }
 
 compose.desktop {
@@ -51,14 +58,21 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Pkg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "Cruvná"
+            packageName = "Cruvna"
             vendor = "RCDS"
             copyright = "Copyright ${LocalDate.now().year} Rhys and Sam. All rights reserved."
             packageVersion = project.version.toString()
-            macOS.bundleID = project.group.toString()
-            macOS.iconFile = rootProject.file("src/main/resources/icon.icns")
-            windows.iconFile = rootProject.file("src/main/resources/icon.ico")
-            linux.iconFile = rootProject.file("src/main/resources/icon.png")
+            macOS {
+                dockName = "Cruvná"
+                bundleID = project.group.toString()
+                iconFile = rootProject.file("src/main/resources/icon.icns")
+            }
+            windows {
+                iconFile = rootProject.file("src/main/resources/icon.ico")
+            }
+            linux {
+                iconFile = rootProject.file("src/main/resources/icon.png")
+            }
         }
     }
 }

@@ -65,11 +65,25 @@ fun String.isValidMoneyString(): Boolean {
  */
 fun <T> MutableCollection<T>.addAll(vararg elements: T) = addAll(elements)
 
+// Shutdown hooks
+private val shutdownHooks = mutableMapOf<String, Thread>()
+
 /**
- * Run [block] right before the program exits.
+ * Run [block] right before the program exits. The block is run on a separate thread.
+ * @param id A unique identifier for this shutdown hook, used to remove it later.
  */
-fun addShutdownHook(block: () -> Unit) {
-    Runtime.getRuntime().addShutdownHook(Thread(block))
+fun addShutdownHook(id: String, block: () -> Unit) {
+    val thread = Thread(block, "Shutdown Hook $id")
+    shutdownHooks[id] = thread
+    Runtime.getRuntime().addShutdownHook(thread)
+}
+
+/**
+ * Remove a shutdown hook by its unique identifier.
+ * @param id The unique identifier of the shutdown hook to remove.
+ */
+fun removeShutdownHook(id: String) {
+    shutdownHooks.remove(id)?.let { Runtime.getRuntime().removeShutdownHook(it) }
 }
 
 /**
@@ -77,4 +91,8 @@ fun addShutdownHook(block: () -> Unit) {
  */
 fun <T : Number> T.zeroToNull(): T? {
     return if (this.toDouble() == 0.0) null else this
+}
+
+fun equals(vararg pairs: Pair<*, *>): Boolean {
+    return pairs.all { it.first == it.second }
 }

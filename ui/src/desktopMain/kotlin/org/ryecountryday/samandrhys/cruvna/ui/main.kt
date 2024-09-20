@@ -34,7 +34,7 @@ import kotlin.io.path.*
  */
 
 // if unknown, use system theme
-private val themeOverride = SystemTheme.Light
+private val themeOverride = SystemTheme.Dark
 
 // Kotlin doesn't have a concept of static-ness, so we have to do this to run code on startup
 private val setupTheming: Unit = run {
@@ -75,19 +75,21 @@ val workHistoryFile: Path = mainFolder.resolve("workHistory.json")
  * The list of employees. This is loaded from [employeesFile] on startup
  * and saved to it when it changes or the program exits.
  */
-val employees = EmployeeContainer(Employees.ADMIN).apply {
-    if(employeesFile.exists()) {
-        val container = json.decodeFromStream<EmployeeContainer>(employeesFile.inputStream())
-        this.addAll(container)
-    }
+val employees = EmployeeContainer(Employees.ADMIN)
+
+/**
+ * Saves [employees] and [WorkHistory] to their respective files.
+ */
+fun save() {
+    json.encodeToStream(employees, employeesFile.outputStream())
+    WorkHistory.save(workHistoryFile)
 }
 
-private val setupLoadingAndSaving: Unit = run {
-    addShutdownHook { // super lazy way to save on exit but it yk works
-        json.encodeToStream(employees, employeesFile.outputStream())
-        WorkHistory.save(workHistoryFile)
-    }
-
+/**
+ * Loads [employees] and [WorkHistory] from their respective files. If the main folder doesn't exist, it is created.
+ * Data is also migrated from legacy locations to the new one.
+ */
+fun load() {
     if(!mainFolder.isDirectory()) mainFolder.deleteIfExists()
     if (!mainFolder.exists()) {
         println("creating $mainFolder")
@@ -102,8 +104,6 @@ private val setupLoadingAndSaving: Unit = run {
         if(oldMainFolder.exists() && os != OperatingSystem.LINUX) { // on linux old folder is the same as the new one
             // copy the old folder to the new one
             oldMainFolder.copyToRecursively(mainFolder, overwrite = false, followLinks = true)
-
-            @OptIn(ExperimentalPathApi::class)
             oldMainFolder.deleteRecursively()
         }
     }
@@ -117,6 +117,11 @@ private val setupLoadingAndSaving: Unit = run {
         }
     }
 
+    val newEmployees = json.decodeFromStream<EmployeeContainer>(employeesFile.inputStream())
+    for(employee in newEmployees) {
+        employees.replaceEmployee(employee)
+    }
+
     if(workHistoryFile.isDirectory()) workHistoryFile.deleteRecursively()
     if (!workHistoryFile.exists()) {
         workHistoryFile.writeText("""{"currentPeriod":[],"clockedIn":[],"payPeriods":[]}""", Charsets.UTF_8, StandardOpenOption.CREATE)
@@ -127,6 +132,11 @@ private val setupLoadingAndSaving: Unit = run {
     }
 
     WorkHistory.load(workHistoryFile)
+}
+
+private val setupLoadingAndSaving: Unit = run {
+    addShutdownHook("SaveOnExit", ::save) // super lazy way to save on exit but yk it works
+    load()
 }
 
 /**

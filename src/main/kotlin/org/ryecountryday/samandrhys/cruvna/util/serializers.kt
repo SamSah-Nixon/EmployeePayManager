@@ -15,6 +15,7 @@ import org.ryecountryday.samandrhys.cruvna.backend.PayPeriod
 import org.ryecountryday.samandrhys.cruvna.backend.PayStrategy
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Address
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
+import org.ryecountryday.samandrhys.cruvna.backend.employee.Employees
 import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkEntry
 import java.time.Instant
 import java.time.LocalDate
@@ -137,6 +138,11 @@ object EmployeeSerializer : KSerializer<Employee> {
     }
 
     override fun serialize(encoder: Encoder, value: Employee) {
+        if(value == Employees.ADMIN) {
+            encoder.encodeString("admin")
+            return
+        }
+
         encoder.encodeStructure(descriptor) {
             encodeStringElement(descriptor, 0, value.lastName)
             encodeStringElement(descriptor, 1, value.firstName)
@@ -149,6 +155,12 @@ object EmployeeSerializer : KSerializer<Employee> {
     }
 
     override fun deserialize(decoder: Decoder): Employee {
+        try {
+            if (decoder.decodeString() == "admin") {
+                return Employees.ADMIN
+            }
+        } catch (_: Exception) {} // If it's not "admin", continue with the normal deserialization
+
         var lastName: String? = null
         var firstName: String? = null
         var id: String? = null

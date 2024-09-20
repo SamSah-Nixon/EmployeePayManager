@@ -86,7 +86,7 @@ object WorkHistory {
         val element = json.parseToJsonElement(path.readText())
         currentPeriod = json.decodeFromJsonElement(element.jsonObject["currentPeriod"]!!)
         clockedIn.addAll(json.decodeFromJsonElement(element.jsonObject["clockedIn"].let {
-            it ?: element.jsonObject["entries"]!!
+            it ?: element.jsonObject["entries"]!! // Backwards compatibility - old save files used "entries" instead of "clockedIn"
         }))
         payPeriods.addAll(json.decodeFromJsonElement(element.jsonObject["payPeriods"]!!))
     }

@@ -8,6 +8,7 @@ package org.ryecountryday.samandrhys.cruvna.backend.timing
 import kotlinx.serialization.Serializable
 import org.ryecountryday.samandrhys.cruvna.util.*
 import java.time.Instant
+import java.util.*
 
 /**
  * Represents a single work entry for an employee.
@@ -31,5 +32,20 @@ class WorkEntry(val start: Instant = Instant.now(), var end: Instant? = null, va
 
     override fun toString(): String {
         return "WorkEntry{\"$id\";start=$start;end=$end}"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is WorkEntry) return false
+
+        return equals(
+            start to other.start,
+            end to other.end,
+            id to other.id
+        )
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(id, start, end)
     }
 }

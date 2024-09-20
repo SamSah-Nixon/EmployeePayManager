@@ -3,7 +3,7 @@
  * Copyright (C) 2024 Rhys and Sam. All rights reserved.
  */
 
-package org.ryecountryday.samandrhys.cruvna.ui
+package org.ryecountryday.samandrhys.cruvna.ui.admin
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -35,6 +35,7 @@ import org.ryecountryday.samandrhys.cruvna.backend.employee.Address
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Employees
 import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkHistory
+import org.ryecountryday.samandrhys.cruvna.ui.*
 import org.ryecountryday.samandrhys.cruvna.util.LocalDate
 import org.ryecountryday.samandrhys.cruvna.util.formatTime
 import org.ryecountryday.samandrhys.cruvna.util.isValidMoneyString
@@ -351,7 +352,11 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>)
                     },
                     modifier = Modifier.width(400.dp)
                 ) {
-                    Text("Pay Type: ${payStrategy.type}")
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Pay Type: ${payStrategy.type}")
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Icon(Icons.Outlined.KeyboardArrowDown, contentDescription = "Change Pay Type")
+                    }
                 }
 
                 var rateString by remember { mutableStateOf(payStrategy.rate.toString()) }
@@ -531,7 +536,11 @@ fun PayTypeChangeDialog(value: MutableState<Boolean>, employee: Employee) {
                     },
                     modifier = Modifier.width(200.dp)
                 ) {
-                    Text("Pay Type: ${payStrategy.type}")
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Pay Type: ${payStrategy.type}")
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Icon(Icons.Outlined.KeyboardArrowDown, contentDescription = "Change Pay Type")
+                    }
                 }
 
                 var rateString by remember { mutableStateOf(payStrategy.rate.toString()) }

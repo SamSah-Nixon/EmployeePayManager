@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.materialPath
 import androidx.compose.material3.*
+import androidx.compose.material3.Tab
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -219,6 +220,46 @@ fun InlineDatePicker(label: String, state: DatePickerState, modifier: Modifier =
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun CoolTabRow(
+    entries: Map<String, @Composable () -> Unit>,
+    secondary: Boolean = false,
+    defaultTab: Int = 0
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        var tab by remember { mutableStateOf(defaultTab) }
+
+        val content = @Composable {
+            entries.keys.forEachIndexed { index, title ->
+                Tab(
+                    text = { Text(title, color = MaterialTheme.colors.onBackground) },
+                    selected = tab == index,
+                    onClick = { tab = index }
+                )
+            }
+        }
+
+        if(secondary) {
+            SecondaryTabRow(
+                selectedTabIndex = tab,
+                containerColor = MaterialTheme.colors.background,
+                tabs = content
+            )
+        } else {
+            PrimaryTabRow(
+                selectedTabIndex = tab,
+                containerColor = MaterialTheme.colors.background,
+                tabs = content
+            )
+        }
+
+        Box { // use Box to reset the alignments in the Column
+            entries.values.elementAt(tab).invoke()
         }
     }
 }
