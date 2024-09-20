@@ -3,7 +3,7 @@ androidx-lifecycle = "2.8.0"
 compose-plugin = "1.6.11"
 kotlin = "2.0.20"
 kotlinx-coroutines = "1.8.1"
-kotlinx-seriazliation = "1.7.2"
+kotlinx-seriazliation = "1.7.3"
 
 [libraries]
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }

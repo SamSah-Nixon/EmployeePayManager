@@ -17,24 +17,23 @@ kotlin {
     }
     
     sourceSets {
-        val desktopMain by getting
-        
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.ui)
-            implementation(compose.material3)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(rootProject)
-            implementation(libs.kotlinx.serialization.json)
-        }
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutines.swing)
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material)
+                implementation(compose.ui)
+                implementation(compose.material3)
+                implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
+                implementation(libs.androidx.lifecycle.viewmodel)
+                implementation(libs.androidx.lifecycle.runtime.compose)
+                implementation(rootProject)
+                implementation(libs.kotlinx.serialization.json)
+
+                implementation(compose.desktop.currentOs)
+                implementation(libs.kotlinx.coroutines.swing)
+            }
         }
     }
 }
@@ -46,8 +45,6 @@ afterEvaluate {
     }
 
     tasks.named<AbstractJPackageTask>("createDistributable") {
-        mangleJarFilesNames = true
-
         destinationDir = rootProject.file("build/dist")
     }
 }
