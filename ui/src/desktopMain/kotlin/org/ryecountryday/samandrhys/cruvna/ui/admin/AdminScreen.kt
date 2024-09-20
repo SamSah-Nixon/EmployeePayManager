@@ -31,8 +31,24 @@ import org.ryecountryday.samandrhys.cruvna.ui.admin.actions.ActionsScreen
  */
 @Composable
 fun AdminScreen(employees: MutableSet<Employee>, exitFunc: () -> Unit) {
-    // Exit button
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
+        // Main content
+        CoolTabRow(
+            mapOf(
+                "All Employees" to { EmployeeList(employees) },
+                "Clocked In Employees" to {
+                    EmployeeList(
+                        employees.filter { WorkHistory.isClockedIn(it.id) }.toMutableSet(),
+                        mainList = false,
+                        defaultComparator = Employees.compareByTimeWorking
+                    )
+                },
+                "Actions" to { ActionsScreen(employees) }
+            ),
+            secondary = true
+        )
+
+        // Exit button
         Row(modifier = Modifier.align(Alignment.BottomEnd)) {
             Button(
                 onClick = exitFunc,
@@ -46,20 +62,4 @@ fun AdminScreen(employees: MutableSet<Employee>, exitFunc: () -> Unit) {
             }
         }
     }
-
-    // Main content
-    CoolTabRow(
-        mapOf(
-            "All Employees" to { EmployeeList(employees) },
-            "Clocked In Employees" to {
-                EmployeeList(
-                    employees.filter { WorkHistory.isClockedIn(it.id) }.toMutableSet(),
-                    mainList = false,
-                    defaultComparator = Employees.compareByTimeWorking
-                )
-            },
-            "Actions" to { ActionsScreen(employees) }
-        ),
-        secondary = true
-    )
 }
