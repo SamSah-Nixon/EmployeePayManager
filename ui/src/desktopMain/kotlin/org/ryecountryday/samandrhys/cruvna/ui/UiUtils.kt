@@ -334,7 +334,7 @@ fun InlineTimePicker(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun CoolTabRow(
-    entries: Map<String, @Composable () -> Unit>,
+    entries: Map<Pair<String, ImageVector?>, @Composable () -> Unit>,
     secondary: Boolean = false,
     defaultTab: Int = 0
 ) {
@@ -344,9 +344,14 @@ fun CoolTabRow(
         val content = @Composable {
             entries.keys.forEachIndexed { index, title ->
                 Tab(
-                    text = { Text(title, color = MaterialTheme.colors.onBackground) },
+                    text = { Text(title.first, color = MaterialTheme.colors.onBackground) },
                     selected = tab == index,
-                    onClick = { tab = index }
+                    onClick = { tab = index },
+                    icon = title.second?.let {{ Icon(
+                        imageVector = it,
+                        contentDescription = title.first,
+                        tint = MaterialTheme.colors.onBackground
+                    ) }}
                 )
             }
         }
@@ -439,12 +444,6 @@ inline fun materialIcon(
 
 @Composable
 fun Modifier.verticalScroll() = this.verticalScroll(rememberScrollState())
-
-object EmptyShape : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-        return Outline.Generic(Path())
-    }
-}
 
 /**
  * An icon with 4 small people in a 2x2 grid

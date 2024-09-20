@@ -5,13 +5,11 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.DateRange
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
 import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkEntry
 import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkHistory
 import org.ryecountryday.samandrhys.cruvna.ui.InlineTimePicker
@@ -21,17 +19,16 @@ import org.ryecountryday.samandrhys.cruvna.ui.verticalScroll
 import org.ryecountryday.samandrhys.cruvna.util.*
 
 @Composable
-fun EditScreen(employees: MutableSet<Employee>) {
+fun EditScreen() {
     var screen by remember { mutableStateOf(0) }
 
     // main content
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
-        when (screen) {
-            0 -> EditCurrentPayPeriodScreen()
-            1 -> ViewPastPayPeriodsScreen()
-        }
+    when (screen) {
+        0 -> EditCurrentPayPeriodScreen()
+        1 -> ViewPastPayPeriodsScreen()
     }
 
+    // side menu
     Column(modifier = Modifier.padding(start = 6.dp, top = 6.dp)) {
         Button(onClick = { screen = 0 }) {
             Icon(
@@ -65,7 +62,6 @@ private fun EditCurrentPayPeriodScreen() {
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 private fun EditWorkEntry(entry: WorkEntry) {
     var show by remember { mutableStateOf(false) }
     Button(
@@ -113,6 +109,14 @@ private fun EditWorkEntry(entry: WorkEntry) {
                             },
                             modifier = modifier
                         )
+                    }
+
+                    Button(
+                        onClick = { entry.id = "\u0000" }, // mark the entry to be deleted
+                        modifier = Modifier.padding(8.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
+                    ) {
+                        Text("Delete Entry")
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                 }

@@ -8,9 +8,9 @@ import org.ryecountryday.samandrhys.cruvna.ui.CoolTabRow
 fun ActionsScreen(employees: MutableSet<Employee>) {
     CoolTabRow(
         mapOf(
-            "Payroll" to { PayrollScreen(employees) },
-            "Edit Work History" to { EditScreen(employees) },
-            "Files" to { FilesScreen() },
+            ("Payroll" to null) to { PayrollScreen(employees) },
+            ("Edit Work History" to null) to { EditScreen() },
+            ("Files" to null) to { FilesScreen() },
         ),
         defaultTab = 1
     )

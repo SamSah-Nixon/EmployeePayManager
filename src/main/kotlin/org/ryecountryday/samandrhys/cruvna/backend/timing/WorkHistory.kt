@@ -68,7 +68,7 @@ object WorkHistory {
                 val entry2 = WorkEntry(startOfNewDay, it.end, id)
 
                 //If a work entry spreads across multiple pay periods add the second day into the new pay period
-                if(it.start.toLocalDate().isEqual(payPeriods[0].payPeriodStart)) {
+                if(it.start.toLocalDate().isEqual(payPeriods.getOrNull(0)?.payPeriodStart)) {
                     payPeriods[0].workEntries.add(entry2)
                 } else {
                     currentPeriod.add(entry2)
@@ -89,6 +89,8 @@ object WorkHistory {
             it ?: element.jsonObject["entries"]!! // Backwards compatibility - old save files used "entries" instead of "clockedIn"
         }))
         payPeriods.addAll(json.decodeFromJsonElement(element.jsonObject["payPeriods"]!!))
+
+        clockedIn.removeIf { it.end != null }
     }
 
     fun save(path: Path) {
