@@ -46,7 +46,6 @@ import org.ryecountryday.samandrhys.cruvna.util.toDateString
  * This also includes a floating action button to add a new employee (see [AddEmployeeDialog]).
  * @param employees The list of employees to display.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmployeeList(
     employees: MutableSet<Employee>,
@@ -55,6 +54,10 @@ fun EmployeeList(
 ) {
     val employeeContainerState =
         remember { mutableStateOf(EmployeeContainer().apply { addAll(employees) }, neverEqualPolicy()) }
+
+    fun refresh() {
+        employeeContainerState.value = EmployeeContainer().apply { addAll(employees) }
+    }
 
     var comparator by remember { mutableStateOf(defaultComparator) }
     var ascending by remember { mutableStateOf(true) }
@@ -78,41 +81,44 @@ fun EmployeeList(
             modifier = Modifier.width(600.dp).padding(8.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(textColor = MaterialTheme.colors.onBackground)
         )
-        for (employee in employeeContainerState.value.sortedWith(
-            // Force admin to be at the top; then sort as configured
-            Employees.adminFirstComparator.thenComparing(if (ascending) comparator else comparator.reversed())
-        )) {
-            EmployeeCard(employee, !mainList)
-        }
 
-        if (employees.isEmpty()) {
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    if (mainList) "No employees found" else "No employees are currently clocked in",
-                    style = MaterialTheme.typography.h4.copy(color = MaterialTheme.colors.onBackground)
-                )
+        Column(modifier = Modifier.verticalScroll().fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            for (employee in employeeContainerState.value.sortedWith(
+                // Force admin to be at the top; then sort as configured
+                Employees.adminFirstComparator.thenComparing(if (ascending) comparator else comparator.reversed())
+            )) {
+                EmployeeCard(employee, !mainList)
             }
-        }
 
-        if (mainList) {
-            // a line that tells the user how to add a new employee - only shown in the main list when the button itself is shown too
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    "Create a new employee by clicking ",
-                    style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onBackground)
-                )
-                FloatingActionButton(
-                    onClick = { addDialogState.value = true },
-                    modifier = Modifier.padding(4.dp).size(24.dp),
-                    shape = CircleShape
+            if (employees.isEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(Icons.Filled.Add, contentDescription = "Add Employee", modifier = Modifier.size(16.dp))
+                    Text(
+                        if (mainList) "No employees found" else "No employees are currently clocked in",
+                        style = MaterialTheme.typography.h4.copy(color = MaterialTheme.colors.onBackground)
+                    )
+                }
+            }
+
+            if (mainList) {
+                // a line that tells the user how to add a new employee - only shown in the main list when the button itself is shown too
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        "Create a new employee by clicking ",
+                        style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onBackground)
+                    )
+                    FloatingActionButton(
+                        onClick = { addDialogState.value = true },
+                        modifier = Modifier.padding(4.dp).size(24.dp),
+                        shape = CircleShape
+                    ) {
+                        Icon(Icons.Filled.Add, contentDescription = "Add Employee", modifier = Modifier.size(16.dp))
+                    }
                 }
             }
         }
@@ -125,7 +131,7 @@ fun EmployeeList(
         }
 
         if (addDialogState.value != false) {
-            AddEmployeeDialog(addDialogState, employees)
+            AddEmployeeDialog(addDialogState, employees, ::refresh)
         }
     }
 
@@ -135,7 +141,7 @@ fun EmployeeList(
         Card(border = mutedBorder()) {
             Column(modifier = Modifier.padding(4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Button(
-                    onClick = { employeeContainerState.value = EmployeeContainer().apply { addAll(employees) } },
+                    onClick = ::refresh,
                     colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
                     border = mutedBorder()
                 ) {
@@ -315,7 +321,7 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>) {
+fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>, refresh: () -> Unit) {
     Dialog(
         onDismissRequest = { value.value = false },
         properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
@@ -485,6 +491,7 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>)
                             value.value = "Employee with ID $id already exists"
                         } else {
                             value.value = false
+                            refresh()
                         }
                     }) {
                         Text("Add Employee")

@@ -18,7 +18,7 @@ import java.util.*
  * @property id The ID of the work entry
  */
 @Serializable(with = WorkEntrySerializer::class)
-class WorkEntry(val start: Instant = Instant.now(), var end: Instant? = null, val id: String) : Comparable<WorkEntry> {
+class WorkEntry(var start: Instant = Instant.now(), var end: Instant? = null, var id: String) : Comparable<WorkEntry> {
 
     val durationSeconds: Long
         get() = (end?.epochSecond ?: Instant.now().epochSecond) - start.epochSecond

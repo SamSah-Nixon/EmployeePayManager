@@ -8,6 +8,8 @@ package org.ryecountryday.samandrhys.cruvna.ui
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.DropdownMenu
@@ -329,6 +331,9 @@ inline fun materialIcon(
     viewportHeight = viewportHeight,
     autoMirror = autoMirror
 ).block().build()
+
+@Composable
+fun Modifier.verticalScroll() = this.verticalScroll(rememberScrollState())
 
 /**
  * An icon with 4 small people in a 2x2 grid

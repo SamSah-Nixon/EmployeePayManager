@@ -55,6 +55,17 @@ fun Instant.toLocalDate(): LocalDate {
 }
 
 /**
+ * Turns an [Instant] into an instance of [LocalDateTime]. Any time of day information will be discarded.
+ */
+fun Instant.toLocalDateTime(): LocalDateTime {
+    return this.atZone(ZoneId.systemDefault()).toLocalDateTime()
+}
+
+fun LocalDateTime.toNiceString(): String {
+    return "${monthValue}/${dayOfMonth}/${year} ${hour}:${minute}"
+}
+
+/**
  * Turns this [LocalDate] into an instance of [Instant]. The time of day will be midnight in the system default time zone.
  */
 fun LocalDate.toInstant(): Instant {
