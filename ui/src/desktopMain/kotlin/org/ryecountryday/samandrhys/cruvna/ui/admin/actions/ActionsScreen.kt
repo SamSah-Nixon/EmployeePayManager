@@ -1,7 +1,6 @@
 package org.ryecountryday.samandrhys.cruvna.ui.admin.actions
 
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
 import org.ryecountryday.samandrhys.cruvna.ui.CoolTabRow
 
@@ -11,13 +10,8 @@ fun ActionsScreen(employees: MutableSet<Employee>) {
         mapOf(
             "Payroll" to { PayrollScreen(employees) },
             "Edit Work History" to { EditScreen(employees) },
-            "Save/Load" to { SaveLoadScreen() },
+            "Files" to { FilesScreen() },
         ),
         defaultTab = 1
     )
-}
-
-@Composable
-private fun PayrollScreen(employees: MutableSet<Employee>) {
-    Text("TODO")
 }

@@ -28,7 +28,7 @@ import kotlin.io.path.deleteRecursively
  * - Delete All Data and Exit - deletes all data from disk and exits the program (with confirmation screen)
  */
 @Composable
-fun SaveLoadScreen() {
+fun FilesScreen() {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
         Button(
             onClick = { os.openFolder(mainFolder) },
