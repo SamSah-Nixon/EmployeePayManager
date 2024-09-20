@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
+import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.Icon
@@ -26,13 +27,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathBuilder
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import org.ryecountryday.samandrhys.cruvna.util.LocalDate
 import org.ryecountryday.samandrhys.cruvna.util.toDateString
+import java.time.LocalTime
 
 /**
  * An [OutlinedCard] with a label that overlaps the top border. The card's content is defined by [content], and the label
@@ -180,9 +189,7 @@ fun <T> DropdownButton(
 @OptIn(ExperimentalMaterial3Api::class)
 fun InlineDatePicker(label: String, state: DatePickerState, modifier: Modifier = Modifier) {
     var showDatePicker by remember { mutableStateOf(false) }
-    Box(
-        modifier = modifier
-    ) {
+    Box(modifier = modifier) {
         OutlinedTextField(
             value = LocalDate(state.selectedDateMillis).toDateString(),
             onValueChange = {},
@@ -220,6 +227,104 @@ fun InlineDatePicker(label: String, state: DatePickerState, modifier: Modifier =
                             weekdayContentColor = MaterialTheme.colors.onSurface,
                         )
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun InlineTimePicker(
+    label: String,
+    initialTime: LocalTime = LocalTime.now(),
+    onTimeChange: (LocalTime) -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    var state by remember { mutableStateOf(initialTime) }
+
+    Box(modifier = modifier) {
+        OutlinedTextField(
+            value = LocalTime.of(state.hour, state.minute).toString(),
+            onValueChange = {},
+            label = { Text(label) },
+            readOnly = true,
+            trailingIcon = {
+                IconButton(onClick = { showTimePicker = !showTimePicker }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Clock,
+                        contentDescription = "Select date"
+                    )
+                }
+            },
+            modifier = Modifier.fillMaxWidth().height(64.dp)
+        )
+
+        if (showTimePicker) {
+            Popup(
+                onDismissRequest = { showTimePicker = false },
+                alignment = Alignment.TopStart,
+                properties = PopupProperties(focusable = true)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .offset(y = 64.dp)
+                        .height(200.dp)
+                        .shadow(elevation = 4.dp)
+                        .background(MaterialTheme.colors.surface)
+                        .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        val colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background)
+                        LabeledCard(
+                            value = "Hour",
+                            border = BorderStroke(1.dp, MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled)),
+                            modifier = Modifier.width(100.dp),
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
+                                Text(
+                                    state.hour.toString(),
+                                    style = MaterialTheme.typography.h6,
+                                    modifier = Modifier.padding(horizontal = 8.dp)
+                                )
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(48.dp)) {
+                                    Button(onClick = {
+                                        state = LocalTime.of((state.hour + 1) % 24, state.minute)
+                                        onTimeChange(state)
+                                    }, colors = colors, content = {})
+                                    Button(onClick = {
+                                        state = LocalTime.of((state.hour - 1) % 24, state.minute)
+                                        onTimeChange(state)
+                                    }, colors = colors, content = {})
+                                }
+                            }
+                        }
+                        Text(":", style = MaterialTheme.typography.h5, modifier = Modifier.padding(horizontal = 8.dp))
+                        LabeledCard(
+                            value = "Minute",
+                            border = BorderStroke(1.dp, MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled)),
+                            modifier = Modifier.width(100.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
+                                Text(
+                                    state.minute.toString(),
+                                    style = MaterialTheme.typography.h6,
+                                    modifier = Modifier.padding(horizontal = 8.dp)
+                                )
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(48.dp)) {
+                                    Button(onClick = {
+                                        state = LocalTime.of(state.hour, (state.minute + 1) % 60)
+                                        onTimeChange(state)
+                                    }, colors = colors, content = {})
+                                    Button(onClick = {
+                                        state = LocalTime.of(state.hour, (state.minute - 1) % 60)
+                                        onTimeChange(state)
+                                    }, colors = colors, content = {})
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -335,6 +440,12 @@ inline fun materialIcon(
 @Composable
 fun Modifier.verticalScroll() = this.verticalScroll(rememberScrollState())
 
+object EmptyShape : Shape {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+        return Outline.Generic(Path())
+    }
+}
+
 /**
  * An icon with 4 small people in a 2x2 grid
  */
@@ -390,6 +501,183 @@ val Icons.Outlined.FolderOpen: ImageVector by lazy {
             moveTo(160.0f, 320.0f)
             verticalLineToRelative(-80.0f)
             verticalLineToRelative(80.0f)
+            close()
+        }
+    }
+}
+
+/**
+ * An icon with a clipboard and a clock in the bottom right corner
+ */
+val Icons.Outlined.ClockWithClipboard: ImageVector by lazy {
+    materialIcon("Outlined.ClipboardWithClock", viewportHeight = 960f, viewportWith = 960f) {
+        materialPath {
+            moveTo(680.0f, 880.0f)
+            quadToRelative(-83.0f, 0.0f, -141.5f, -58.5f)
+            reflectiveQuadTo(480.0f, 680.0f)
+            quadToRelative(0.0f, -83.0f, 58.5f, -141.5f)
+            reflectiveQuadTo(680.0f, 480.0f)
+            quadToRelative(83.0f, 0.0f, 141.5f, 58.5f)
+            reflectiveQuadTo(880.0f, 680.0f)
+            quadToRelative(0.0f, 83.0f, -58.5f, 141.5f)
+            reflectiveQuadTo(680.0f, 880.0f)
+            close()
+            moveTo(747.0f, 775.0f)
+            lineTo(775.0f, 747.0f)
+            lineTo(700.0f, 672.0f)
+            verticalLineToRelative(-112.0f)
+            horizontalLineToRelative(-40.0f)
+            verticalLineToRelative(128.0f)
+            lineToRelative(87.0f, 87.0f)
+            close()
+            moveTo(200.0f, 840.0f)
+            quadToRelative(-33.0f, 0.0f, -56.5f, -23.5f)
+            reflectiveQuadTo(120.0f, 760.0f)
+            verticalLineToRelative(-560.0f)
+            quadToRelative(0.0f, -33.0f, 23.5f, -56.5f)
+            reflectiveQuadTo(200.0f, 120.0f)
+            horizontalLineToRelative(167.0f)
+            quadToRelative(11.0f, -35.0f, 43.0f, -57.5f)
+            reflectiveQuadToRelative(70.0f, -22.5f)
+            quadToRelative(40.0f, 0.0f, 71.5f, 22.5f)
+            reflectiveQuadTo(594.0f, 120.0f)
+            horizontalLineToRelative(166.0f)
+            quadToRelative(33.0f, 0.0f, 56.5f, 23.5f)
+            reflectiveQuadTo(840.0f, 200.0f)
+            verticalLineToRelative(250.0f)
+            quadToRelative(-18.0f, -13.0f, -38.0f, -22.0f)
+            reflectiveQuadToRelative(-42.0f, -16.0f)
+            verticalLineToRelative(-212.0f)
+            horizontalLineToRelative(-80.0f)
+            verticalLineToRelative(120.0f)
+            lineTo(280.0f, 320.0f)
+            verticalLineToRelative(-120.0f)
+            horizontalLineToRelative(-80.0f)
+            verticalLineToRelative(560.0f)
+            horizontalLineToRelative(212.0f)
+            quadToRelative(7.0f, 22.0f, 16.0f, 42.0f)
+            reflectiveQuadToRelative(22.0f, 38.0f)
+            lineTo(200.0f, 840.0f)
+            close()
+            moveTo(480.0f, 200.0f)
+            quadToRelative(17.0f, 0.0f, 28.5f, -11.5f)
+            reflectiveQuadTo(520.0f, 160.0f)
+            quadToRelative(0.0f, -17.0f, -11.5f, -28.5f)
+            reflectiveQuadTo(480.0f, 120.0f)
+            quadToRelative(-17.0f, 0.0f, -28.5f, 11.5f)
+            reflectiveQuadTo(440.0f, 160.0f)
+            quadToRelative(0.0f, 17.0f, 11.5f, 28.5f)
+            reflectiveQuadTo(480.0f, 200.0f)
+            close()
+        }
+    }
+}
+
+val Icons.Outlined.Clock: ImageVector by lazy {
+    materialIcon("Outlined.Clock", viewportHeight = 960f, viewportWith = 960f) {
+        materialPath {
+            moveToRelative(612.0f, 668.0f)
+            lineToRelative(56.0f, -56.0f)
+            lineToRelative(-148.0f, -148.0f)
+            verticalLineToRelative(-184.0f)
+            horizontalLineToRelative(-80.0f)
+            verticalLineToRelative(216.0f)
+            lineToRelative(172.0f, 172.0f)
+            close()
+            moveTo(480.0f, 880.0f)
+            quadToRelative(-83.0f, 0.0f, -156.0f, -31.5f)
+            reflectiveQuadTo(197.0f, 763.0f)
+            quadToRelative(-54.0f, -54.0f, -85.5f, -127.0f)
+            reflectiveQuadTo(80.0f, 480.0f)
+            quadToRelative(0.0f, -83.0f, 31.5f, -156.0f)
+            reflectiveQuadTo(197.0f, 197.0f)
+            quadToRelative(54.0f, -54.0f, 127.0f, -85.5f)
+            reflectiveQuadTo(480.0f, 80.0f)
+            quadToRelative(83.0f, 0.0f, 156.0f, 31.5f)
+            reflectiveQuadTo(763.0f, 197.0f)
+            quadToRelative(54.0f, 54.0f, 85.5f, 127.0f)
+            reflectiveQuadTo(880.0f, 480.0f)
+            quadToRelative(0.0f, 83.0f, -31.5f, 156.0f)
+            reflectiveQuadTo(763.0f, 763.0f)
+            quadToRelative(-54.0f, 54.0f, -127.0f, 85.5f)
+            reflectiveQuadTo(480.0f, 880.0f)
+            close()
+            moveTo(480.0f, 480.0f)
+            close()
+            moveTo(480.0f, 800.0f)
+            quadToRelative(133.0f, 0.0f, 226.5f, -93.5f)
+            reflectiveQuadTo(800.0f, 480.0f)
+            quadToRelative(0.0f, -133.0f, -93.5f, -226.5f)
+            reflectiveQuadTo(480.0f, 160.0f)
+            quadToRelative(-133.0f, 0.0f, -226.5f, 93.5f)
+            reflectiveQuadTo(160.0f, 480.0f)
+            quadToRelative(0.0f, 133.0f, 93.5f, 226.5f)
+            reflectiveQuadTo(480.0f, 800.0f)
+            close()
+        }
+    }
+}
+
+val Icons.Outlined.BriefcaseWithClock: ImageVector by lazy {
+    materialIcon("Outlined.BriefcaseWithClock", viewportHeight = 960f, viewportWith = 960f) {
+        materialPath {
+            moveTo(160.0f, 760.0f)
+            verticalLineToRelative(-440.0f)
+            verticalLineToRelative(440.0f)
+            verticalLineToRelative(-15.0f)
+            verticalLineToRelative(15.0f)
+            close()
+            moveTo(160.0f, 840.0f)
+            quadToRelative(-33.0f, 0.0f, -56.5f, -23.5f)
+            reflectiveQuadTo(80.0f, 760.0f)
+            verticalLineToRelative(-440.0f)
+            quadToRelative(0.0f, -33.0f, 23.5f, -56.5f)
+            reflectiveQuadTo(160.0f, 240.0f)
+            horizontalLineToRelative(160.0f)
+            verticalLineToRelative(-80.0f)
+            quadToRelative(0.0f, -33.0f, 23.5f, -56.5f)
+            reflectiveQuadTo(400.0f, 80.0f)
+            horizontalLineToRelative(160.0f)
+            quadToRelative(33.0f, 0.0f, 56.5f, 23.5f)
+            reflectiveQuadTo(640.0f, 160.0f)
+            verticalLineToRelative(80.0f)
+            horizontalLineToRelative(160.0f)
+            quadToRelative(33.0f, 0.0f, 56.5f, 23.5f)
+            reflectiveQuadTo(880.0f, 320.0f)
+            verticalLineToRelative(171.0f)
+            quadToRelative(-18.0f, -13.0f, -38.0f, -22.5f)
+            reflectiveQuadTo(800.0f, 452.0f)
+            verticalLineToRelative(-132.0f)
+            lineTo(160.0f, 320.0f)
+            verticalLineToRelative(440.0f)
+            horizontalLineToRelative(283.0f)
+            quadToRelative(3.0f, 21.0f, 9.0f, 41.0f)
+            reflectiveQuadToRelative(15.0f, 39.0f)
+            lineTo(160.0f, 840.0f)
+            close()
+            moveTo(400.0f, 240.0f)
+            horizontalLineToRelative(160.0f)
+            verticalLineToRelative(-80.0f)
+            lineTo(400.0f, 160.0f)
+            verticalLineToRelative(80.0f)
+            close()
+            moveTo(720.0f, 920.0f)
+            quadToRelative(-83.0f, 0.0f, -141.5f, -58.5f)
+            reflectiveQuadTo(520.0f, 720.0f)
+            quadToRelative(0.0f, -83.0f, 58.5f, -141.5f)
+            reflectiveQuadTo(720.0f, 520.0f)
+            quadToRelative(83.0f, 0.0f, 141.5f, 58.5f)
+            reflectiveQuadTo(920.0f, 720.0f)
+            quadToRelative(0.0f, 83.0f, -58.5f, 141.5f)
+            reflectiveQuadTo(720.0f, 920.0f)
+            close()
+            moveTo(740.0f, 712.0f)
+            verticalLineToRelative(-112.0f)
+            horizontalLineToRelative(-40.0f)
+            verticalLineToRelative(128.0f)
+            lineToRelative(86.0f, 86.0f)
+            lineToRelative(28.0f, -28.0f)
+            lineToRelative(-74.0f, -74.0f)
             close()
         }
     }

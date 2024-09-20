@@ -8,6 +8,7 @@ package org.ryecountryday.samandrhys.cruvna.util
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
@@ -61,8 +62,18 @@ fun Instant.toLocalDateTime(): LocalDateTime {
     return this.atZone(ZoneId.systemDefault()).toLocalDateTime()
 }
 
+/**
+ * Turns a [LocalDateTime] into a [String]. The string will be in the format "MM/dd/yyyy hh:mm" by default.
+ */
 fun LocalDateTime.toNiceString(): String {
-    return "${monthValue}/${dayOfMonth}/${year} ${hour}:${minute}"
+    fun prefix0(num: Int): String {
+        return if (num < 10) "0$num" else num.toString()
+    }
+    return "${monthValue}/${dayOfMonth}/${year} ${hour}:${prefix0(minute)}"
+}
+
+fun LocalDate.withTime(time: LocalTime): LocalDateTime {
+    return LocalDateTime.of(this, time)
 }
 
 /**
