@@ -1,4 +1,4 @@
-package org.ryecountryday.samandrhys.cruvna.ui.admin
+package org.ryecountryday.samandrhys.cruvna.ui.admin.actions
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -10,25 +10,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
-import org.ryecountryday.samandrhys.cruvna.ui.*
+import org.ryecountryday.samandrhys.cruvna.ui.FolderOpen
+import org.ryecountryday.samandrhys.cruvna.ui.load
+import org.ryecountryday.samandrhys.cruvna.ui.mainFolder
+import org.ryecountryday.samandrhys.cruvna.ui.save
 import org.ryecountryday.samandrhys.cruvna.util.openFolder
 import org.ryecountryday.samandrhys.cruvna.util.os
 import org.ryecountryday.samandrhys.cruvna.util.removeShutdownHook
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.deleteRecursively
-
-@Composable
-fun ActionsScreen(employees: MutableSet<Employee>) {
-    CoolTabRow(
-        mapOf(
-            "Payroll" to { PayrollScreen(employees) },
-            "Edit Work History" to { EditWorkHistoryScreen(employees) },
-            "Save/Load" to { SaveLoadScreen() },
-        ),
-        defaultTab = 1
-    )
-}
 
 /**
  * Screen with 4 buttons:
@@ -38,7 +28,7 @@ fun ActionsScreen(employees: MutableSet<Employee>) {
  * - Delete All Data and Exit - deletes all data from disk and exits the program (with confirmation screen)
  */
 @Composable
-private fun SaveLoadScreen() {
+fun SaveLoadScreen() {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
         Button(
             onClick = { os.openFolder(mainFolder) },
@@ -155,15 +145,4 @@ private fun DeleteConfirmationPopup(exit: () -> Unit) {
             }
         }
     }
-
-}
-
-@Composable
-private fun EditWorkHistoryScreen(employees: MutableSet<Employee>) {
-    Text("TODO")
-}
-
-@Composable
-private fun PayrollScreen(employees: MutableSet<Employee>) {
-    Text("TODO")
 }

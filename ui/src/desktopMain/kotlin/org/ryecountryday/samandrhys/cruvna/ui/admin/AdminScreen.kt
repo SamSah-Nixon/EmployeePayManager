@@ -24,13 +24,14 @@ import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Employees
 import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkHistory
 import org.ryecountryday.samandrhys.cruvna.ui.CoolTabRow
+import org.ryecountryday.samandrhys.cruvna.ui.admin.actions.ActionsScreen
 
 /**
  * Main screen for viewing all employees and their status.
  */
 @Composable
 fun AdminScreen(employees: MutableSet<Employee>, exitFunc: () -> Unit) {
-    // Admin controls
+    // Exit button
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
         Row(modifier = Modifier.align(Alignment.BottomEnd)) {
             Button(

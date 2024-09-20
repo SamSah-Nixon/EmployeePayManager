@@ -46,6 +46,7 @@ import org.ryecountryday.samandrhys.cruvna.util.toDateString
  * This also includes a floating action button to add a new employee (see [AddEmployeeDialog]).
  * @param employees The list of employees to display.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmployeeList(
     employees: MutableSet<Employee>,
@@ -64,6 +65,19 @@ fun EmployeeList(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        var search by remember { mutableStateOf("") }
+        OutlinedTextField(
+            value = search,
+            onValueChange = {
+                search = it
+                employeeContainerState.value = EmployeeContainer().apply {
+                    addAll(employees.filter { employee -> employee.name.contains(search, ignoreCase = true) })
+                }
+            },
+            label = { Text("Search Employees") },
+            modifier = Modifier.width(600.dp).padding(8.dp),
+            colors = TextFieldDefaults.outlinedTextFieldColors(textColor = MaterialTheme.colors.onBackground)
+        )
         for (employee in employeeContainerState.value.sortedWith(
             // Force admin to be at the top; then sort as configured
             Employees.adminFirstComparator.thenComparing(if (ascending) comparator else comparator.reversed())
