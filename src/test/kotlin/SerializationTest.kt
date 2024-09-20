@@ -9,6 +9,7 @@ import org.ryecountryday.samandrhys.cruvna.backend.EmployeeContainer
 import org.ryecountryday.samandrhys.cruvna.backend.PayStrategy
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Address
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
+import org.ryecountryday.samandrhys.cruvna.backend.employee.Employees
 import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkEntry
 import org.ryecountryday.samandrhys.cruvna.util.parseDate
 import java.time.Instant
@@ -129,9 +130,10 @@ class SerializationTest {
     @Test
     fun `employee container`() {
         val c = EmployeeContainer(
+            Employees.ADMIN,
             Employee(
                 name = "Mr. Cruté",
-                id = "000100",
+                id = "12345",
                 pay = PayStrategy.Hourly(0),
                 dateOfBirth = parseDate("01/01/2000"),
                 address = Address("3 Five Cedar", "Rye Land", "New York", "11122-1111"),
@@ -155,10 +157,11 @@ class SerializationTest {
         val expected = """
             {
                 "employees": [
+                    "admin",
                     {
                         "lastName": "Cruté",
                         "firstName": "Mr.",
-                        "id": "000100",
+                        "id": "12345",
                         "pay": {
                             "type": "hourly",
                             "rate": 0.0

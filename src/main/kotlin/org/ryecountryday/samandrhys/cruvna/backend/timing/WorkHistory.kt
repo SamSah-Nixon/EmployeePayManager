@@ -51,7 +51,7 @@ object WorkHistory {
     }
 
     fun isClockedIn(id: String) : Boolean {
-        return getClockedInEntry(id) != null
+        return getClockedInEntry(id).let { it != null && it.end == null }
     }
 
     fun getClockedInEntry(id: String) : WorkEntry? {

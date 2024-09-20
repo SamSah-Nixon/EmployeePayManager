@@ -48,6 +48,9 @@ open class Employee(
     override fun compareTo(other: Employee) = Employees.defaultComparator.compare(this, other)
 
     override fun equals(other: Any?): Boolean {
+        if(this === Employees.ADMIN || other === Employees.ADMIN) { // admin is only equal to itself
+            return this === other
+        }
         return this === other || (other is Employee && this.id == other.id)
     }
 

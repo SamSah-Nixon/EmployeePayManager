@@ -16,7 +16,7 @@ class EmployeeTest {
     fun `test employee creation and name splitting`() {
         val e = Employee(
             name = "Mr. Cruté",
-            id = "000100",
+            id = "12345",
             pay = PayStrategy.Hourly(0),
             dateOfBirth = parseDate("01/01/2000"),
             address = Address("3 Five Cedar", "Rye Land", "New York", "11122-1111"),
@@ -37,12 +37,14 @@ class EmployeeTest {
         assertEquals("de Haan", e2.lastName)
 
         WorkHistory.clockIn("a")
-        WorkHistory.clockIn("000100")
-        assertEquals(WorkHistory.isClockedIn("a"), true)
-        assertEquals(WorkHistory.isClockedIn("000100"), true)
+        WorkHistory.clockIn("12345")
+        assertTrue(WorkHistory.isClockedIn("a"))
+        assertTrue(WorkHistory.isClockedIn("12345"))
         WorkHistory.clockOut("a")
-        WorkHistory.clockOut("000100")
-        assertEquals(WorkHistory.isClockedIn("a"), false)
-        assertEquals(WorkHistory.isClockedIn("000100"), false)
+        WorkHistory.clockOut("12345")
+        assertFalse(WorkHistory.isClockedIn("a"))
+        assertFalse(WorkHistory.isClockedIn("12345"))
+
+        assertFalse(WorkHistory.isClockedIn("no"))
     }
 }
