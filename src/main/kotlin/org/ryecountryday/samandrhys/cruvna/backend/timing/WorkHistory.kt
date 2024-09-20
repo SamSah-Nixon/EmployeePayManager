@@ -40,7 +40,8 @@ object WorkHistory {
      * false if a pay period with the same end date already exists
      */
     fun addPayPeriod(startDate: LocalDate, endDate: LocalDate): Boolean {
-        if(endDate.isEqual(payPeriods[0].payPeriodEnd)) return false
+        val previousEnd = payPeriods.getOrNull(0)
+        if(previousEnd != null && endDate.isEqual(previousEnd.payPeriodEnd)) return false
         payPeriods.addFirst(PayPeriod(startDate, endDate, mutableSetOf(*currentPeriod.toTypedArray())))
         currentPeriod.clear()
         return true

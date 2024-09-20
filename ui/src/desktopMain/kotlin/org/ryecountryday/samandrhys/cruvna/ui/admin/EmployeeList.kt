@@ -275,7 +275,7 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                         }
                     }
 
-                    LabeledCard("Birthday", modifier = modifier) { Text(employee.dateOfBirth.toDateString()) }
+                    LabeledCard("Date of Birth", modifier = modifier) { Text(employee.dateOfBirth.toDateString()) }
 
                     val showAddressChangeDialog = remember { mutableStateOf(false) }
                     LabeledButton(
