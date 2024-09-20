@@ -110,7 +110,7 @@ private fun ClockInPopup(
                 if(employee == Employees.ADMIN) {
                     Button(onClick = onAdminButtonClicked, modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Filled.FourPeople, contentDescription = "Admin", modifier = Modifier.padding(end = 8.dp))
+                            Icon(Icons.Filled.ShieldPerson, contentDescription = "Admin", modifier = Modifier.padding(end = 8.dp))
                             Text("Enter Admin Mode")
                         }
                     }

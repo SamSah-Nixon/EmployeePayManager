@@ -1,11 +1,7 @@
 package org.ryecountryday.samandrhys.cruvna.ui
 
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.materialPath
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.unit.dp
@@ -22,7 +18,7 @@ import androidx.compose.ui.unit.dp
  * left locales
  * @param block builder lambda to add paths to this vector asset
  */
-inline fun materialIcon(
+private inline fun materialIcon(
     name: String,
     viewportWith: Float = 24f,
     viewportHeight: Float = 24f,
@@ -58,9 +54,6 @@ private fun PathBuilder.person(x: Int, y: Int, scale: Float = 1.0F) {
     close()
 }
 
-@Composable
-fun Modifier.verticalScroll() = this.verticalScroll(rememberScrollState())
-
 /**
  * An icon with 4 small people in a 2x2 grid
  */
@@ -78,7 +71,7 @@ val Icons.Filled.FourPeople: ImageVector by lazy {
 /**
  * An icon with an open folder
  */
-val Icons.Outlined.FolderOpen: ImageVector by lazy {
+val Icons.Filled.FolderOpen: ImageVector by lazy {
     materialIcon("Outlined.FolderOpen", viewportHeight = 960f, viewportWith = 960f) {
         materialPath {
             moveTo(160.0f, 800.0f)
@@ -124,7 +117,7 @@ val Icons.Outlined.FolderOpen: ImageVector by lazy {
 /**
  * An icon with a clipboard and a clock in the bottom right corner
  */
-val Icons.Filled.ClockWithClipboard: ImageVector by lazy {
+val Icons.Filled.ClipboardWithClock: ImageVector by lazy {
     materialIcon("Filled.ClipboardWithClock", viewportHeight = 960f, viewportWith = 960f) {
         materialPath {
             moveTo(680.0f, 880.0f)
@@ -682,6 +675,205 @@ val Icons.Filled.PersonAdd: ImageVector by lazy {
             moveTo(360.0f, 320.0f)
             close()
             moveTo(360.0f, 720.0f)
+            close()
+        }
+    }
+}
+
+/**
+ * Floppy disk
+ */
+val Icons.Filled.Save: ImageVector by lazy {
+    materialIcon("Filled.Save", viewportHeight = 960f, viewportWith = 960f) {
+        materialPath {
+            moveToRelative(840.0f, 280.0f)
+            verticalLineToRelative(480.0f)
+            quadToRelative(0.0f, 33.0f, -23.5f, 56.5f)
+            reflectiveQuadToRelative(-56.5f, 23.5f)
+            horizontalLineToRelative(-560.0f)
+            quadToRelative(-33.0f, 0.0f, -56.5f, -23.5f)
+            reflectiveQuadToRelative(-23.5f, -56.5f)
+            verticalLineToRelative(-560.0f)
+            quadToRelative(0.0f, -33.0f, 23.5f, -56.5f)
+            reflectiveQuadToRelative(56.5f, -23.5f)
+            horizontalLineToRelative(480.0f)
+            close()
+            moveTo(760.0f, 314.0f)
+            lineTo(646.0f, 200.0f)
+            horizontalLineToRelative(-446.0f)
+            verticalLineToRelative(560.0f)
+            horizontalLineToRelative(560.0f)
+            close()
+            moveTo(480.0f, 720.0f)
+            quadToRelative(50.0f, 0.0f, 85.0f, -35.0f)
+            reflectiveQuadToRelative(35.0f, -85.0f)
+            quadToRelative(0.0f, -50.0f, -35.0f, -85.0f)
+            reflectiveQuadToRelative(-85.0f, -35.0f)
+            quadToRelative(-50.0f, 0.0f, -85.0f, 35.0f)
+            reflectiveQuadToRelative(-35.0f, 85.0f)
+            quadToRelative(0.0f, 50.0f, 35.0f, 85.0f)
+            reflectiveQuadToRelative(85.0f, 35.0f)
+            close()
+            moveTo(240.0f, 400.0f)
+            horizontalLineToRelative(360.0f)
+            verticalLineToRelative(-160.0f)
+            horizontalLineToRelative(-360.0f)
+            close()
+            moveTo(200.0f, 314.0f)
+            verticalLineToRelative(446.0f)
+            verticalLineToRelative(-560.0f)
+            close()
+        }
+    }
+}
+
+/**
+ * Paper airplane with down arrow in circle in the right corner
+ */
+// TODO this should go on the button to add a pay period
+val Icons.Filled.SendAndArchive: ImageVector by lazy {
+    materialIcon("Filled.SendAndArchive", viewportHeight = 960f, viewportWith = 960f) {
+        materialPath {
+            moveToRelative(680.0f, 800.0f)
+            lineToRelative(120.0f, -120.0f)
+            lineToRelative(-28.0f, -28.0f)
+            lineToRelative(-72.0f, 72.0f)
+            verticalLineToRelative(-164.0f)
+            horizontalLineToRelative(-40.0f)
+            verticalLineToRelative(164.0f)
+            lineToRelative(-72.0f, -72.0f)
+            lineToRelative(-28.0f, 28.0f)
+            lineToRelative(120.0f, 120.0f)
+            close()
+            moveTo(120.0f, 800.0f)
+            verticalLineToRelative(-640.0f)
+            lineToRelative(572.0f, 240.0f)
+            horizontalLineToRelative(-12.0f)
+            quadToRelative(-35.0f, 0.0f, -66.0f, 8.0f)
+            reflectiveQuadToRelative(-60.0f, 22.0f)
+            lineTo(200.0f, 280.0f)
+            verticalLineToRelative(140.0f)
+            lineToRelative(240.0f, 60.0f)
+            lineToRelative(-240.0f, 60.0f)
+            verticalLineToRelative(140.0f)
+            lineToRelative(216.0f, -92.0f)
+            quadToRelative(-8.0f, 23.0f, -12.0f, 45.5f)
+            reflectiveQuadToRelative(-4.0f, 46.5f)
+            verticalLineToRelative(2.0f)
+            lineTo(120.0f, 800.0f)
+            close()
+            moveTo(680.0f, 880.0f)
+            quadToRelative(-83.0f, 0.0f, -141.5f, -58.5f)
+            reflectiveQuadTo(480.0f, 680.0f)
+            quadToRelative(0.0f, -83.0f, 58.5f, -141.5f)
+            reflectiveQuadTo(680.0f, 480.0f)
+            quadToRelative(83.0f, 0.0f, 141.5f, 58.5f)
+            reflectiveQuadTo(880.0f, 680.0f)
+            quadToRelative(0.0f, 83.0f, -58.5f, 141.5f)
+            reflectiveQuadTo(680.0f, 880.0f)
+            close()
+            moveTo(200.0f, 588.0f)
+            verticalLineToRelative(-308.0f)
+            verticalLineToRelative(400.0f)
+            verticalLineToRelative(-92.0f)
+            close()
+        }
+    }
+}
+
+/**
+ * An arrow pointing up on top of an inbox type thing
+ */
+val Icons.Filled.Upload: ImageVector by lazy {
+    materialIcon("Filled.Upload", viewportHeight = 960f, viewportWith = 960f) {
+        materialPath {
+            moveTo(440.0f, 640.0f)
+            verticalLineToRelative(-326.0f)
+            lineTo(336.0f, 418.0f)
+            lineToRelative(-56.0f, -58.0f)
+            lineToRelative(200.0f, -200.0f)
+            lineToRelative(200.0f, 200.0f)
+            lineToRelative(-56.0f, 58.0f)
+            lineToRelative(-104.0f, -104.0f)
+            verticalLineToRelative(326.0f)
+            horizontalLineToRelative(-80.0f)
+            close()
+            moveTo(240.0f, 800.0f)
+            quadToRelative(-33.0f, 0.0f, -56.5f, -23.5f)
+            reflectiveQuadTo(160.0f, 720.0f)
+            verticalLineToRelative(-120.0f)
+            horizontalLineToRelative(80.0f)
+            verticalLineToRelative(120.0f)
+            horizontalLineToRelative(480.0f)
+            verticalLineToRelative(-120.0f)
+            horizontalLineToRelative(80.0f)
+            verticalLineToRelative(120.0f)
+            quadToRelative(0.0f, 33.0f, -23.5f, 56.5f)
+            reflectiveQuadTo(720.0f, 800.0f)
+            lineTo(240.0f, 800.0f)
+            close()
+        }
+    }
+}
+
+val Icons.Filled.ShieldPerson: ImageVector by lazy {
+    materialIcon("Filled.ShieldPerson", viewportHeight = 960f, viewportWith = 960f) {
+        materialPath {
+            moveTo(480.0f, 520.0f)
+            quadToRelative(-59.0f, 0.0f, -99.5f, -40.5f)
+            reflectiveQuadTo(340.0f, 380.0f)
+            quadToRelative(0.0f, -59.0f, 40.5f, -99.5f)
+            reflectiveQuadTo(480.0f, 240.0f)
+            quadToRelative(59.0f, 0.0f, 99.5f, 40.5f)
+            reflectiveQuadTo(620.0f, 380.0f)
+            quadToRelative(0.0f, 59.0f, -40.5f, 99.5f)
+            reflectiveQuadTo(480.0f, 520.0f)
+            close()
+            moveTo(480.0f, 440.0f)
+            quadToRelative(26.0f, 0.0f, 43.0f, -17.0f)
+            reflectiveQuadToRelative(17.0f, -43.0f)
+            quadToRelative(0.0f, -26.0f, -17.0f, -43.0f)
+            reflectiveQuadToRelative(-43.0f, -17.0f)
+            quadToRelative(-26.0f, 0.0f, -43.0f, 17.0f)
+            reflectiveQuadToRelative(-17.0f, 43.0f)
+            quadToRelative(0.0f, 26.0f, 17.0f, 43.0f)
+            reflectiveQuadToRelative(43.0f, 17.0f)
+            close()
+            moveTo(480.0f, 880.0f)
+            quadToRelative(-139.0f, -35.0f, -229.5f, -159.5f)
+            reflectiveQuadTo(160.0f, 444.0f)
+            verticalLineToRelative(-244.0f)
+            lineToRelative(320.0f, -120.0f)
+            lineToRelative(320.0f, 120.0f)
+            verticalLineToRelative(244.0f)
+            quadToRelative(0.0f, 152.0f, -90.5f, 276.5f)
+            reflectiveQuadTo(480.0f, 880.0f)
+            close()
+            moveTo(480.0f, 480.0f)
+            close()
+            moveTo(480.0f, 165.0f)
+            lineTo(240.0f, 255.0f)
+            verticalLineToRelative(189.0f)
+            quadToRelative(0.0f, 54.0f, 15.0f, 105.0f)
+            reflectiveQuadToRelative(41.0f, 96.0f)
+            quadToRelative(42.0f, -21.0f, 88.0f, -33.0f)
+            reflectiveQuadToRelative(96.0f, -12.0f)
+            quadToRelative(50.0f, 0.0f, 96.0f, 12.0f)
+            reflectiveQuadToRelative(88.0f, 33.0f)
+            quadToRelative(26.0f, -45.0f, 41.0f, -96.0f)
+            reflectiveQuadToRelative(15.0f, -105.0f)
+            verticalLineToRelative(-189.0f)
+            lineToRelative(-240.0f, -90.0f)
+            close()
+            moveTo(480.0f, 680.0f)
+            quadToRelative(-36.0f, 0.0f, -70.0f, 8.0f)
+            reflectiveQuadToRelative(-65.0f, 22.0f)
+            quadToRelative(29.0f, 30.0f, 63.0f, 52.0f)
+            reflectiveQuadToRelative(72.0f, 34.0f)
+            quadToRelative(38.0f, -12.0f, 72.0f, -34.0f)
+            reflectiveQuadToRelative(63.0f, -52.0f)
+            quadToRelative(-31.0f, -14.0f, -65.0f, -22.0f)
+            reflectiveQuadToRelative(-70.0f, -8.0f)
             close()
         }
     }

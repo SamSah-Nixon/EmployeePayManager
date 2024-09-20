@@ -15,7 +15,6 @@ enum class OperatingSystem {
     WINDOWS,
     MAC,
     LINUX,
-    UNKNOWN
 }
 
 /**
@@ -25,7 +24,7 @@ val os: OperatingSystem = when {
     System.getProperty("os.name").contains("mac", ignoreCase = true) -> OperatingSystem.MAC
     System.getProperty("os.name").contains("win", ignoreCase = true) -> OperatingSystem.WINDOWS
     System.getProperty("os.name").contains("nix", ignoreCase = true) -> OperatingSystem.LINUX
-    else -> OperatingSystem.UNKNOWN
+    else -> throw UnsupportedOperationException("Unknown operating system")
 }
 
 /**
@@ -36,7 +35,6 @@ val OperatingSystem.applicationDataFolder: Path
         OperatingSystem.MAC -> Path(System.getProperty("user.home")).resolve("Library/Application Support")
         OperatingSystem.WINDOWS -> Path(System.getenv("APPDATA"))
         OperatingSystem.LINUX -> Path(System.getProperty("user.home"))
-        OperatingSystem.UNKNOWN -> throw UnsupportedOperationException("Unknown operating system")
     }
 
 /**
@@ -48,7 +46,6 @@ fun OperatingSystem.openFolder(path: Path) {
         OperatingSystem.MAC -> pb.command("open", "-R", path.toString())
         OperatingSystem.WINDOWS -> pb.command("explorer", path.toString())
         OperatingSystem.LINUX -> pb.command("xdg-open", path.toString())
-        OperatingSystem.UNKNOWN -> throw UnsupportedOperationException("Unknown operating system")
     }
 
     pb.start()

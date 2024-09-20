@@ -8,6 +8,8 @@ package org.ryecountryday.samandrhys.cruvna.ui
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -323,6 +325,12 @@ fun InlineTimePicker(
     }
 }
 
+/**
+ * A [TabRow] with a custom layout and appearance. The tabs are defined by [entries], which maps a title and optional
+ * icon to a composable that defines the tab's content.
+ * @param secondary controls the appearance of the tab row
+ * @param defaultTab the index of the tab to show by default
+ */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun CoolTabRow(
@@ -333,6 +341,7 @@ fun CoolTabRow(
     Column(modifier = Modifier.fillMaxSize()) {
         var tab by remember { mutableStateOf(defaultTab) }
 
+        // the content inside the tabs, so it isn't repeated twice below
         val content = @Composable {
             entries.keys.forEachIndexed { index, title ->
                 Tab(
@@ -348,6 +357,7 @@ fun CoolTabRow(
             }
         }
 
+        // the tab row itself
         if(secondary) {
             SecondaryTabRow(
                 selectedTabIndex = tab,
@@ -387,6 +397,9 @@ fun maybeSelectedBorder(selected: Boolean): BorderStroke {
             MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled)
         )
 }
+
+@Composable
+fun Modifier.verticalScroll() = this.verticalScroll(rememberScrollState())
 
 @Composable
 fun TextWithIcon(

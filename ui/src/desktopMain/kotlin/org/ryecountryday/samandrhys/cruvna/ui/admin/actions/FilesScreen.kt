@@ -3,7 +3,6 @@ package org.ryecountryday.samandrhys.cruvna.ui.admin.actions
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -44,16 +43,16 @@ fun FilesScreen() {
             )
         }
 
-        button("Open Application Data Folder", Icons.Outlined.FolderOpen) {
+        button("Open Application Data Folder", Icons.Filled.FolderOpen) {
             os.openFolder(mainFolder)
         }
 
-        button("Save Data to Disk", Icons.Outlined.ArrowDropDown) {
+        button("Save Data to Disk", Icons.Filled.Save) {
             save()
         }
 
         var confirmationScreen by remember { mutableStateOf(0) }
-        button("Load Data from Disk", Icons.Outlined.ArrowDropDown) {
+        button("Load Data from Disk", Icons.Filled.Upload) {
             confirmationScreen = 1
         }
         button("Delete All Data and Exit", Icons.Outlined.Delete, color = MaterialTheme.colors.error) {
