@@ -13,7 +13,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
@@ -117,7 +116,7 @@ fun EmployeeList(
                         modifier = Modifier.padding(4.dp).size(24.dp),
                         shape = CircleShape
                     ) {
-                        Icon(Icons.Filled.Add, contentDescription = "Add Employee", modifier = Modifier.size(16.dp))
+                        Icon(Icons.Filled.PersonAdd, contentDescription = "Add Employee", modifier = Modifier.size(16.dp))
                     }
                 }
             }
@@ -127,7 +126,7 @@ fun EmployeeList(
     if (mainList) {
         // the floating action button that opens the add employee dialog
         FloatingActionButton(onClick = { addDialogState.value = true }, modifier = Modifier.padding(4.dp)) {
-            Icon(Icons.Filled.Add, contentDescription = "Add Employee")
+            Icon(Icons.Filled.PersonAdd, contentDescription = "Add Employee")
         }
 
         if (addDialogState.value != false) {
@@ -261,7 +260,6 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     if (!isAdmin) {
-
                         val showPayTypeChangeDialog = remember { mutableStateOf(false) }
                         LabeledButton(
                             "Pay Type",

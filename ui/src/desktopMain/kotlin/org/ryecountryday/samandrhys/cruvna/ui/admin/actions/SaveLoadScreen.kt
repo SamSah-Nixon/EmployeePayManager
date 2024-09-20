@@ -8,12 +8,11 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import org.ryecountryday.samandrhys.cruvna.ui.FolderOpen
-import org.ryecountryday.samandrhys.cruvna.ui.load
-import org.ryecountryday.samandrhys.cruvna.ui.mainFolder
-import org.ryecountryday.samandrhys.cruvna.ui.save
+import org.ryecountryday.samandrhys.cruvna.ui.*
 import org.ryecountryday.samandrhys.cruvna.util.openFolder
 import org.ryecountryday.samandrhys.cruvna.util.os
 import org.ryecountryday.samandrhys.cruvna.util.removeShutdownHook
@@ -30,56 +29,35 @@ import kotlin.io.path.deleteRecursively
 @Composable
 fun FilesScreen() {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
-        Button(
-            onClick = { os.openFolder(mainFolder) },
-            modifier = Modifier.padding(horizontal = 6.dp).width(500.dp)
+        @Composable
+        fun button(
+            text: String,
+            icon: ImageVector,
+            color: Color = MaterialTheme.colors.primary,
+            onClick: () -> Unit
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Open Application Data Folder")
-                Spacer(Modifier.width(6.dp))
-                Icon(
-                    imageVector = Icons.Outlined.FolderOpen,
-                    contentDescription = "Open Application Data Folder"
-                )
-            }
+            Button(
+                onClick = onClick,
+                modifier = Modifier.padding(horizontal = 6.dp).width(500.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = color),
+                content = { TextWithIcon(text, icon, spacerWidth = 6, color = MaterialTheme.colors.background) }
+            )
         }
 
-        Button(onClick = { save() }, modifier = Modifier.padding(horizontal = 6.dp).width(500.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Save Data to Disk")
-                Spacer(Modifier.width(6.dp))
-                Icon(
-                    imageVector = Icons.Outlined.ArrowDropDown,
-                    contentDescription = "Save Data to Disk"
-                )
-            }
+        button("Open Application Data Folder", Icons.Outlined.FolderOpen) {
+            os.openFolder(mainFolder)
+        }
+
+        button("Save Data to Disk", Icons.Outlined.ArrowDropDown) {
+            save()
         }
 
         var confirmationScreen by remember { mutableStateOf(0) }
-        Button(onClick = { confirmationScreen = 1 }, modifier = Modifier.padding(horizontal = 6.dp).width(500.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Load Data from Disk")
-                Spacer(Modifier.width(6.dp))
-                Icon(
-                    imageVector = Icons.Outlined.ArrowDropDown,
-                    contentDescription = "Load Data from Disk"
-                )
-            }
+        button("Load Data from Disk", Icons.Outlined.ArrowDropDown) {
+            confirmationScreen = 1
         }
-
-        Button(
-            onClick = { confirmationScreen = 2 },
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error),
-            modifier = Modifier.padding(horizontal = 6.dp).width(500.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Delete All Data and Exit")
-                Spacer(Modifier.width(6.dp))
-                Icon(
-                    imageVector = Icons.Outlined.Delete,
-                    contentDescription = "Delete All Data and Exit"
-                )
-            }
+        button("Delete All Data and Exit", Icons.Outlined.Delete, color = MaterialTheme.colors.error) {
+            confirmationScreen = 2
         }
 
         when (confirmationScreen) {

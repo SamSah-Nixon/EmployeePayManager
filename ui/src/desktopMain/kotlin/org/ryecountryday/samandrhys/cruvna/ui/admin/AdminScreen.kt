@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Employees
 import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkHistory
+import org.ryecountryday.samandrhys.cruvna.ui.BriefcaseWithClock
+import org.ryecountryday.samandrhys.cruvna.ui.ButtonPencil
 import org.ryecountryday.samandrhys.cruvna.ui.CoolTabRow
 import org.ryecountryday.samandrhys.cruvna.ui.FourPeople
 import org.ryecountryday.samandrhys.cruvna.ui.admin.actions.ActionsScreen
@@ -37,14 +39,14 @@ fun AdminScreen(employees: MutableSet<Employee>, exitFunc: () -> Unit) {
         CoolTabRow(
             mapOf(
                 ("All Employees" to Icons.Filled.FourPeople) to { EmployeeList(employees) },
-                ("Clocked In Employees" to null) to {
+                ("Clocked In Employees" to Icons.Filled.BriefcaseWithClock) to {
                     EmployeeList(
                         employees.filter { WorkHistory.isClockedIn(it.id) }.toMutableSet(),
                         mainList = false,
                         defaultComparator = Employees.compareByTimeWorking
                     )
                 },
-                ("Actions" to null) to { ActionsScreen(employees) }
+                ("Actions" to Icons.Filled.ButtonPencil) to { ActionsScreen(employees) }
             ),
             secondary = true
         )

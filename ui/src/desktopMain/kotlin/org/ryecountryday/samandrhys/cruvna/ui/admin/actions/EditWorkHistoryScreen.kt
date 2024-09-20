@@ -110,14 +110,6 @@ private fun EditWorkEntry(entry: WorkEntry) {
                             modifier = modifier
                         )
                     }
-
-                    Button(
-                        onClick = { entry.id = "\u0000" }, // mark the entry to be deleted
-                        modifier = Modifier.padding(8.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
-                    ) {
-                        Text("Delete Entry")
-                    }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
