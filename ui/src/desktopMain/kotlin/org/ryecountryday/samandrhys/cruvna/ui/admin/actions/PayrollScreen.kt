@@ -106,23 +106,17 @@ fun PayrollScreen() {
         }
     }
     if (confirmPopup) {
-        ConfirmPopup(onClose = { confirmPopup = false })
-        print(confirmPopup)
-    }
-}
-    @Composable
-    fun ConfirmPopup(onClose: () -> Unit){
         Box(
-            modifier = Modifier.size(300.dp).background(MaterialTheme.colors.surface)
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.surface)
                 .border(BorderStroke(1.dp, MaterialTheme.colors.onSurface)).padding(4.dp),
-            contentAlignment = Alignment.CenterEnd
         ) {
             Row(modifier = Modifier.padding(32.dp)){Text("Are you sure you want to remove all pay periods?", color = MaterialTheme.colors.onSurface) }
-            Row(modifier = Modifier.padding(16.dp)) {
+            Row(modifier = Modifier.padding(64.dp)) {
                 Button(
                     onClick = {
                         payPeriods.clear()
                         save()
+                        confirmPopup = false
                     },
                     modifier = Modifier.size(150.dp).padding(16.dp)
                 ) {
@@ -133,19 +127,21 @@ fun PayrollScreen() {
                         textAlign = TextAlign.Center
                     )
                 }
-                    Button(
-                        onClick = {
-
-                        },
-                        modifier = Modifier.size(150.dp).padding(16.dp)
-                    ) {
-                        Text(
-                            "No",
-                            modifier = Modifier.padding(16.dp),
-                            color = MaterialTheme.colors.onSurface,
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                Button(
+                    onClick = {
+                        confirmPopup = false
+                    },
+                    modifier = Modifier.size(150.dp).padding(16.dp)
+                ) {
+                    Text(
+                        "No",
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colors.onSurface,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
+
     }
+}

@@ -18,6 +18,7 @@ import java.time.LocalDate
 /**
  * Represents an employee in the company.
  * @property id the employee's unique identifier.
+ * @property pay the employee's pay strategy (hourly vs salaried).
  * @property dateOfBirth the day on which this employee was born. Does not include the time (and time won't be serialized)
  * @property address the employee's address.
  */
@@ -54,6 +55,9 @@ open class Employee(
         return this === other || (other is Employee && this.id == other.id)
     }
 
+    /**
+     * Whether it is currently this employee's birthday.
+     */
     open fun isBirthday(): Boolean {
         return dateOfBirth.dayOfYear == Instant.now().toLocalDate().dayOfYear
     }
@@ -62,6 +66,9 @@ open class Employee(
         return "Employee(id=$id, name=$name, pay=$pay, dateOfBirth=$dateOfBirth, address=$address)"
     }
 
+    /**
+     * Represents the status of an employee.
+     */
     enum class Status {
         ACTIVE,
         INACTIVE;
@@ -82,6 +89,7 @@ open class Employee(
     }
 }
 
+//Admin created here with special properties
 object Employees {
     object ADMIN : Employee(
         lastName = "Admin",
@@ -114,7 +122,6 @@ object Employees {
         else if(e2 is ADMIN) 1
         else 0
     }
-
     val defaultComparator: Comparator<Employee> = Comparator { e1, e2 ->
         e1.status.compareTo(e2.status).zeroToNull() ?: e1.id.compareTo(e2.id)
     }

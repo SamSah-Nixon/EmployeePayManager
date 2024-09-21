@@ -42,7 +42,7 @@ object WorkHistory {
     fun addPayPeriod(endDate: LocalDate): Boolean {
         val previousEnd = payPeriods.getOrNull(0)
         if(previousEnd != null && endDate.isEqual(previousEnd.payPeriodEnd)) return false
-        payPeriods.addFirst(PayPeriod(LocalDate.MIN, endDate, mutableSetOf(*currentPeriod.toTypedArray())))
+        payPeriods.addFirst(PayPeriod(LocalDate.ofEpochDay(0), endDate, mutableSetOf(*currentPeriod.toTypedArray())))
         currentPeriod.clear()
         return true
     }
