@@ -32,6 +32,10 @@ kotlin {
 
                 implementation(compose.desktop.currentOs)
                 implementation(libs.kotlinx.coroutines.swing)
+
+                implementation("io.github.vinceglb:filekit-core:0.8.2")
+                implementation("io.github.vinceglb:filekit-compose:0.8.2")
+                implementation("net.java.dev.jna:jna:5.15.0")
             }
         }
     }

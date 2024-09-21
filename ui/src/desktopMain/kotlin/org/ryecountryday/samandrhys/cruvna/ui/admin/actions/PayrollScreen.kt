@@ -18,12 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import io.github.vinceglb.filekit.compose.rememberDirectoryPickerLauncher
+import org.ryecountryday.samandrhys.cruvna.backend.employee.Employees
 import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkHistory
-import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkHistory.payPeriods
+import org.ryecountryday.samandrhys.cruvna.ui.employees
 import org.ryecountryday.samandrhys.cruvna.ui.mutedBorder
 import org.ryecountryday.samandrhys.cruvna.ui.save
-import org.ryecountryday.samandrhys.cruvna.util.toLocalDate
+import org.ryecountryday.samandrhys.cruvna.util.*
 import java.time.Instant
+import kotlin.io.path.bufferedWriter
 
 /**
  * Screen for managing pay periods, with buttons to create and remove pay periods, and a list on the right of all pay periods.
@@ -40,13 +43,48 @@ fun PayrollScreen() {
         var showFailedPopup by remember { mutableStateOf(false) }
 
         Column(modifier = Modifier.width(200.dp).align(Alignment.CenterStart).padding(16.dp)) {
+
+            // When this is called it opens a dialog to select a directory to save the pay report
+            val launcher = rememberDirectoryPickerLauncher(
+                title = "Select a directory to save the pay report",
+            ) { dir ->
+                if(dir == null) return@rememberDirectoryPickerLauncher
+                val file = dir.file.toPath().resolve("pay_report_${Instant.now().toLocalDate().toDateString(separator = '_')}.txt")
+                file.bufferedWriter().use {
+                    val pp = WorkHistory.payPeriods.first()
+                    it.write("Pay Report for ${Instant.now().toLocalDate()}\n\n")
+                    it.write("Spanned from ${pp.payPeriodStart.toDateString()} to ${pp.payPeriodEnd.toDateString()} (${pp.daysInPeriod} days)\n\n")
+                    it.write("Pay:\n\n")
+
+                    var printed = false
+
+                    for(e in employees) {
+                        if(pp.hoursWorked(e.id) <= 0 || e == Employees.ADMIN) continue
+                        printed = true
+                        it.write("Employee: ${e.name}\n")
+                        it.write("  - ID: ${e.id}\n")
+                        it.write("  - Hours: ${pp.hoursWorked(e.id)}\n")
+                        it.write("  - Pay: ${e.pay.calculateSalary(pp, e.id)}\n\n")
+                    }
+
+                    if(!printed) {
+                        it.write("No employees worked during this pay period.")
+                    }
+                }
+
+                os.openFile(file)
+            }
+
             Button(
                 onClick = {
                     println("Creating Pay Period")
                     val bool = WorkHistory.addPayPeriod(Instant.now().toLocalDate())
-                    print("Did it work? $bool")
+                    println("Did it work? $bool")
                     showFailedPopup = !bool
-                    if(bool) save()
+                    if(bool) {
+                        save()
+                        launcher.launch()
+                    }
                 },
                 modifier = Modifier.width(200.dp).height(150.dp).padding(8.dp)
             ) {
@@ -95,8 +133,8 @@ fun PayrollScreen() {
         }
 
         Column(modifier = Modifier.width(500.dp).align(Alignment.CenterEnd).padding(16.dp)) {
-            var index = payPeriods.size
-            for (payPeriod in payPeriods) {
+            var index = WorkHistory.payPeriods.size
+            for (payPeriod in WorkHistory.payPeriods) {
                 Card(
                     modifier = Modifier.fillMaxWidth().border(border = mutedBorder())
                         .background(MaterialTheme.colors.primary),
@@ -122,7 +160,7 @@ fun PayrollScreen() {
             Row(modifier = Modifier.padding(64.dp)) {
                 Button(
                     onClick = {
-                        payPeriods.clear()
+                        WorkHistory.payPeriods.clear()
                         save()
                         confirmPopup = false
                     },

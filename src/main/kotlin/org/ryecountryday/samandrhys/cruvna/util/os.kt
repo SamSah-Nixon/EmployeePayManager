@@ -52,3 +52,14 @@ fun OperatingSystem.openFolder(path: Path) {
 
     pb.start()
 }
+
+fun OperatingSystem.openFile(path: Path) {
+    val pb = ProcessBuilder().inheritIO()
+    when (this) {
+        OperatingSystem.MAC -> pb.command("open", "-t", path.toString())
+        OperatingSystem.WINDOWS -> pb.command("rundll32", "url.dll,FileProtocolHandler", path.toString())
+        OperatingSystem.LINUX -> pb.command("xdg-open", path.toString())
+    }
+
+    pb.start()
+}
