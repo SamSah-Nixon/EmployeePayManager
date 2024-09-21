@@ -151,43 +151,52 @@ fun PayrollScreen() {
             }
         }
     }
+
     if (confirmPopup) {
-        Box(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.surface)
-                .border(BorderStroke(1.dp, MaterialTheme.colors.onSurface)).padding(4.dp),
-        ) {
-            Row(modifier = Modifier.padding(32.dp)){Text("Are you sure you want to remove all pay periods?", color = MaterialTheme.colors.onSurface) }
-            Row(modifier = Modifier.padding(64.dp)) {
-                Button(
-                    onClick = {
-                        WorkHistory.payPeriods.clear()
-                        save()
-                        confirmPopup = false
-                    },
-                    modifier = Modifier.size(150.dp).padding(16.dp)
+        Dialog(onDismissRequest = { confirmPopup = false }) {
+            Card {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(12.dp)
                 ) {
-                    Text(
-                        "Yes",
-                        modifier = Modifier.padding(16.dp),
-                        color = MaterialTheme.colors.onSurface,
-                        textAlign = TextAlign.Center
-                    )
-                }
-                Button(
-                    onClick = {
-                        confirmPopup = false
-                    },
-                    modifier = Modifier.size(150.dp).padding(16.dp)
-                ) {
-                    Text(
-                        "No",
-                        modifier = Modifier.padding(16.dp),
-                        color = MaterialTheme.colors.onSurface,
-                        textAlign = TextAlign.Center
-                    )
+                    Row(modifier = Modifier.padding(32.dp)) {
+                        Text(
+                            "Are you sure you want to remove all pay periods?",
+                            color = MaterialTheme.colors.onSurface
+                        )
+                    }
+                    Row(modifier = Modifier.padding(64.dp)) {
+                        Button(
+                            onClick = {
+                                WorkHistory.payPeriods.clear()
+                                save()
+                                confirmPopup = false
+                            },
+                            modifier = Modifier.size(150.dp).padding(16.dp)
+                        ) {
+                            Text(
+                                "Yes",
+                                modifier = Modifier.padding(16.dp),
+                                color = MaterialTheme.colors.onSurface,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                        Button(
+                            onClick = {
+                                confirmPopup = false
+                            },
+                            modifier = Modifier.size(150.dp).padding(16.dp)
+                        ) {
+                            Text(
+                                "No",
+                                modifier = Modifier.padding(16.dp),
+                                color = MaterialTheme.colors.onSurface,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                 }
             }
         }
-
     }
 }
