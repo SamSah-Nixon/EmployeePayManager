@@ -25,8 +25,8 @@ fun Instant.startOfDay(): Instant {
  * @param str The string to parse.
  */
 fun parseDate(str: String): LocalDate {
-    val parts = str.split('/', '-', '.', limit = 3)
-    return LocalDate.of(parts[2].toInt(), parts[0].toInt(), parts[1].toInt())
+    val parts = str.split('/', '-', '.', limit = 3).map(String::toInt)
+    return LocalDate.of(parts[2], parts[0], parts[1])
 }
 
 /**

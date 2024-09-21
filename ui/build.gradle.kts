@@ -1,6 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask
-import org.jetbrains.compose.desktop.application.tasks.AbstractProguardTask
 import java.time.LocalDate
 
 plugins {
@@ -39,13 +38,8 @@ kotlin {
 }
 
 afterEvaluate {
-    tasks.withType<AbstractProguardTask> {
-        proguardVersion = "7.5.0"
-        enabled = false // proguard is broken for some reason, maybe figure it out later
-    }
-
-    tasks.named<AbstractJPackageTask>("createDistributable") {
-        destinationDir = rootProject.file("build/dist")
+    tasks.withType<AbstractJPackageTask> {
+        destinationDir = rootProject.file("build/dist/${destinationDir.asFile.get().name}")
     }
 }
 
@@ -61,14 +55,26 @@ compose.desktop {
             packageVersion = project.version.toString()
             macOS {
                 dockName = "Cruvná"
-                bundleID = project.group.toString()
+                bundleID = "${project.group}.${rootProject.name}"
                 iconFile = rootProject.file("src/main/resources/icon.icns")
+
+                signing {
+
+                }
             }
             windows {
                 iconFile = rootProject.file("src/main/resources/icon.ico")
             }
             linux {
                 iconFile = rootProject.file("src/main/resources/icon.png")
+            }
+        }
+
+        buildTypes.release {
+            proguard {
+                version = "7.5.0"
+                configurationFiles.from(rootProject.file("guard.pro"))
+                optimize = false
             }
         }
     }
