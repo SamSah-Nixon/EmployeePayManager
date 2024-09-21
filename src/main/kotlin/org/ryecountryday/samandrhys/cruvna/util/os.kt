@@ -20,11 +20,13 @@ enum class OperatingSystem {
 /**
  * The operating system the program is running on.
  */
-val os: OperatingSystem = when {
-    System.getProperty("os.name").contains("mac", ignoreCase = true) -> OperatingSystem.MAC
-    System.getProperty("os.name").contains("win", ignoreCase = true) -> OperatingSystem.WINDOWS
-    System.getProperty("os.name").contains("nix", ignoreCase = true) -> OperatingSystem.LINUX
-    else -> throw UnsupportedOperationException("Unknown operating system")
+val os: OperatingSystem = System.getProperty("os.name").let {
+    when {
+        it.contains("mac", ignoreCase = true) -> OperatingSystem.MAC
+        it.contains("win", ignoreCase = true) -> OperatingSystem.WINDOWS
+        it.contains("nix", ignoreCase = true) -> OperatingSystem.LINUX
+        else -> throw UnsupportedOperationException("Unknown operating system")
+    }
 }
 
 /**
