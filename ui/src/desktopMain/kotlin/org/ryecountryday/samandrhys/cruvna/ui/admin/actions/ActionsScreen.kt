@@ -1,3 +1,7 @@
+/*
+ * This file is a part of Cruvná.
+ * Copyright (C) 2024 Rhys and Sam. All rights reserved.
+ */
 package org.ryecountryday.samandrhys.cruvna.ui.admin.actions
 
 import androidx.compose.material.icons.Icons
@@ -12,7 +16,7 @@ import org.ryecountryday.samandrhys.cruvna.ui.Storage
 fun ActionsScreen(employees: MutableSet<Employee>) {
     CoolTabRow(
         mapOf(
-            ("Payroll" to Icons.Filled.Money) to { PayrollScreen(employees) },
+            ("Payroll" to Icons.Filled.Money) to { PayrollScreen() },
             ("Edit Work History" to Icons.Filled.HistorySettings) to { EditScreen() },
             ("Files" to Icons.Filled.Storage) to { FilesScreen() },
         ),

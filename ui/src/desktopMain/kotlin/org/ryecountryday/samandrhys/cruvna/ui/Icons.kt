@@ -1,3 +1,7 @@
+/*
+ * This file is a part of Cruvná.
+ * Copyright (C) 2024 Rhys and Sam. All rights reserved.
+ */
 package org.ryecountryday.samandrhys.cruvna.ui
 
 import androidx.compose.material.icons.Icons
