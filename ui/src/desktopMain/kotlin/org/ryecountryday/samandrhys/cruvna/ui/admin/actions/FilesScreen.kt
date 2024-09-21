@@ -32,6 +32,7 @@ import kotlin.io.path.deleteRecursively
 @Composable
 fun FilesScreen() {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
+        Spacer(Modifier.height(32.dp))
         @Composable
         fun button(
             text: String,
@@ -43,7 +44,7 @@ fun FilesScreen() {
                 onClick = onClick,
                 modifier = Modifier.padding(horizontal = 6.dp).width(500.dp),
                 colors = ButtonDefaults.buttonColors(backgroundColor = color),
-                content = { TextWithIcon(text, icon, spacerWidth = 6, color = MaterialTheme.colors.background) }
+                content = { TextWithIcon(text, icon, spacerWidth = 6, color = MaterialTheme.colors.onPrimary) }
             )
         }
 
@@ -111,7 +112,10 @@ private fun DeleteConfirmationPopup(exit: () -> Unit) {
                         removeShutdownHook("SaveOnExit")
                         @OptIn(ExperimentalPathApi::class)
                         mainFolder.deleteRecursively()
-                        Runtime.getRuntime().exit(0)
+                        Thread {
+                            Thread.sleep(50)
+                            Runtime.getRuntime().exit(0)
+                        }.start()
                     },
                         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
                     ) {

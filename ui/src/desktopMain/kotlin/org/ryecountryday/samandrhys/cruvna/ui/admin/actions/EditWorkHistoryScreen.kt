@@ -6,9 +6,6 @@ package org.ryecountryday.samandrhys.cruvna.ui.admin.actions
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.List
-import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,43 +21,27 @@ import org.ryecountryday.samandrhys.cruvna.util.*
 
 @Composable
 fun EditScreen() {
-    var screen by remember { mutableStateOf(0) }
-
-    // main content
-    when (screen) {
-        0 -> EditCurrentPayPeriodScreen()
-        1 -> ViewPastPayPeriodsScreen()
-    }
-
-    // side menu
-    Column(modifier = Modifier.padding(start = 6.dp, top = 6.dp)) {
-        Button(onClick = { screen = 0 }) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.List,
-                contentDescription = "Edit Current Pay Period"
+    val entries by remember {
+        mutableStateOf(
+            mutableSetOf(
+                *WorkHistory.currentPeriod.toTypedArray<WorkEntry>(),
+                *WorkHistory.clockedIn.toTypedArray<WorkEntry>()
             )
-        }
-        Button(onClick = { screen = 1 }) {
-            Icon(
-                imageVector = Icons.Outlined.DateRange,
-                contentDescription = "View Past Pay Periods"
-            )
-        }
-    }
-}
-
-@Composable
-private fun EditCurrentPayPeriodScreen() {
-    val entries by remember { mutableStateOf(
-        mutableSetOf(
-            *WorkHistory.currentPeriod.toTypedArray(),
-            *WorkHistory.clockedIn.toTypedArray()
         )
-    ) }
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize().verticalScroll()) {
-        for(entry in entries) {
-            EditWorkEntry(entry)
+    }
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
+        Spacer(modifier = Modifier.height(8.dp))
+        if(entries.isEmpty()) {
+            Text("No entries to edit",
+                modifier = Modifier.padding(8.dp),
+                style = MaterialTheme.typography.h3,
+                color = MaterialTheme.colors.onSurface
+            )
+        }
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize().verticalScroll()) {
+            for (entry in entries) {
+                EditWorkEntry(entry)
+            }
         }
     }
 }
@@ -104,7 +85,7 @@ private fun EditWorkEntry(entry: WorkEntry) {
                         modifier = modifier,
                     )
 
-                    if(entry.end != null) {
+                    if (entry.end != null) {
                         InlineTimePicker(
                             label = "End Time",
                             initialTime = entry.end!!.toLocalDateTime().toLocalTime(),
@@ -119,9 +100,4 @@ private fun EditWorkEntry(entry: WorkEntry) {
             }
         }
     }
-}
-
-@Composable
-private fun ViewPastPayPeriodsScreen() {
-    Text("TODO")
 }

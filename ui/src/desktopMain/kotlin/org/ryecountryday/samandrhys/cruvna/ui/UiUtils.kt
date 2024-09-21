@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material3.*
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -362,13 +363,25 @@ fun CoolTabRow(
             SecondaryTabRow(
                 selectedTabIndex = tab,
                 containerColor = MaterialTheme.colors.background,
-                tabs = content
+                tabs = content,
+                indicator = {
+                    TabRowDefaults.SecondaryIndicator(
+                        Modifier.tabIndicatorOffset(tab, matchContentSize = false),
+                        color = MaterialTheme.colors.primaryVariant
+                    )
+                }
             )
         } else {
             PrimaryTabRow(
                 selectedTabIndex = tab,
                 containerColor = MaterialTheme.colors.background,
-                tabs = content
+                tabs = content,
+                indicator = {
+                    TabRowDefaults.SecondaryIndicator(
+                        Modifier.tabIndicatorOffset(tab, matchContentSize = false),
+                        color = MaterialTheme.colors.primaryVariant
+                    )
+                }
             )
         }
 

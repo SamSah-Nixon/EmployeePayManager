@@ -16,7 +16,7 @@ import org.ryecountryday.samandrhys.cruvna.ui.admin.AdminScreen
 @Preview
 @Composable
 fun App() {
-    var admin by remember { mutableStateOf(true) } // remember keeps this state across recompositions
+    var admin by remember { mutableStateOf(false) } // remember keeps this state across recompositions
 
     if (admin) {
         AdminScreen(employees, exitFunc = { admin = false })

@@ -13,6 +13,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.ui.SystemTheme
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -34,7 +35,7 @@ import kotlin.io.path.*
  */
 
 // if unknown, use system theme
-private val themeOverride = SystemTheme.Light
+private val themeOverride = SystemTheme.Unknown
 
 // Kotlin doesn't have a concept of static-ness, so we have to do this to run code on startup
 private val setupTheming: Unit = run {
@@ -154,8 +155,20 @@ fun main() = application {
             MaterialTheme(
                 colors =
                 if(themeOverride == SystemTheme.Dark || (themeOverride == SystemTheme.Unknown && isSystemInDarkTheme()))
-                    darkColors()
-                else lightColors()
+                    darkColors(
+                        primary = Color(0xFF1C2A50),
+                        primaryVariant = Color(0xFF1A2948),
+                        secondary = Color(0xFFCFAF18),
+                        secondaryVariant = Color(0xFFCDAD16),
+                        onPrimary = Color.White,
+                    )
+                else lightColors(
+                    primary = Color(0xFF1C2A50),
+                    primaryVariant = Color(0xFF1A2948),
+                    secondary = Color(0xFFCFAF18),
+                    secondaryVariant = Color(0xFFCDAD16),
+                    onPrimary = Color.White,
+                )
             ) {
                 App()
             }
