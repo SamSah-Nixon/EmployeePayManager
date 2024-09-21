@@ -3,10 +3,8 @@
  * Copyright (C) 2024 Rhys and Sam. All rights reserved.
  */
 
-import org.ryecountryday.samandrhys.cruvna.util.isPositiveDouble
-import org.ryecountryday.samandrhys.cruvna.util.isValidMoneyString
-import org.ryecountryday.samandrhys.cruvna.util.roundToTwoDecimalPlaces
-import org.ryecountryday.samandrhys.cruvna.util.toMoneyString
+import org.ryecountryday.samandrhys.cruvna.util.*
+import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -43,5 +41,14 @@ class RandomOtherTests {
         assertFalse("100000.143".isValidMoneyString())
         assertFalse("-123.23".isValidMoneyString())
         assertFalse("not valid".isValidMoneyString())
+    }
+
+    @Test
+    fun `parseDate(String)`() {
+        assertEquals(parseDate("01/01/2024"), LocalDate.of(2024, 1, 1))
+        assertEquals(parseDate("01-01-2024"), LocalDate.of(2024, 1, 1))
+        assertEquals(parseDate("01.01.2024"), LocalDate.of(2024, 1, 1))
+
+        assertEquals(parseDate("1/1/-99999"), LocalDate.of(-99999, 1, 1))
     }
 }
