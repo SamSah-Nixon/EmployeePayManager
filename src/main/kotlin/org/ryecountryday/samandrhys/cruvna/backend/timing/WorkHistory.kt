@@ -29,7 +29,7 @@ import kotlin.io.path.readText
 object WorkHistory {
 
     var clockedIn = mutableSetOf<WorkEntry>()
-    var currentPeriod = sortedSetOf<WorkEntry>()
+    var currentPeriod = mutableSetOf<WorkEntry>()
     var payPeriods = mutableListOf<PayPeriod>()
 
     /**
@@ -92,7 +92,8 @@ object WorkHistory {
             } else {
                 currentPeriod.add(it)
             }
-            clockedIn.find { it.end != null }?.let { clockedIn.remove(it) }
+
+            clockedIn.removeIf { it.id == id }
         }
     }
 

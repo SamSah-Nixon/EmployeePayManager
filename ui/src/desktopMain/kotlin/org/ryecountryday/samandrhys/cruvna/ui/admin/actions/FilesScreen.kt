@@ -33,6 +33,8 @@ import kotlin.io.path.deleteRecursively
 fun FilesScreen() {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
         Spacer(Modifier.height(32.dp))
+
+        // helper function for all the buttons we use here
         @Composable
         fun button(
             text: String,

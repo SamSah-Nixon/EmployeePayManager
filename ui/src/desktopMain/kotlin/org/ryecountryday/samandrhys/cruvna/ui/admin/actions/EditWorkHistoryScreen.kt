@@ -6,6 +6,9 @@ package org.ryecountryday.samandrhys.cruvna.ui.admin.actions
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,27 +27,45 @@ import org.ryecountryday.samandrhys.cruvna.util.*
  */
 @Composable
 fun EditScreen() {
-    val entries by remember {
+
+    var ascending by remember { mutableStateOf(true) }
+    var entries by remember {
         mutableStateOf(
             mutableSetOf(
                 *WorkHistory.currentPeriod.toTypedArray<WorkEntry>(),
                 *WorkHistory.clockedIn.toTypedArray<WorkEntry>()
-            )
+            ).sorted()
         )
     }
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
-        Spacer(modifier = Modifier.height(8.dp))
-        if(entries.isEmpty()) {
-            Text("No entries to edit",
-                modifier = Modifier.padding(8.dp),
-                style = MaterialTheme.typography.h3,
-                color = MaterialTheme.colors.onSurface
-            )
-        }
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize().verticalScroll()) {
-            for (entry in entries) {
-                EditWorkEntry(entry)
+
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            if(entries.isEmpty()) {
+                Text("No entries to edit",
+                    modifier = Modifier.padding(8.dp),
+                    style = MaterialTheme.typography.h3,
+                    color = MaterialTheme.colors.onSurface
+                )
             }
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize().verticalScroll()) {
+                for (entry in entries) {
+                    EditWorkEntry(entry)
+                }
+            }
+        }
+
+        Button(
+            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
+            onClick = {
+                ascending = !ascending
+                entries = entries.sortedWith(Comparator(WorkEntry::compareTo).let { if(ascending) it else it.reversed() })
+            }
+        ) {
+            Icon(
+                if (ascending) Icons.Outlined.KeyboardArrowDown else Icons.Outlined.KeyboardArrowUp,
+                contentDescription = "Ascending/Descending"
+            )
         }
     }
 }

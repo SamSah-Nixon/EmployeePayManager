@@ -65,7 +65,8 @@ sealed class PayStrategy {
                 if(hours > 40) {
                     val overtimeHours = hours - 40
 
-                    // this counts these overtime hours twice - once at 1x pay, and another at 1.5x pay
+                    // this counts these overtime hours twice - once at 1x pay, and another at 0.5x pay
+                    // for a total of 1.5x pay
                     pay += overtimeHours * 0.5
                 }
             }

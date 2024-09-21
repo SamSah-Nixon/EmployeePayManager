@@ -156,10 +156,10 @@ fun main() = application {
                 colors =
                 if(themeOverride == SystemTheme.Dark || (themeOverride == SystemTheme.Unknown && isSystemInDarkTheme()))
                     darkColors(
-                        primary = Color(0xFF1C2A50),
-                        primaryVariant = Color(0xFF1A2948),
-                        secondary = Color(0xFFFED456),
-                        secondaryVariant = Color(0xFFCFAF18),
+                        primary = Color(0xFF1C2A50), // rcds blue
+                        primaryVariant = Color(0xFF1A2948), // slightly darker rcds blue
+                        secondary = Color(0xFFFED456), // rcds gold
+                        secondaryVariant = Color(0xFFCFAF18), // slightly darker rcds gold
                         onPrimary = Color.White,
                     )
                 else lightColors(
