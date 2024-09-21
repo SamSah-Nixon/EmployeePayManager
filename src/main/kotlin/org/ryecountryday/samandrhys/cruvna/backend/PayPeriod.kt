@@ -35,12 +35,14 @@ class PayPeriod(var payPeriodStart: LocalDate, var payPeriodEnd: LocalDate, var 
         var dateIterator: LocalDate = payPeriodStart
         var hours = 0.0
 
-        while (dateIterator.isBefore(payPeriodEnd)) {
+        while (!dateIterator.isAfter(payPeriodEnd)) {
+            hours = 0.0
             for (workEntry in workEntries) {
                 //Find all entries on this day
                 if (workEntry.start.toLocalDate() == dateIterator) {
                     hours += workEntry.durationHours
                 }
+
             }
             hoursWorked.add(hours)
             dateIterator = dateIterator.plusDays(1)
@@ -55,15 +57,16 @@ class PayPeriod(var payPeriodStart: LocalDate, var payPeriodEnd: LocalDate, var 
         var hours = 0.0
         var dateIterator = payPeriodStart
         var index = 0
-        while (dateIterator.isBefore(payPeriodEnd)) {
+        while (hoursWorkedByDay.size > index) {
             hours += hoursWorkedByDay[index]
             if (dateIterator.dayOfWeek == DayOfWeek.SUNDAY) {
                 hoursWorkedByWeek.add(hours)
                 hours = 0.0
             }
-            dateIterator = dateIterator.plusDays(1)
             index++
+            dateIterator = dateIterator.plusDays(1)
         }
+        hoursWorkedByWeek.add(hours)
         return hoursWorkedByWeek
     }
 

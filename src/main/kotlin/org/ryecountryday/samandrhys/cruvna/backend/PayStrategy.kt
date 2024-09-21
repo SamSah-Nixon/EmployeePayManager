@@ -53,7 +53,6 @@ sealed class PayStrategy {
             var daysInRow = 0
             val hoursPerWeek = payPeriod.hoursWorkedByWeek(id)
             val hoursPerDay = payPeriod.hoursWorkedbyDay(id)
-
             // Overtime 9 days in a row
             for(hours in hoursPerDay){
                 if(hours > 0.0) daysInRow++
@@ -95,9 +94,9 @@ sealed class PayStrategy {
         override fun calculateSalary(payPeriod: PayPeriod, id: String): Double {
             var days = payPeriod.daysInPeriod
             val hoursPerWeek = payPeriod.hoursWorkedByWeek(id)
-
             //Deduction for under 40h a week
             for (hours in hoursPerWeek){
+                println("Id $id Hours: $hours")
                 if(hours < 40) {
                     val numHoursUnder = (40 - hours).toInt()
                     val deductions = (numHoursUnder / 8)

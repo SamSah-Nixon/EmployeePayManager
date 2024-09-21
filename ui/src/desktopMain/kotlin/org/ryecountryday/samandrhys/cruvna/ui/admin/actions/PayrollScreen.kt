@@ -36,9 +36,6 @@ import java.time.ZoneId
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PayrollScreen() {
-    val datePickerState = rememberDatePickerState()
-    val date by remember { derivedStateOf { datePickerState.selectedDateMillis } }
-
     var confirmPopup by remember { mutableStateOf(false) }
 
     Box(
@@ -46,18 +43,10 @@ fun PayrollScreen() {
         contentAlignment = Alignment.BottomCenter
     ) {
 
-
-
         Column(modifier = Modifier.width(200.dp).align(Alignment.CenterStart).padding(16.dp)) {
-            InlineDatePicker(
-                "End Date",
-                datePickerState,
-                modifier = Modifier.height(100.dp).width(200.dp).padding(16.dp)
-            )
-            datePickerState.selectedDateMillis = Instant.now().toEpochMilli()
             Button(
                 onClick = {
-                    var bool = WorkHistory.addPayPeriod(Instant.ofEpochMilli(date!!).atZone(ZoneId.systemDefault()).toLocalDate())
+                    var bool = WorkHistory.addPayPeriod(Instant.now().atZone(ZoneId.systemDefault()).toLocalDate())
                     print(bool)
                     save()
                 },
@@ -86,9 +75,9 @@ fun PayrollScreen() {
             }
         }
         Column(modifier = Modifier.width(500.dp).align(Alignment.CenterEnd).padding(16.dp)) {
-            var index = 0
+            var index = payPeriods.size
             for (payPeriod in payPeriods) {
-                index++
+
                 Box(
                     modifier = Modifier.fillMaxWidth().border(border = mutedBorder())
                         .background(MaterialTheme.colors.primary), contentAlignment = Alignment.Center
@@ -102,6 +91,7 @@ fun PayrollScreen() {
                     )
                 }
                 Row(modifier = Modifier.padding(4.dp)) {}
+                index--
             }
         }
     }

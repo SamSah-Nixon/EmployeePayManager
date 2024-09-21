@@ -41,8 +41,10 @@ object WorkHistory {
      */
     fun addPayPeriod(endDate: LocalDate): Boolean {
         val previousEnd = payPeriods.getOrNull(0)
+        //If the previous pay period ended on the same day as the new one, don't add it
         if(previousEnd != null && endDate.isEqual(previousEnd.payPeriodEnd)) return false
-        payPeriods.addFirst(PayPeriod(LocalDate.ofEpochDay(0), endDate, mutableSetOf(*currentPeriod.toTypedArray())))
+        if(previousEnd == null) payPeriods.addFirst(PayPeriod(LocalDate.of(2024,1,1), endDate, mutableSetOf(*currentPeriod.toTypedArray())))
+        else payPeriods.addFirst(PayPeriod(previousEnd.payPeriodEnd, endDate, mutableSetOf(*currentPeriod.toTypedArray())))
         currentPeriod.clear()
         return true
     }
@@ -69,7 +71,7 @@ object WorkHistory {
                 val entry2 = WorkEntry(startOfNewDay, it.end, id)
 
                 //If a work entry spreads across multiple pay periods add the second day into the new pay period
-                if(it.start.toLocalDate().isEqual(payPeriods.getOrNull(0)?.payPeriodStart)) {
+                if(payPeriods.getOrNull(0) != null && it.start.toLocalDate().isEqual(payPeriods.getOrNull(0)!!.payPeriodStart)) {
                     payPeriods[0].workEntries.add(entry2)
                 } else {
                     currentPeriod.add(entry2)
@@ -78,8 +80,7 @@ object WorkHistory {
             } else {
                 currentPeriod.add(it)
             }
-
-            clockedIn.remove(it)
+            clockedIn.find { it.end != null }?.let { clockedIn.remove(it) }
         }
     }
 

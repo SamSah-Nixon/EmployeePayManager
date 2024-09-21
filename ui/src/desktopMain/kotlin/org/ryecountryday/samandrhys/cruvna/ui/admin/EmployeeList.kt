@@ -34,6 +34,7 @@ import org.ryecountryday.samandrhys.cruvna.backend.employee.Address
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Employees
 import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkHistory
+import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkHistory.payPeriods
 import org.ryecountryday.samandrhys.cruvna.ui.*
 import org.ryecountryday.samandrhys.cruvna.util.LocalDate
 import org.ryecountryday.samandrhys.cruvna.util.formatTime
@@ -194,7 +195,7 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
         Column(modifier = Modifier.padding(8.dp).width(400.dp)) {
             Text("Name: ${employee.name}", style = MaterialTheme.typography.body1)
             Text("ID: ${employee.id}", style = MaterialTheme.typography.body1)
-
+            if(payPeriods.getOrNull(0) != null) Text("Pay Last Period: $${employee.pay.calculateSalary(WorkHistory.payPeriods.first(), employee.id)}", style = MaterialTheme.typography.body1)
             if (showClockedInStatus) {
                 var isClockedIn by remember { mutableStateOf(WorkHistory.isClockedIn(employee.id)) }
                 var duration by remember { mutableStateOf(WorkHistory.getClockedInEntry(employee.id)?.durationSeconds) }
