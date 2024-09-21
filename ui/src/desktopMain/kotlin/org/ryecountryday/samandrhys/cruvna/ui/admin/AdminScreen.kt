@@ -46,7 +46,7 @@ fun AdminScreen(employees: MutableSet<Employee>, exitFunc: () -> Unit) {
                         defaultComparator = Employees.compareByTimeWorking
                     )
                 },
-                ("Actions" to Icons.Filled.ButtonPencil) to { ActionsScreen(employees) }
+                ("Actions" to Icons.Filled.ButtonPencil) to { ActionsScreen() }
             ),
             secondary = true
         )

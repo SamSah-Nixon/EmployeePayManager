@@ -6,14 +6,10 @@ package org.ryecountryday.samandrhys.cruvna.ui.admin.actions
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
-import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
-import org.ryecountryday.samandrhys.cruvna.ui.CoolTabRow
-import org.ryecountryday.samandrhys.cruvna.ui.HistorySettings
-import org.ryecountryday.samandrhys.cruvna.ui.Money
-import org.ryecountryday.samandrhys.cruvna.ui.Storage
+import org.ryecountryday.samandrhys.cruvna.ui.*
 
 @Composable
-fun ActionsScreen(employees: MutableSet<Employee>) {
+fun ActionsScreen() {
     CoolTabRow(
         mapOf(
             ("Payroll" to Icons.Filled.Money) to { PayrollScreen() },

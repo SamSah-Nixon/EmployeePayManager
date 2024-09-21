@@ -34,12 +34,9 @@ import org.ryecountryday.samandrhys.cruvna.backend.employee.Address
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Employee
 import org.ryecountryday.samandrhys.cruvna.backend.employee.Employees
 import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkHistory
-import org.ryecountryday.samandrhys.cruvna.backend.timing.WorkHistory.payPeriods
 import org.ryecountryday.samandrhys.cruvna.ui.*
-import org.ryecountryday.samandrhys.cruvna.util.LocalDate
-import org.ryecountryday.samandrhys.cruvna.util.formatTime
-import org.ryecountryday.samandrhys.cruvna.util.isValidMoneyString
-import org.ryecountryday.samandrhys.cruvna.util.toDateString
+import org.ryecountryday.samandrhys.cruvna.util.*
+import kotlin.math.max
 
 /**
  * A composable that displays a list of employees in a column.
@@ -186,6 +183,8 @@ fun EmployeeList(
 fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
     var show by remember { mutableStateOf(false) }
 
+    val isAdmin by remember { mutableStateOf(employee == Employees.ADMIN) }
+
     Button(
         onClick = { show = true },
         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
@@ -195,11 +194,15 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
         Column(modifier = Modifier.padding(8.dp).width(400.dp)) {
             Text("Name: ${employee.name}", style = MaterialTheme.typography.body1)
             Text("ID: ${employee.id}", style = MaterialTheme.typography.body1)
-            if(payPeriods.getOrNull(0) != null) {
-                var payLastPeriod = employee.pay.calculateSalary(WorkHistory.payPeriods.first(), employee.id)
-                if(payLastPeriod < 0.0) payLastPeriod=0.0
-                Text("Pay Last Period: $${payLastPeriod}", style = MaterialTheme.typography.body1)
-                Text("Hours Worked Last Period: ${payPeriods.first().hoursWorked(employee.id)}", style = MaterialTheme.typography.body1)
+            if(WorkHistory.payPeriods.getOrNull(0) != null) {
+                val payLastPeriod = max(0.0,
+                    employee.pay.calculateSalary(WorkHistory.payPeriods.first(), employee.id))
+
+                if(!isAdmin) {
+                    Text("Pay Last Period: $${payLastPeriod.toMoneyString()}", style = MaterialTheme.typography.body1)
+                    val timeWorked = (WorkHistory.payPeriods.first().hoursWorked(employee.id) * 3600).toLong()
+                    Text("Time Worked Last Period: ${formatTime(timeWorked)}", style = MaterialTheme.typography.body1)
+                }
             }
             if (showClockedInStatus) {
                 var isClockedIn by remember { mutableStateOf(WorkHistory.isClockedIn(employee.id)) }
@@ -238,8 +241,6 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                     val modifier = Modifier.width(350.dp).align(Alignment.CenterHorizontally)
 
                     LabeledCard("ID", modifier = modifier) { Text(employee.id) }
-
-                    val isAdmin by remember { mutableStateOf(employee == Employees.ADMIN) }
 
                     OutlinedTextField(
                         value = firstName,
