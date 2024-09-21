@@ -21,7 +21,9 @@ import java.time.LocalTime
 @Serializable(with = PayPeriodSerializer::class)
 class PayPeriod(var payPeriodStart: LocalDate, var payPeriodEnd: LocalDate, var workEntries: MutableSet<WorkEntry>) {
     var daysInPeriod = payPeriodStart.until(payPeriodEnd).days
-
+    fun hoursWorked(id: String): Double {
+        return workEntries.filter { it.id == id }.sumOf { it.durationHours }
+    }
     //Find amount of hours worked for a specific employee in the pay period separated by day
     fun hoursWorkedbyDay(id: String): MutableList<Double> {
         val PPStart : Instant = payPeriodStart.toInstant()

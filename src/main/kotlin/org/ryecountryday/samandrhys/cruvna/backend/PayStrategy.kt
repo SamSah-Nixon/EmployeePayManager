@@ -96,7 +96,6 @@ sealed class PayStrategy {
             val hoursPerWeek = payPeriod.hoursWorkedByWeek(id)
             //Deduction for under 40h a week
             for (hours in hoursPerWeek){
-                println("Id $id Hours: $hours")
                 if(hours < 40) {
                     val numHoursUnder = (40 - hours).toInt()
                     val deductions = (numHoursUnder / 8)
