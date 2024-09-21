@@ -9,6 +9,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import org.ryecountryday.samandrhys.cruvna.ui.*
 
+/**
+ * Wrapper with tabs that lead to [PayrollScreen], [EditScreen], and [FilesScreen].
+ */
 @Composable
 fun ActionsScreen() {
     CoolTabRow(

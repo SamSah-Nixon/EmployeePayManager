@@ -31,8 +31,6 @@ sealed class PayStrategy {
     abstract val rate: Double
     abstract override fun toString(): String
 
-
-
     /**
      * Pays the employee based on a rate per hour worked. Overtime can occur in 2 scenarios:
      * - Working more than 40 hours in a week (1.5x rate)
@@ -58,13 +56,18 @@ sealed class PayStrategy {
                 if(hours > 0.0) daysInRow++
                 else daysInRow = 0
 
-                if(daysInRow > 9) pay += hours*1.5
+                if(daysInRow > 9) pay += hours * 1.5
                 pay += hours
             }
 
             // Overtime 40+ hours a week
             for (hours in hoursPerWeek){
-                if(hours > 40) pay += (hours-40)*0.5
+                if(hours > 40) {
+                    val overtimeHours = hours - 40
+
+                    // this counts these overtime hours twice - once at 1x pay, and another at 1.5x pay
+                    pay += overtimeHours * 0.5
+                }
             }
 
             return pay * rate
@@ -94,6 +97,7 @@ sealed class PayStrategy {
         override fun calculateSalary(payPeriod: PayPeriod, id: String): Double {
             var days = payPeriod.daysInPeriod
             val hoursPerWeek = payPeriod.hoursWorkedByWeek(id)
+
             //Deduction for under 40h a week
             for (hours in hoursPerWeek){
                 if(hours < 40) {

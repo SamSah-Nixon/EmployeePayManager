@@ -113,18 +113,31 @@ object Employees {
         }
     }
 
+    /**
+     * Creates a comparator for employees based on a property of the employee.
+     */
     fun <T : Comparable<T>> comparator(element: (Employee) -> T): Comparator<Employee> {
         return Comparator { e1, e2 -> element(e1).compareTo(element(e2)) }
     }
 
+    /**
+     * A comparator that sorts employees by whether they are admins or not.
+     */
     val adminFirstComparator = Comparator<Employee> { e1, e2 ->
         if(e1 is ADMIN) -1
         else if(e2 is ADMIN) 1
         else 0
     }
+
+    /**
+     * The default comparator, used in [Employee.compareTo] - sorts by status, then by ID.
+     */
     val defaultComparator: Comparator<Employee> = Comparator { e1, e2 ->
         e1.status.compareTo(e2.status).zeroToNull() ?: e1.id.compareTo(e2.id)
     }
 
+    /**
+     * A comparator that sorts employees by their time worked.
+     */
     val compareByTimeWorking = comparator { WorkHistory.getClockedInEntry(it.id)?.durationSeconds ?: -1 }
 }

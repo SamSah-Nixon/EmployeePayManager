@@ -19,6 +19,9 @@ import org.ryecountryday.samandrhys.cruvna.ui.mutedBorder
 import org.ryecountryday.samandrhys.cruvna.ui.verticalScroll
 import org.ryecountryday.samandrhys.cruvna.util.*
 
+/**
+ * Screen for editing work history entries.
+ */
 @Composable
 fun EditScreen() {
     val entries by remember {
@@ -46,6 +49,11 @@ fun EditScreen() {
     }
 }
 
+/**
+ * A work entry card. When clicked, it opens a dialog to edit the entry.
+ *
+ * @param entry The entry to edit.
+ */
 @Composable
 private fun EditWorkEntry(entry: WorkEntry) {
     var show by remember { mutableStateOf(false) }

@@ -52,10 +52,11 @@ fun EmployeeList(
     val employeeContainerState =
         remember { mutableStateOf(EmployeeContainer().apply { addAll(employees) }, neverEqualPolicy()) }
 
-    fun refresh() {
+    fun refresh() { // refreshes the order/entries in the list
         employeeContainerState.value = EmployeeContainer().apply { addAll(employees) }
     }
 
+    // Sorting options
     var comparator by remember { mutableStateOf(defaultComparator) }
     var ascending by remember { mutableStateOf(true) }
     val addDialogState: MutableState<Any> = remember { mutableStateOf(false) }
@@ -65,6 +66,8 @@ fun EmployeeList(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        // the search bar that filters the employees by name
         var search by remember { mutableStateOf("") }
         OutlinedTextField(
             value = search,
@@ -79,6 +82,7 @@ fun EmployeeList(
             colors = TextFieldDefaults.outlinedTextFieldColors(textColor = MaterialTheme.colors.onBackground)
         )
 
+        // The main column with all the cards in it
         Column(modifier = Modifier.verticalScroll().fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             for (employee in employeeContainerState.value.sortedWith(
                 // Force admin to be at the top; then sort as configured
@@ -99,8 +103,9 @@ fun EmployeeList(
                 }
             }
 
+            // at the bottom of the column, a line that tells the user how to add a new employee
+            // only shown in the main list when the button itself is shown too
             if (mainList) {
-                // a line that tells the user how to add a new employee - only shown in the main list when the button itself is shown too
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
@@ -121,8 +126,8 @@ fun EmployeeList(
         }
     }
 
+    // the floating action button that opens the add employee dialog
     if (mainList) {
-        // the floating action button that opens the add employee dialog
         FloatingActionButton(onClick = { addDialogState.value = true }, modifier = Modifier.padding(4.dp)) {
             Icon(Icons.Filled.PersonAdd, contentDescription = "Add Employee")
         }
@@ -191,6 +196,7 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
         modifier = Modifier.padding(2.dp),
         border = mutedBorder()
     ) {
+        // Display general info about the employee
         Column(modifier = Modifier.padding(8.dp).width(400.dp)) {
             Text("Name: ${employee.name}", style = MaterialTheme.typography.body1)
             Text("ID: ${employee.id}", style = MaterialTheme.typography.body1)
@@ -198,17 +204,21 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                 val payLastPeriod = max(0.0,
                     employee.pay.calculateSalary(WorkHistory.payPeriods.first(), employee.id))
 
+                // Display pay and time worked for the last pay period if not an admin
                 if(!isAdmin) {
                     Text("Pay Last Period: $${payLastPeriod.toMoneyString()}", style = MaterialTheme.typography.body1)
                     val timeWorked = (WorkHistory.payPeriods.first().hoursWorked(employee.id) * 3600).toLong()
                     Text("Time Worked Last Period: ${formatTime(timeWorked)}", style = MaterialTheme.typography.body1)
                 }
             }
+
+            // if in the clocked in list, display how long they've been working
             if (showClockedInStatus) {
                 var isClockedIn by remember { mutableStateOf(WorkHistory.isClockedIn(employee.id)) }
                 var duration by remember { mutableStateOf(WorkHistory.getClockedInEntry(employee.id)?.durationSeconds) }
 
                 LaunchedEffect(employee.id) {
+                    // Update the clocked in status every second
                     while (true) {
                         delay(1000)
                         isClockedIn = WorkHistory.isClockedIn(employee.id)
@@ -231,6 +241,7 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
     var firstName by remember { mutableStateOf(employee.firstName) }
     var lastName by remember { mutableStateOf(employee.lastName) }
 
+    // The popup dialog that shows the employee's details and allows for editing them
     if (show) {
         Dialog(onDismissRequest = { show = false }) {
             Card(modifier = Modifier.width(500.dp), backgroundColor = MaterialTheme.colors.background) {
@@ -249,7 +260,7 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                             employee.firstName = it
                             firstName = it
                         },
-                        enabled = !isAdmin,
+                        enabled = !isAdmin, // All of admin's info is read-only
                         label = { Text("First Name") },
                         modifier = modifier,
                     )
@@ -300,6 +311,7 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
                         }
                     }
 
+                    // Button to deactivate/activate the employee
                     if (!isAdmin) {
                         var status by remember { mutableStateOf(employee.status) }
 
@@ -324,6 +336,11 @@ fun EmployeeCard(employee: Employee, showClockedInStatus: Boolean = false) {
     }
 }
 
+/**
+ * Popup dialog that allows the user to add a new employee to the system.
+ * @param value A [MutableState] that controls whether the dialog is open or not. May be a [String] if there's an error,
+ *        in which case a dialog will be shown with the error message.
+ */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>, refresh: () -> Unit) {
@@ -336,6 +353,8 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>,
                 modifier = Modifier.verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
+                // All the employee's info that needs to be filled out
                 var lastName by remember { mutableStateOf("") }
                 var firstName by remember { mutableStateOf("") }
                 var id by remember { mutableStateOf("") }
@@ -445,6 +464,7 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>,
                     }
                 }
 
+                // Buttons to add the employee or cancel
                 Row(modifier = modifier) {
                     Button(onClick = {
                         if (lastName.isBlank() && firstName.isBlank()) {
@@ -502,6 +522,7 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>,
                         Text("Add Employee")
                     }
 
+                    // if there's an error, show a dialog with the error message
                     if (value.value is String) {
                         Dialog(onDismissRequest = { value.value = true }) {
                             Card {
@@ -541,6 +562,9 @@ fun AddEmployeeDialog(value: MutableState<Any>, employees: MutableSet<Employee>,
     }
 }
 
+/**
+ * Popup dialog that allows the user to change the pay type of an employee.
+ */
 @Composable
 fun PayTypeChangeDialog(value: MutableState<Boolean>, employee: Employee) {
     Dialog(onDismissRequest = { value.value = false }) {
@@ -601,6 +625,9 @@ fun PayTypeChangeDialog(value: MutableState<Boolean>, employee: Employee) {
     }
 }
 
+/**
+ * Popup dialog that allows the user to change the address of an employee.
+ */
 @Composable
 fun AddressChangeDialog(value: MutableState<Boolean>, address: Address) {
     Dialog(onDismissRequest = { value.value = false }) {

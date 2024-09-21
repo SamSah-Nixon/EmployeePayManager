@@ -71,6 +71,8 @@ fun FilesScreen() {
     }
 }
 
+// Confirmation screens
+
 @Composable
 private fun LoadConfirmationPopup(exit: () -> Unit) {
     Dialog(onDismissRequest = exit) {

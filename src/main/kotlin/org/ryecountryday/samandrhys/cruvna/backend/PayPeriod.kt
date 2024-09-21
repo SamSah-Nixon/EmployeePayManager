@@ -24,8 +24,11 @@ class PayPeriod(var payPeriodStart: LocalDate, var payPeriodEnd: LocalDate, var 
     fun hoursWorked(id: String): Double {
         return workEntries.filter { it.id == id }.sumOf { it.durationHours }
     }
-    //Find amount of hours worked for a specific employee in the pay period separated by day
-    fun hoursWorkedbyDay(id: String): MutableList<Double> {
+
+    /**
+     * Find amount of hours worked for a specific employee in the pay period separated by day
+     */
+    fun hoursWorkedbyDay(id: String): List<Double> {
         val PPStart : Instant = payPeriodStart.toInstant()
         val PPEnd : Instant = payPeriodEnd.atTime(LocalTime.MAX).toInstant()
         //Find all workEntries that match the employee id and are within the pay period
@@ -53,6 +56,10 @@ class PayPeriod(var payPeriodStart: LocalDate, var payPeriodEnd: LocalDate, var 
         return hoursWorked
     }
 
+    /**
+     * Find amount of hours worked for a specific employee in the pay period separated by week
+     * If the pay period is less than a week, the hours worked will be returned in a single element list
+     */
     fun hoursWorkedByWeek(id: String): List<Double> {
         val hoursWorkedByDay = hoursWorkedbyDay(id)
         val hoursWorkedByWeek = mutableListOf<Double>()

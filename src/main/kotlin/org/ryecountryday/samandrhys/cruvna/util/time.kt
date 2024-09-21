@@ -90,6 +90,9 @@ fun LocalDateTime.toInstant(): Instant {
     return ZonedDateTime.of(this, ZoneId.systemDefault()).toInstant()
 }
 
+/**
+ * Formats the time in seconds into a human-readable string, with proper pluralization.
+ */
 fun formatTime(totalSeconds: Long): String {
     val hours = totalSeconds / 3600
     val minutes = (totalSeconds % 3600) / 60

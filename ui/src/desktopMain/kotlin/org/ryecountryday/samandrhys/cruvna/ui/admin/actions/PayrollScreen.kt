@@ -25,6 +25,9 @@ import org.ryecountryday.samandrhys.cruvna.ui.save
 import org.ryecountryday.samandrhys.cruvna.util.toLocalDate
 import java.time.Instant
 
+/**
+ * Screen for managing pay periods, with buttons to create and remove pay periods, and a list on the right of all pay periods.
+ */
 @Composable
 fun PayrollScreen() {
     var confirmPopup by remember { mutableStateOf(false) }

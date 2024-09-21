@@ -29,7 +29,7 @@ import kotlin.io.path.readText
 object WorkHistory {
 
     var clockedIn = mutableSetOf<WorkEntry>()
-    var currentPeriod = mutableSetOf<WorkEntry>()
+    var currentPeriod = sortedSetOf<WorkEntry>()
     var payPeriods = mutableListOf<PayPeriod>()
 
     /**
@@ -49,18 +49,30 @@ object WorkHistory {
         return true
     }
 
+    /**
+     * Starts tracking the work of an employee.
+     */
     fun clockIn(id: String) {
         clockedIn.add(WorkEntry(id = id))
     }
 
+    /**
+     * @return true if the employee with the given ID is currently clocked in, false otherwise
+     */
     fun isClockedIn(id: String) : Boolean {
         return getClockedInEntry(id).let { it != null && it.end == null }
     }
 
+    /**
+     * @return the work entry of the employee with the given ID that is currently clocked in, or null if the employee is not clocked in
+     */
     fun getClockedInEntry(id: String) : WorkEntry? {
         return clockedIn.firstOrNull { it.id == id }
     }
 
+    /**
+     * Stops tracking the work of an employee. The work entry is added to the current pay period.
+     */
     fun clockOut(id: String) {
         getClockedInEntry(id)?.let {
             it.end = Instant.now()
@@ -84,6 +96,9 @@ object WorkHistory {
         }
     }
 
+    /**
+     * Loads work history from a file.
+     */
     fun load(path: Path) {
         val element = json.parseToJsonElement(path.readText())
         currentPeriod = json.decodeFromJsonElement(element.jsonObject["currentPeriod"]!!)
@@ -95,6 +110,9 @@ object WorkHistory {
         clockedIn.removeIf { it.end != null }
     }
 
+    /**
+     * Saves work history to a file.
+     */
     fun save(path: Path) {
         val element = buildJsonObject {
             put("currentPeriod", json.encodeToJsonElement(currentPeriod))
