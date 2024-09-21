@@ -158,15 +158,15 @@ fun main() = application {
                     darkColors(
                         primary = Color(0xFF1C2A50),
                         primaryVariant = Color(0xFF1A2948),
-                        secondary = Color(0xFFCFAF18),
-                        secondaryVariant = Color(0xFFCDAD16),
+                        secondary = Color(0xFFFED456),
+                        secondaryVariant = Color(0xFFCFAF18),
                         onPrimary = Color.White,
                     )
                 else lightColors(
                     primary = Color(0xFF1C2A50),
                     primaryVariant = Color(0xFF1A2948),
-                    secondary = Color(0xFFCFAF18),
-                    secondaryVariant = Color(0xFFCDAD16),
+                    secondary = Color(0xFFFED456),
+                    secondaryVariant = Color(0xFFCFAF18),
                     onPrimary = Color.White,
                 )
             ) {

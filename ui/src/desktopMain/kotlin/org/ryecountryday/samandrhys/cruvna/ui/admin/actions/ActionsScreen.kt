@@ -4,6 +4,7 @@
  */
 package org.ryecountryday.samandrhys.cruvna.ui.admin.actions
 
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import org.ryecountryday.samandrhys.cruvna.ui.*
@@ -16,6 +17,7 @@ fun ActionsScreen() {
             ("Edit Work History" to Icons.Filled.HistorySettings) to { EditScreen() },
             ("Files" to Icons.Filled.Storage) to { FilesScreen() },
         ),
-        defaultTab = 1
+        defaultTab = 1,
+        indicatorColor = MaterialTheme.colors.secondaryVariant
     )
 }

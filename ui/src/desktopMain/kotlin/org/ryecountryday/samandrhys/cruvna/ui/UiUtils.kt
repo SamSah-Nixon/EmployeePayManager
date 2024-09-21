@@ -337,9 +337,11 @@ fun InlineTimePicker(
 fun CoolTabRow(
     entries: Map<Pair<String, ImageVector?>, @Composable () -> Unit>,
     secondary: Boolean = false,
-    defaultTab: Int = 0
+    defaultTab: Int = 0,
+    indicatorColor: Color = MaterialTheme.colors.primaryVariant,
+    modifier: Modifier = Modifier.fillMaxSize()
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier) {
         var tab by remember { mutableStateOf(defaultTab) }
 
         // the content inside the tabs, so it isn't repeated twice below
@@ -367,7 +369,7 @@ fun CoolTabRow(
                 indicator = {
                     TabRowDefaults.SecondaryIndicator(
                         Modifier.tabIndicatorOffset(tab, matchContentSize = false),
-                        color = MaterialTheme.colors.primaryVariant
+                        color = indicatorColor
                     )
                 }
             )
@@ -379,7 +381,7 @@ fun CoolTabRow(
                 indicator = {
                     TabRowDefaults.SecondaryIndicator(
                         Modifier.tabIndicatorOffset(tab, matchContentSize = false),
-                        color = MaterialTheme.colors.primaryVariant
+                        color = indicatorColor
                     )
                 }
             )

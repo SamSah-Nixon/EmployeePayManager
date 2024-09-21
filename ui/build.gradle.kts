@@ -57,10 +57,6 @@ compose.desktop {
                 dockName = "Cruvná"
                 bundleID = "${project.group}.${rootProject.name}"
                 iconFile = rootProject.file("src/main/resources/icon.icns")
-
-                signing {
-
-                }
             }
             windows {
                 iconFile = rootProject.file("src/main/resources/icon.ico")
