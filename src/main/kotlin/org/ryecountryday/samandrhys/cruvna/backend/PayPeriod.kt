@@ -20,7 +20,8 @@ import java.time.LocalTime
  */
 @Serializable(with = PayPeriodSerializer::class)
 class PayPeriod(var payPeriodStart: LocalDate, var payPeriodEnd: LocalDate, var workEntries: MutableSet<WorkEntry>) {
-    var daysInPeriod = payPeriodStart.until(payPeriodEnd).days
+    var daysInPeriod = payPeriodEnd.toEpochDay() - payPeriodStart.toEpochDay()
+
     fun hoursWorked(id: String): Double {
         return workEntries.filter { it.id == id }.sumOf { it.durationHours }
     }
@@ -38,7 +39,7 @@ class PayPeriod(var payPeriodStart: LocalDate, var payPeriodEnd: LocalDate, var 
 
         val hoursWorked: MutableList<Double> = mutableListOf()
         var dateIterator: LocalDate = payPeriodStart
-        var hours = 0.0
+        var hours: Double
 
         while (!dateIterator.isAfter(payPeriodEnd)) {
             hours = 0.0
