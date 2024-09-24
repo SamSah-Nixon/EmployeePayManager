@@ -27,9 +27,7 @@ fun Double.roundToTwoDecimalPlaces(): Double {
  * @return A string representation of the Double, rounded to two decimal places.
  */
 fun Double.toMoneyString(): String {
-    var result = this.roundToTwoDecimalPlaces().toString()
-    result += "0".repeat(2 - result.numDecimalPlaces())
-    return result
+    return String.format("%.2f", this)
 }
 
 /**

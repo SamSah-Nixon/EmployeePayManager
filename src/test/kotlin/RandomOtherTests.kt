@@ -21,6 +21,7 @@ class RandomOtherTests {
     fun `Double#toMoneyString()`() {
         assertEquals(3.5.toMoneyString(), "3.50")
         assertEquals(3.0.toMoneyString(), "3.00")
+        assertEquals(1.0E7.toMoneyString(), "10000000.00")
         assertEquals(1.2345.toMoneyString(), "1.23")
         assertEquals(2.3456.toMoneyString(), "2.35")
     }
